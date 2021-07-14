@@ -18,15 +18,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * Thank you
  */
 
-$lang['edit_return']                       = 'Editar retorno';
-$lang['delete_return']                     = 'Excluir retorno';
+$lang['edit_return']                       = 'Editar devolução';
+$lang['delete_return']                     = 'Excluir devolução';
 $lang['return_sale']                       = 'Devoluções de vendas';
 $lang['return_note']                       = 'Nota de devolução';
 $lang['staff_note']                        = 'Nota da equipe';
-$lang['you_will_loss_return_data']         = 'Você perderá dados de retorno atuais';
-$lang['delete_returns']                    = 'Excluir Retornos';
+$lang['you_will_loss_return_data']         = 'Você perderá dados de devoluções atuais';
+$lang['delete_returns']                    = 'Excluir Devoluções';
 $lang['staff_note']                        = 'Nota da equipe';
-$lang['return_added']                      = 'O retorno foi adicionado com sucesso';
-$lang['return_updated']                    = 'O retorno foi atualizado com sucesso';
-$lang['return_deleted']                    = 'O retorno foi excluído com sucesso';
-$lang['return_x_edited_older_than_x_days'] = 'Retornos anteriores a% d dias não podem ser editados';
+$lang['return_added']                      = 'A devolução foi adicionada com sucesso';
+$lang['return_updated']                    = 'A devolução foi atualizada com sucesso';
+$lang['return_deleted']                    = 'A devolução foi excluída com sucesso';
+$lang['return_x_edited_older_than_x_days'] = 'Devoluções anteriores a %d dias não podem ser editados';

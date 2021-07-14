@@ -6,7 +6,7 @@ error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Install Stock Manager Advance with All Modules</title>
+    <title>Instalar ATS Stock Manager Advance - All Modules</title>
     <link rel="stylesheet" type="text/css" href="css/bootstrap-cosmo.css"/>
     <link href="css/custom.css" rel="stylesheet" type="text/css" />
     <link href="css/font-awesome.css" rel="stylesheet" type="text/css" />

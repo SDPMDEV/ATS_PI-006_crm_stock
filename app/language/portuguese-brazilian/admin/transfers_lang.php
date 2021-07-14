@@ -53,3 +53,4 @@ $lang['pr_not_found']                                = 'Produto não encontrado 
 $lang['line_no']                                     = 'Nº da Linha';
 $lang['transfer_order']                              = 'Pedido de Transferência';
 $lang['expenses_report']                             = 'Relatório de Despesas';
+$lang['attachments']                          = 'Anexos';

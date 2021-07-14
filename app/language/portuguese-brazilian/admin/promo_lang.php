@@ -18,20 +18,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
  * Thank you
  */
 
-$lang['add_promo']         = 'Add Promo';
-$lang['edit_promo']        = 'Edit Promo';
-$lang['delete_promo']      = 'Delete Promo';
-$lang['delete_promos']     = 'Delete Promos';
-$lang['free_product']      = 'Free Product';
-$lang['start_date']        = 'Start Date';
-$lang['end_date']          = 'End Date';
-$lang['product2buy']       = 'Product to buy';
-$lang['product2get']       = 'Product to get';
-$lang['quantity2buy']      = 'Quantity to buy';
-$lang['quantity2get']      = 'Quantity to get';
-$lang['promo_added']       = 'Promo successfully added';
-$lang['promo_updated']     = 'Promo successfully updated';
-$lang['promo_deleted']     = 'Promo successfully deleted';
-$lang['promos_deleted']    = 'Promos successfully deleted';
-$lang['no_promo_selected'] = 'No promo selected. Please select at least one promo.';
-$lang['description']       = 'Description';
+$lang['add_promo']         = 'Add Promoção';
+$lang['edit_promo']        = 'Editar Promoção';
+$lang['delete_promo']      = 'Deletar Promoção';
+$lang['delete_promos']     = 'Deletar Promoções';
+$lang['free_product']      = 'Produto Gratuito';
+$lang['start_date']        = 'Data de Início';
+$lang['end_date']          = 'Data Final';
+$lang['product2buy']       = 'Produto à comprar';
+$lang['product2get']       = 'Produto à adiquirir';
+$lang['quantity2buy']      = 'Quantidade por comprar';
+$lang['quantity2get']      = 'Quantidade por aquisição';
+$lang['promo_added']       = 'Promoção adicionada com sucesso';
+$lang['promo_updated']     = 'Promoção atualizada com sucesso';
+$lang['promo_deleted']     = 'Promoção excluída com sucesso';
+$lang['promos_deleted']    = 'Promoções excluídas com sucesso';
+$lang['no_promo_selected'] = 'Nenhuma promoção selecionada. Selecione pelo menos uma promoção.';
+$lang['description']       = 'Descrição';

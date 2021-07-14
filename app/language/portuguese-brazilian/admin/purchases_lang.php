@@ -124,3 +124,4 @@ $lang['adjust_payments']                       = 'Por favor ajustar os pagamento
 $lang['purchase_has_returned']                 = 'Compras com Entrada de Devolução não pode ser editada';
 $lang['purchase_already_returned']             = 'Compra já possui uma Entrada de Devolução';
 $lang['expenses_report']                       = 'Relatório de Despesas';
+$lang['attachments']                          = 'Anexos';

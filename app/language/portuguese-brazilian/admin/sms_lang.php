@@ -32,7 +32,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 // 1. {delivery_reference} for deliver reference
 // 2. (received_by} for delivery received by field
 
-$lang['sale_added']       = 'Caro(a) {customer}, your order (Ref. {sale_reference}) tenha sido recebido, prossiga para o pagamento no montante {grand_total}. Obrigado';
-$lang['payment_received'] = 'Caro(a) {customer}, seu pagamento (Ref. {payment_reference}, Amt: {amount}) foi recebido, processaremos seu pedido em breve. Obrigado';
-$lang['delivering']       = 'Caro(a) {customer}, Nós somos a entrega do seu pedido (Ref. {delivery_reference}).';
+$lang['sale_added']       = 'Caro(a) {customer}, seu pedido (Ref. {sale_reference}) foi recebido, prossiga para o pagamento do montante de {grand_total}. Obrigado';
+$lang['payment_received'] = 'Caro(a) {customer}, seu pagamento (Ref. {payment_reference}, Total: {amount}) foi recebido, processaremos seu pedido em breve. Obrigado';
+$lang['delivering']       = 'Caro(a) {customer}, aqui está um resumo da entrega do seu pedido (Ref. {delivery_reference}).';
 $lang['delived']          = 'Caro(a) {customer}, Seu pedido (Ref. {sale_reference}) foi recebido por {received_by}.';

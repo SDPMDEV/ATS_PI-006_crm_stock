@@ -9,6 +9,7 @@
     <link href="<?= $assets ?>styles/theme.css" rel="stylesheet"/>
     <link href="<?= $assets ?>styles/style.css" rel="stylesheet"/>
     <link href="<?= base_url('assets/custom/custom.css') ?>" rel="stylesheet"/>
+    <link href="<?= base_url('assets/global/plugins.bundle.css') ?>" rel="stylesheet"/>
     <script type="text/javascript" src="<?= $assets ?>js/jquery-2.0.3.min.js"></script>
     <script type="text/javascript" src="<?= $assets ?>js/jquery-migrate-1.2.1.min.js"></script>
     <!--[if lt IE 9]>
@@ -41,7 +42,7 @@
     </div>
 </noscript>
 <div id="loading"></div>
-<div id="app_wrapper">
+<div id="app_wrapper" class="sma_style">
     <header id="header" class="navbar">
         <div class="container">
             <a class="navbar-brand" href="<?= admin_url() ?>"><span class="logo"><?= $Settings->site_name ?></span></a>
@@ -104,7 +105,7 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav pull-right">
-                    <li class="dropdown hidden-xs"><a class="btn tip" title="<?= lang('dashboard') ?>" data-placement="bottom" href="<?= admin_url('welcome') ?>"><i class="fa fa-dashboard"></i></a></li>
+                    <li class="dropdown hidden-xs"><a class="btn tip" title="<?= lang('dashboard') ?>" data-placement="bottom" href="<?= admin_url('welcome') ?>"><i class="flaticon-dashboard" style="font-size: 1.25em;"></i></a></li>
                     <?php if (SHOP) {
         ?>
                     <li class="dropdown hidden-xs"><a class="btn tip" title="<?= lang('shop') ?>" data-placement="bottom" href="<?= base_url() ?>"><i class="fa fa-shopping-cart"></i></a></li>
@@ -206,16 +207,16 @@
                             <li class="bwhite noPadding">
                                 <a href="#" id="fixed" class="">
                                     <i class="fa fa-angle-double-left"></i>
-                                    <span id="fixedText">Fixed</span>
+                                    <span id="fixedText">Fixado</span>
                                 </a>
                                 <a href="#" id="cssLight" class="grey">
-                                    <i class="fa fa-stop"></i> Grey
+                                    <i class="fa fa-stop"></i> Cinza
                                 </a>
                                 <a href="#" id="cssBlue" class="blue">
-                                    <i class="fa fa-stop"></i> Blue
+                                    <i class="fa fa-stop"></i> Azul
                                 </a>
                                 <a href="#" id="cssBlack" class="black">
-                                   <i class="fa fa-stop"></i> Black
+                                   <i class="fa fa-stop"></i> Escuro
                                </a>
                            </li>
                         </ul>
@@ -234,7 +235,21 @@
                                 <li>
                                     <a href="<?= admin_url('welcome/language/' . $entry); ?>">
                                         <img src="<?= base_url('assets/images/' . $entry . '.png'); ?>" class="language-img">
-                                        &nbsp;&nbsp;<?= ucwords($entry); ?>
+                                        
+                                        <?php switch ($entry) {
+                                                case 'english':
+                                                $cal_lang = 'Inglês';
+                                                break;
+                                                case 'portuguese-brazilian':
+                                                $cal_lang = 'Português';
+                                                break;
+                                                case 'spanish':
+                                                $cal_lang = 'Espanhol';
+                                                break;
+                                            }
+                                            //return $cal_lang;?>
+
+                                            &nbsp;&nbsp;<?= ucwords($cal_lang); ?>
                                     </a>
                                 </li>
                             <?php
@@ -360,7 +375,7 @@
                     <ul class="nav main-menu">
                         <li class="mm_welcome">
                             <a href="<?= admin_url() ?>">
-                                <i class="fa fa-dashboard"></i>
+                                <i class="flaticon2-chart2"></i>
                                 <span class="text"> <?= lang('dashboard'); ?></span>
                             </a>
                         </li>
@@ -371,56 +386,56 @@
 
                             <li class="mm_products">
                                 <a class="dropmenu" href="#">
-                                    <i class="fa fa-barcode"></i>
+                                    <i class="flaticon-download-1"></i>
                                     <span class="text"> <?= lang('products'); ?> </span>
                                     <span class="chevron closed"></span>
                                 </a>
                                 <ul>
                                     <li id="products_index">
                                         <a class="submenu" href="<?= admin_url('products'); ?>">
-                                            <i class="fa fa-barcode"></i>
+                                            <i class="flaticon2-list-1"></i>
                                             <span class="text"> <?= lang('list_products'); ?></span>
                                         </a>
                                     </li>
                                     <li id="products_add">
                                         <a class="submenu" href="<?= admin_url('products/add'); ?>">
-                                            <i class="fa fa-plus-circle"></i>
+                                            <i class="flaticon2-plus-1"></i>
                                             <span class="text"> <?= lang('add_product'); ?></span>
                                         </a>
                                     </li>
                                     <li id="products_import_csv">
                                         <a class="submenu" href="<?= admin_url('products/import_csv'); ?>">
-                                            <i class="fa fa-file-text"></i>
+                                            <i class="flaticon2-checking"></i>
                                             <span class="text"> <?= lang('import_products'); ?></span>
                                         </a>
                                     </li>
                                     <li id="products_print_barcodes">
                                         <a class="submenu" href="<?= admin_url('products/print_barcodes'); ?>">
-                                            <i class="fa fa-tags"></i>
+                                            <i class="flaticon2-printer"></i>
                                             <span class="text"> <?= lang('print_barcode_label'); ?></span>
                                         </a>
                                     </li>
                                     <li id="products_quantity_adjustments">
                                         <a class="submenu" href="<?= admin_url('products/quantity_adjustments'); ?>">
-                                            <i class="fa fa-filter"></i>
+                                            <i class="flaticon-clipboard"></i>
                                             <span class="text"> <?= lang('quantity_adjustments'); ?></span>
                                         </a>
                                     </li>
                                     <li id="products_add_adjustment">
                                         <a class="submenu" href="<?= admin_url('products/add_adjustment'); ?>">
-                                            <i class="fa fa-filter"></i>
+                                            <i class="flaticon2-dashboard"></i>
                                             <span class="text"> <?= lang('add_adjustment'); ?></span>
                                         </a>
                                     </li>
                                     <li id="products_stock_counts">
                                         <a class="submenu" href="<?= admin_url('products/stock_counts'); ?>">
-                                            <i class="fa fa-list-ol"></i>
+                                            <i class="flaticon2-medical-records"></i>
                                             <span class="text"> <?= lang('stock_counts'); ?></span>
                                         </a>
                                     </li>
                                     <li id="products_count_stock">
                                         <a class="submenu" href="<?= admin_url('products/count_stock'); ?>">
-                                            <i class="fa fa-plus-circle"></i>
+                                            <i class="flaticon2-graphic"></i>
                                             <span class="text"> <?= lang('count_stock'); ?></span>
                                         </a>
                                     </li>

@@ -110,18 +110,9 @@ $ps = ['0' => lang('disable'), '1' => lang('enable')];
                                     <?= lang('language', 'language'); ?>
                                     <?php
                                     $lang = [
-                                        'arabic'               => 'Arabic',
-                                        'english'              => 'English',
-                                        'french'               => 'French',
-                                        'german'               => 'German',
-                                        'indonesian'           => 'Indonesian',
-                                        'portuguese-brazilian' => 'Portuguese (Brazil)',
-                                        'simplified-chinese'   => 'Simplified Chinese',
-                                        'spanish'              => 'Spanish',
-                                        'thai'                 => 'Thai',
-                                        'traditional-chinese'  => 'Traditional Chinese',
-                                        'turkish'              => 'Turkish',
-                                        'vietnamese'           => 'Vietnamese',
+                                        'english'              => 'Inglês',
+                                        'portuguese-brazilian' => 'Português (Brasil)',
+                                        'spanish'              => 'Espanhol',
                                     ];
                                     echo form_dropdown('language', $lang, $Settings->language, 'class="form-control tip" id="language" required="required" style="width:100%;"');
                                     ?>
@@ -193,7 +184,8 @@ $ps = ['0' => lang('disable'), '1' => lang('enable')];
                             <div class="controls">
                                 <?php
                                 $themes = [
-                                    'default' => 'Default',
+                                    'default' => 'Padrão',
+                                    'alliancets' => 'ATS Moderno',
                                 ];
                                 echo form_dropdown('theme', $themes, $Settings->theme, 'id="theme" class="form-control tip" required="required" style="width:100%;"');
                                 ?>

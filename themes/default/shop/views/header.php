@@ -18,7 +18,7 @@
     <meta property="og:image" content="<?= isset($product) && !empty($product) ? base_url('assets/uploads/' . $product->image) : base_url('assets/uploads/logos/' . $shop_settings->logo); ?>" />
 </head>
 <body>
-    <section id="wrapper" class="blue">
+    <section id="wrapper" class="orange">
         <header>
             <!-- Top Header -->
             <section class="top-header">
@@ -38,7 +38,7 @@
                             <ul class="list-inline nav pull-right">
                                 <?php
                                 if (DEMO) {
-                                    echo '<li class="hidden-xs hidden-sm"><a href="https://codecanyon.net/item/stock-manager-advance-with-all-modules/23045302?ref=Tecdiary" class="green" target="_blank"><i class="fa fa-shopping-cart"></i> Buy Now!</a></li>';
+                                    echo '<li class="hidden-xs hidden-sm"><a href="https://alliancets.app" class="green" target="_blank"><i class="fa fa-shopping-cart"></i> Comprar licença agora!</a></li>';
                                     echo '<li class="hidden-xs hidden-sm"><a href="' . admin_url() . '" class="green" target="_blank"><i class="fa fa-user"></i> Admin demo</a></li>';
                                 }
                                 ?>
@@ -46,7 +46,22 @@
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                     <img src="<?= base_url('assets/images/' . $Settings->user_language . '.png'); ?>" alt="">
-                                    <span class="hidden-xs">&nbsp;&nbsp;<?= ucwords($Settings->user_language); ?></span>
+
+                                             <?php switch ($Settings->user_language) {
+                                                case 'english':
+                                                $cal_user_language = 'Inglês';
+                                                break;
+                                                case 'portuguese-brazilian':
+                                                $cal_user_language = 'Português';
+                                                break;
+                                                case 'spanish':
+                                                $cal_user_language = 'Espanhol';
+                                                break;
+                                            }
+                                            //return $cal_lang;?>
+
+
+                                    <span class="hidden-xs">&nbsp;&nbsp;<?= ucwords($cal_user_language); ?></span>
                                  </a>
                                  <ul class="dropdown-menu dropdown-menu-right">
                                     <?php $scanned_lang_dir = array_map(function ($path) {
@@ -58,7 +73,21 @@
                                     <li>
                                         <a href="<?= site_url('main/language/' . $entry); ?>">
                                             <img src="<?= base_url('assets/images/' . $entry . '.png'); ?>" class="language-img">
-                                            &nbsp;&nbsp;<?= ucwords($entry); ?>
+
+                                            <?php switch ($entry) {
+                                                case 'english':
+                                                $cal_lang = 'Inglês';
+                                                break;
+                                                case 'portuguese-brazilian':
+                                                $cal_lang = 'Português';
+                                                break;
+                                                case 'spanish':
+                                                $cal_lang = 'Espanhol';
+                                                break;
+                                            }
+                                            //return $cal_lang;?>
+
+                                            &nbsp;&nbsp;<?= ucwords($cal_lang); ?>
                                         </a>
                                     </li>
                                     <?php

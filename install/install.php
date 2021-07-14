@@ -5,24 +5,25 @@
 *   @package      SMA3              *
 *   @subpackage   install           *
 ************************************/
+header('Content-Type: text/html; charset=utf-8');
 
-$installFile  = '../MAIN';
+$installFile  = './INSTALL';
 $indexFile    = '../index.php';
 $configFolder = '../app/config';
 $configFile   = '../app/config/config.php';
 $dbFile       = '../app/config/database.php';
-if (is_file($installFile)) {
+if (file_exists($installFile)) {
     $step = $_GET['step'] ?? '';
     switch ($step) {
         default: ?>
         <ul class="steps">
-            <li class="active pk">Checklist</li>
-            <li>Verify</li>
-            <li>Database</li>
-            <li>Site Config</li>
-            <li class="last">Done!</li>
+            <li class="active pk">Análise</li>
+            <li>Verificação</li>
+            <li>Base de Dados</li>
+            <li>Configuração do Site</li>
+            <li class="last">Etapa Final</li>
         </ul>
-        <h3>Pre-Install Checklist</h3>
+        <h3>Análise Pré-Instalação</h3>
         <?php
         $error = false;
         if (!is_writeable($indexFile)) {
@@ -86,11 +87,11 @@ if (is_file($installFile)) {
         <div class="bottom">
             <?php if ($error) {
             ?>
-            <a href="#" class="btn btn-primary disabled">Next Step</a>
+            <a href="#" class="btn btn-primary disabled">Próx. etapa</a>
             <?php
         } else {
             ?>
-            <a href="index.php?step=0" class="btn btn-primary">Next Step</a>
+            <a href="index.php?step=0" class="btn btn-primary">Próx. etapa</a>
             <?php
         } ?>
         </div>
@@ -99,19 +100,19 @@ if (is_file($installFile)) {
         break;
         case '0': ?>
         <ul class="steps">
-            <li class="ok"><i class="icon icon-ok"></i>Checklist</li>
-            <li class="active">Verify</li>
-            <li>Database</li>
-            <li>Site Config</li>
-            <li class="last">Done!</li>
+            <li class="ok"><i class="icon icon-ok"></i>Análise</li>
+            <li class="active">Verificação</li>
+            <li>Base de Dados</li>
+            <li>Configuração do Site</li>
+            <li class="last">Etapa Final</li>
         </ul>
-        <h3>Verify your purchase</h3>
+        <h3>Verificação do Código de Compra</h3>
         <?php
         if ($_POST) {
             $code        = filter_var($_POST['code'], FILTER_SANITIZE_STRING);
             $username    = filter_var($_POST['username'], FILTER_SANITIZE_STRING);
 
-            $buffer = '{"status":"success","success":true,"message":"Purchase code is valid. Please proceed!"}';
+            $buffer = '{"status":"success","success":true,"message":"Código de Compra é válido, pode prosseguir!"}';
             $object = json_decode($buffer);
 
             if ($object->status == 'success') {
@@ -131,15 +132,15 @@ if (is_file($installFile)) {
                 <div class="alert alert-error"><i class='icon-remove'></i> <strong><?php echo ucfirst($object->status); ?> <?php echo $cfc ? 'CloudFlare Security Error (request challenge/blacklist IP)' : ''; ?> :</strong><br /> <?php echo $object->message; ?><?php echo substr($cfc, -200, 150) ; ?></div>
                 <form action="index.php?step=0" method="POST" class="form-horizontal">
                     <div class="control-group">
-                        <label class="control-label" for="username">Envato Username</label>
+                        <label class="control-label" for="username">Usuário ATS</label>
                         <div class="controls">
-                            <input id="username" type="text" name="username" class="input-large" required data-error="Username is required" placeholder="Envato Username" />
+                            <input id="username" type="text" name="username" class="input-large" required data-error="Username is required" placeholder="Usuário ATS" />
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label" for="code">Purchase Code <a href="#myModal" role="button" data-toggle="modal"><i class="icon-question-sign"></i></a></label>
+                        <label class="control-label" for="code">Código de Compra <a href="#myModal" role="button" data-toggle="modal"><i class="icon-question-sign"></i></a></label>
                         <div class="controls">
-                            <input id="code" type="text" name="code" class="input-large" required data-error="Purchase Code is required" placeholder="Purchase Code" />
+                            <input id="code" type="text" name="code" class="input-large" required data-error="Purchase Code is required" placeholder="Código de Compra" />
                         </div>
                     </div>
                     <div class="bottom">
@@ -153,15 +154,15 @@ if (is_file($installFile)) {
             <p>Please enter the information to verify your purchase. </p><br>
             <form action="index.php?step=0" method="POST" class="form-horizontal">
                 <div class="control-group">
-                    <label class="control-label" for="username">Envato Username</label>
+                    <label class="control-label" for="username">Usuário ATS</label>
                     <div class="controls">
-                        <input id="username" type="text" name="username" class="input-large" required data-error="Username is required" placeholder="Envato Username" />
+                        <input id="username" type="text" name="username" class="input-large" required data-error="Username is required" placeholder="Usuário ATS" />
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label" for="code">Purchase Code <a href="#myModal" role="button" data-toggle="modal"><i class="icon-question-sign"></i></a></label>
                     <div class="controls">
-                        <input id="code" type="text" name="code" class="input-large" required data-error="Purchase Code is required" placeholder="Purchase Code" />
+                        <input id="code" type="text" name="code" class="input-large" required data-error="Purchase Code is required" placeholder="Código de Compra" />
                     </div>
                 </div>
 
@@ -174,41 +175,41 @@ if (is_file($installFile)) {
         break;
         case '1': ?>
         <ul class="steps">
-            <li class="ok"><i class="icon icon-ok"></i>Checklist</li>
-            <li class="ok"><i class="icon icon-ok"></i>Verify</li>
-            <li class="active">Database</li>
-            <li>Site Config</li>
-            <li class="last">Done!</li>
+            <li class="ok"><i class="icon icon-ok"></i>Análise</li>
+            <li class="ok"><i class="icon icon-ok"></i>Verificação</li>
+            <li class="active">Base de Dados</li>
+            <li>Configuração do Site</li>
+            <li class="last">Etapa Final</li>
         </ul>
         <?php
         if ($_POST) {
             $code     = filter_var($_POST['code'], FILTER_SANITIZE_STRING);
             $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING); ?>
-            <h3>Database Config</h3>
-            <p>If the database does not exist the system will try to create it.</p>
+            <h3>Configuração da Base de Dados</h3>
+            <p>Se a base de dados não existe, o sistema irá criar a mesma.</p>
             <form action="index.php?step=2" method="POST" class="form-horizontal">
                 <div class="control-group">
-                    <label class="control-label" for="dbhost">Database Host</label>
+                    <label class="control-label" for="dbhost">Configuração da Base de Dados</label>
                     <div class="controls">
-                        <input id="dbhost" type="text" name="dbhost" class="input-large" required data-error="DB Host is required" placeholder="DB Host" value="localhost" />
+                        <input id="dbhost" type="text" name="dbhost" class="input-large" required data-error="DB Host is required" placeholder="Host do Banco" value="localhost" />
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="dbusername">Database Username</label>
+                    <label class="control-label" for="dbusername">Usuário do Banco</label>
                     <div class="controls">
-                        <input id="dbusername" type="text" name="dbusername" class="input-large" required data-error="DB Username is required" placeholder="DB Username" />
+                        <input id="dbusername" type="text" name="dbusername" class="input-large" required data-error="DB Username is required" placeholder="Usuário do Banco" />
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="dbpassword">Database Password</a></label>
+                    <label class="control-label" for="dbpassword">Senha do Banco</a></label>
                     <div class="controls">
-                        <input id="dbpassword" type="password" name="dbpassword" class="input-large" data-error="DB Password is required" placeholder="DB Password" />
+                        <input id="dbpassword" type="password" name="dbpassword" class="input-large" data-error="DB Password is required" placeholder="Senha do Banco" />
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="dbname">Database Name</label>
+                    <label class="control-label" for="dbname">Nome do Banco</label>
                     <div class="controls">
-                        <input id="dbname" type="text" name="dbname" class="input-large" required data-error="DB Name is required" placeholder="DB Name" />
+                        <input id="dbname" type="text" name="dbname" class="input-large" required data-error="DB Name is required" placeholder="Nome do Banco" />
                     </div>
                 </div>
                 <input id="code" type="hidden" name="code" value="<?php echo $code; ?>" />
@@ -223,13 +224,13 @@ if (is_file($installFile)) {
         case '2':
         ?>
         <ul class="steps">
-            <li class="ok"><i class="icon icon-ok"></i>Checklist</li>
-            <li class="ok"><i class="icon icon-ok"></i>Verify</li>
-            <li class="active">Database</li>
-            <li>Site Config</li>
-            <li class="last">Done!</li>
+            <li class="ok"><i class="icon icon-ok"></i>Análise</li>
+            <li class="ok"><i class="icon icon-ok"></i>Verificação</li>
+            <li class="active">Base de Dados</li>
+            <li>Configuração do Site</li>
+            <li class="last">Etapa Final</li>
         </ul>
-        <h3>Saving database config</h3>
+        <h3>Salvando Configuração do Banco</h3>
         <?php
         if ($_POST) {
             $dbhost     = filter_var($_POST['dbhost'], FILTER_SANITIZE_STRING);
@@ -290,33 +291,33 @@ if (is_file($installFile)) {
         case '3':
         ?>
         <ul class="steps">
-            <li class="ok"><i class="icon icon-ok"></i>Checklist</li>
-            <li class="ok"><i class="icon icon-ok"></i>Verify</li>
-            <li class="ok"><i class="icon icon-ok"></i>Database</li>
-            <li class="active">Site Config</li>
-            <li class="last">Done!</li>
+            <li class="ok"><i class="icon icon-ok"></i>Análise</li>
+            <li class="ok"><i class="icon icon-ok"></i>Verificação</li>
+            <li class="ok"><i class="icon icon-ok"></i>Base de dados</li>
+            <li class="active">Configuração do Site</li>
+            <li class="last">Etapa Final</li>
         </ul>
-        <h3>Site Config</h3>
+        <h3>Configuração do Site</h3>
         <?php
         if ($_POST) {
             $code     = filter_var($_POST['code'], FILTER_SANITIZE_STRING);
             $username = filter_var($_POST['username'], FILTER_SANITIZE_STRING); ?>
             <form action="index.php?step=4" method="POST" class="form-horizontal">
                 <div class="control-group">
-                    <label class="control-label" for="domain">Base URL</label>
+                    <label class="control-label" for="domain">URL RAIZ</label>
                     <div class="controls">
                         <input type="text" id="domain" name="domain" class="xlarge" required data-error="Base URL is required" value="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . substr($_SERVER['REQUEST_URI'], 0, -24); ?>" />
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="domain">SECRET KEY</label>
+                    <label class="control-label" for="domain">CHAVE SECRETA</label>
                     <div class="controls">
                         <?php $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'; ?>
                         <input type="text" id="enckey" name="enckey" class="xlarge" required data-error="SECRET KEY is required" value="<?php echo substr(str_shuffle($characters), 25); ?>" />
                     </div>
                 </div>
                 <div class="control-group">
-                    <label class="control-label" for="domain">Your Timezone</a></label>
+                    <label class="control-label" for="domain">Fuso Horário</a></label>
                     <div class="controls">
                         <?php
                         $timezones = DateTimeZone::listIdentifiers();
@@ -330,7 +331,7 @@ if (is_file($installFile)) {
                 <input type="hidden" name="code" value="<?php echo $code; ?>" />
                 <input type="hidden" name="username" value="<?php echo $username; ?>" />
                 <div class="bottom">
-                    <a href="index.php?step=2" class="btn pull-left">Previous Step</a>
+                    <a href="index.php?step=2" class="btn pull-left">Anterior</a>
                     <input type="submit" class="btn btn-primary" value="Next Step"/>
                 </div>
             </form>
@@ -341,13 +342,13 @@ if (is_file($installFile)) {
         case '4':
         ?>
         <ul class="steps">
-            <li class="ok"><i class="icon icon-ok"></i>Checklist</li>
-            <li class="ok"><i class="icon icon-ok"></i>Verify</li>
-            <li class="ok">Database</li>
-            <li class="active">Site Config</li>
-            <li class="last">Done!</li>
+            <li class="ok"><i class="icon icon-ok"></i>Análise</li>
+            <li class="ok"><i class="icon icon-ok"></i>Verificação</li>
+            <li class="ok">Base de Dados</li>
+            <li class="active">Configuração do Site</li>
+            <li class="last">Etapa Final</li>
         </ul>
-        <h3>Saving site config</h3>
+        <h3>Salvando a Configuração</h3>
         <?php
         if ($_POST) {
             $domain   = filter_var($_POST['domain'], FILTER_SANITIZE_STRING);
@@ -360,14 +361,14 @@ if (is_file($installFile)) {
             $core = new Core();
 
             if ($core->write_config($domain, $enckey) == false) {
-                echo "<div class='alert alert-error'><i class='icon-remove'></i> Failed to write config details to " . $configFile . '</div>';
+                echo "<div class='alert alert-error'><i class='icon-remove'></i> Falha ao escrever os dados no arquivo de configuração " . $configFile . '</div>';
             } elseif ($core->write_index($timezone) == false) {
-                echo "<div class='alert alert-error'><i class='icon-remove'></i> Failed to write timezone details to " . $indexFile . '</div>';
+                echo "<div class='alert alert-error'><i class='icon-remove'></i> Falha ao definir o fuso horário " . $indexFile . '</div>';
             } else {
-                echo "<div class='alert alert-success'><i class='icon-ok'></i> Config details written to the config file.</div>";
+                echo "<div class='alert alert-success'><i class='icon-ok'></i> Confira os detalhes escritos no arquivo de configuração.</div>";
             }
         } else {
-            echo "<div class='alert alert-success'><i class='icon-question-sign'></i> Nothing to do...</div>";
+            echo "<div class='alert alert-success'><i class='icon-question-sign'></i> Nada para fazer...</div>";
         }
         ?>
         <div class="bottom">
@@ -388,10 +389,10 @@ if (is_file($installFile)) {
         break;
         case '5': ?>
         <ul class="steps">
-            <li class="ok"><i class="icon icon-ok"></i>Checklist</li>
-            <li class="ok"><i class="icon icon-ok"></i>Verify</li>
-            <li class="ok"><i class="icon icon-ok"></i>Database</li>
-            <li class="ok"><i class="icon icon-ok"></i>Site Config</li>
+            <li class="ok"><i class="icon icon-ok"></i>Análise</li>
+            <li class="ok"><i class="icon icon-ok"></i>Verificação</li>
+            <li class="ok"><i class="icon icon-ok"></i>Base de Dados</li>
+            <li class="ok"><i class="icon icon-ok"></i>Configuração do Site</li>
             <li  class="active">Done!</li>
         </ul>
 
@@ -418,35 +419,34 @@ if (is_file($installFile)) {
                 $database = new Database();
                 if ($database->create_tables($dbdata, $username, $code) == false) {
                     $finished = false;
-                    echo "<div class='alert alert-warning'><i class='icon-warning'></i> The database tables could not be created, please try again.</div>";
+                    echo "<div class='alert alert-warning'><i class='icon-warning'></i> A base de dados não pôde ser criada, por favor tente novamente.</div>";
                 } else {
                     $finished = true;
                     if (!@unlink('../MAIN')) {
-                        echo "<div class='alert alert-warning'><i class='icon-warning'></i> Please remove the MAIN file from the main folder in order to lock the installer.</div>";
+                        echo "<div class='alert alert-warning'><i class='icon-warning'></i> Por favor remova o arquivo MAIN da pasta de instalação para prosseguir.</div>";
                     }
                 }
             } else {
-                echo "<div class='alert alert-error'><i class='icon-remove'></i> Error while validating your purchase code!</div>";
+                echo "<div class='alert alert-error'><i class='icon-remove'></i> Erro ao validar o código de compra!</div>";
             }
         }
         if ($finished) {
             ?>
 
-            <h3><i class='icon-ok'></i> Installation completed!</h3>
-            <div class="alert alert-info"><i class='icon-info-sign'></i> You can login now using the following credential:<br /><br />
-                Username: <span style="font-weight:bold; letter-spacing:1px;">owner@tecdiary.com</span><br />Password: <span style="font-weight:bold; letter-spacing:1px;">12345678</span><br /><br />
+            <h3><i class='icon-ok'></i> A Instalação Está Completa!</h3>
+            <div class="alert alert-info"><i class='icon-info-sign'></i> Você pode seguir para o login utilizando as credenciais:<br /><br />
+                Usuário: <span style="font-weight:bold; letter-spacing:1px;">owner@alliancets.app</span><br />Senha: <span style="font-weight:bold; letter-spacing:1px;">12345678</span><br /><br />
             </div>
-            <div class="alert alert-warning"><i class='icon-warning-sign'></i> Please don't forget to change username and password.</div>
+            <div class="alert alert-warning"><i class='icon-warning-sign'></i> Não se esqueça de alterar seu usuário e senha.</div>
             <div class="bottom">
-                <a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . substr($_SERVER['REQUEST_URI'], 0, -24); ?>" class="btn btn-primary">Go to Login</a>
-			<a href="https://bit.ly/2QCCRlD" target="_blank" class="btn btn-primary">WarezzZ!</a>
+                <a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . substr($_SERVER['REQUEST_URI'], 0, -24); ?>" class="btn btn-primary">Ir ao login</a>
             </div>
 
             <?php
         }
     }
 } else {
-    echo "<div style='width: 100%; font-size: 10em; color: #757575; text-shadow: 0 0 2px #333, 0 0 2px #333, 0 0 2px #333; text-align: center;'><i class='icon-lock'></i></div><h3 class='alert-text text-center'>Installer is locked!<br><small style='color:#666;'>Please contact your developer/support.</small></h3>";
+    echo "<div style='width: 100%; font-size: 10em; color: #757575; text-shadow: 0 0 2px #333, 0 0 2px #333, 0 0 2px #333; text-align: center;'><i class='icon-lock'></i></div><h3 class='alert-text text-center'>A Instalação Está Bloqueada!<br><small style='color:#666;'>Por favor contate o administrador ou desenvolvedor do sistema.</small></h3>";
 }
 ?>
 
@@ -454,7 +454,7 @@ if (is_file($installFile)) {
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove"></i></button>
-        <h3 id="myModalLabel">How to find your purchase code</h3>
+        <h3 id="myModalLabel">Como Encontrar o Seu Código de Compra</h3>
     </div>
     <div class="modal-body">
         <img src="img/purchaseCode.png">
