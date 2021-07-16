@@ -12,6 +12,8 @@ if (!$bd) {
   die("Connection failed: " . mysqli_connect_error());
 }
 
+mysqli_close($bd);
+
 	
 define('EMPRESA', "ALLIANCE TECNOLOGIA E DESENVOLVIMENTO DE SISTEMAS LTDA");	
 define('CNPJ',  "36.665.277/0001-80");

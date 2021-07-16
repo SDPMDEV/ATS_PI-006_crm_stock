@@ -4,7 +4,7 @@
 
     require_once 'conexao.class.php';
     $con = new conexao(); // instancia classe de conxao
-    $con->connect(); // abre conexao com o banco
+    $link = $con->connect(); // abre conexao com o banco
 
 /* NFe Bling Integração API v1 */
 
@@ -14,13 +14,13 @@ header("Location: ../");
 } else { 
 $pedido = $_GET['pedido'];
 
-$query_sale = mysql_query("SELECT * FROM sma_sales WHERE id = '$pedido'");
-$sales = mysql_fetch_array($query_sale);
+$query_sale = mysqli_query($link, "SELECT * FROM sma_sales WHERE id = '$pedido'");
+$sales = mysqli_fetch_array($query_sale);
 
 $cliente = $sales['customer_id'];
 
-$query_customer = mysql_query("SELECT * FROM sma_companies WHERE id = '$cliente'");
-$customer = mysql_fetch_array($query_customer);
+$query_customer = mysqli_query($link, "SELECT * FROM sma_companies WHERE id = '$cliente'");
+$customer = mysqli_fetch_array($query_customer);
 
 // CF4 Tipo de Cliente J ou F
 
@@ -28,19 +28,19 @@ $url = 'http://www.bling.com.br/recepcao.nfe.php';
 $xml .= '<?xml version="1.0" encoding="UTF-8"?>
 <pedido>
     <cliente>
-        <nome>'.$customer[name].'</nome>
-        <tipoPessoa>'.$customer[cf4].'</tipoPessoa>
-        <cpf_cnpj>'.$customer[vat_no].'</cpf_cnpj>
-        <ie_rg>'.$customer[cf1].'</ie_rg>
-        <endereco>'.$customer[address].'</endereco>
-        <numero>'.$customer[cf2].'</numero>
-        <complemento>'.$customer[cf3].'</complemento>
-        <bairro>'.$customer[cf5].'</bairro>
-        <cep>'.$customer[postal_code].'</cep>
-        <cidade>'.$customer[city].'</cidade>
-        <uf>'.$customer[state].'</uf>
-        <fone>'.$customer[phone].'</fone>
-        <email>'.$customer[email].'</email>
+        <nome>'.$customer['name'].'</nome>
+        <tipoPessoa>'.$customer['cf4'].'</tipoPessoa>
+        <cpf_cnpj>'.$customer['vat_no'].'</cpf_cnpj>
+        <ie_rg>'.$customer['cf1'].'</ie_rg>
+        <endereco>'.$customer['address'].'</endereco>
+        <numero>'.$customer['cf2'].'</numero>
+        <complemento>'.$customer['cf3'].'</complemento>
+        <bairro>'.$customer['cf5'].'</bairro>
+        <cep>'.$customer['postal_code'].'</cep>
+        <cidade>'.$customer['city'].'</cidade>
+        <uf>'.$customer['state'].'</uf>
+        <fone>'.$customer['phone'].'</fone>
+        <email>'.$customer['email'].'</email>
     </cliente>
     <transporte>
         <transportadora>EMPRESA BRASILEIRA DE CORREIOS E TELÉGRAFOS - ECT</transportadora>
@@ -60,54 +60,52 @@ $xml .= '<?xml version="1.0" encoding="UTF-8"?>
         <servico_correios>SEDEX</servico_correios>
     </transporte>
     <dados_etiqueta>
-        <nome>'.$customer[name].'</nome>
-        <endereco>'.$customer[address].'</endereco>
-        <numero>'.$customer[cf2].'</numero>
+        <nome>'.$customer['name'].'</nome>
+        <endereco>'.$customer['address'].'</endereco>
+        <numero>'.$customer['cf2'].'</numero>
         <complemento>'.$complemento.'</complemento>
-        <bairro>'.$customer[cf5].'</bairro>
-        <municipio>'.$customer[city].'</municipio>
-        <uf>'.$customer[state].'</uf>
-        <cep>'.$customer[postal_code].'</cep>
+        <bairro>'.$customer['cf5'].'</bairro>
+        <municipio>'.$customer['city'].'</municipio>
+        <uf>'.$customer['state'].'</uf>
+        <cep>'.$customer['postal_code'].'</cep>
     </dados_etiqueta>
     <itens>';
 
-$query_bling = mysql_query("SELECT * FROM sma_sales WHERE id = '$pedido'");
-while($bling = mysql_fetch_array($query_bling)){
+$query_bling = mysqli_query($link, "SELECT * FROM sma_sales WHERE id = '$pedido'");
+while($bling = mysqli_fetch_array($query_bling)){
 
-$prdbling = mysql_query("SELECT * FROM sma_sale_items WHERE sale_id = '".$bling['id']."'");
-$produtobling = mysql_fetch_array($prdbling);
+$prdbling = mysqli_query($link, "SELECT * FROM sma_sale_items WHERE sale_id = '".$bling['id']."'");
+$produtobling = mysqli_fetch_array($prdbling);
 
-$prdsbb = mysql_query("SELECT * FROM sma_products WHERE id = '".$produtobling['product_id']."'");
-$prds = mysql_fetch_array($prdsbb);
+$prdsbb = mysqli_query($link, "SELECT * FROM sma_products WHERE id = '".$produtobling['product_id']."'");
+$prds = mysqli_fetch_array($prdsbb);
 
 $xml .='<item>
-            <codigo>'.$produtobling[product_code].'</codigo>
-            <descricao>'.$produtobling[product_name].'</descricao>
-            <un>'.$prds[unit].'</un>
-            <qtde>'.(int)$produtobling[quantity].'</qtde>
-            <vlr_unit>'.$produtobling[unit_price].'</vlr_unit>
+            <codigo>'.$produtobling['product_code'].'</codigo>
+            <descricao>'.$produtobling['product_name'].'</descricao>
+            <un>'.$prds['unit'].'</un>
+            <qtde>'.(int)$produtobling['quantity'].'</qtde>
+            <vlr_unit>'.$produtobling['unit_price'].'</vlr_unit>
             <tipo>P</tipo>
-            <peso_bruto>'.($prds[cf2] * (int)$produtobling[quantity]).'</peso_bruto>
-            <peso_liq>'.($prds[cf2] * (int)$produtobling[quantity]).'</peso_liq>
-            <class_fiscal>'.$prds[cf3].'</class_fiscal>
+            <peso_bruto>'.($prds['cf2'] * (int)$produtobling['quantity']).'</peso_bruto>
+            <peso_liq>'.($prds['cf2'] * (int)$produtobling['quantity']).'</peso_liq>
+            <class_fiscal>'.$prds['cf3'].'</class_fiscal>
             <origem>0</origem>
         </item>';
 }
 
 $datapagamento = date('d/m/Y');
 $xml .= '</itens>
-    <vlr_frete>'.$sales[shipping].'</vlr_frete>
-    <numero_loja>'.$sales[reference_no].'</numero_loja>
-    <obs>Pedido: '.$sales[reference_no].' EXPOS</obs>
+    <vlr_frete>'.$sales['shipping'].'</vlr_frete>
+    <numero_loja>'.$sales['reference_no'].'</numero_loja>
+    <obs>Pedido: '.$sales['reference_no'].' EXPOS</obs>
 </pedido>';
 
 $apiblingkey = API_BLING; 
 
 $data = "apiKey=$apiblingkey&retornaNumeroNota=S&pedidoXML=" . urlencode($xml);
 
-$nferetorna = enviarPedidoREST($url, $data);
 
- 
 function enviarPedidoREST($url, $data){
     $curl_handle = curl_init();
     curl_setopt($curl_handle, CURLOPT_URL, $url);
@@ -115,15 +113,24 @@ function enviarPedidoREST($url, $data){
     curl_setopt($curl_handle, CURLOPT_POSTFIELDS, $data);
     curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, TRUE);
     $response = curl_exec($curl_handle);
+
+    die(var_dump($response));
+    
+
     curl_close($curl_handle);
  
     return $response;
 }
 
+$nferetorna = enviarPedidoREST($url, $data);
+
+ 
+
+
 /* FIM API BLING */ 
 
-$sql_nfe = mysql_query("UPDATE sma_sales SET note='$nferetorna' WHERE id= '$pedido'");
-$rs_alterar = mysql_query($sql_nfe);
+$sql_nfe = mysqli_query($link, "UPDATE sma_sales SET note='$nferetorna' WHERE id= '$pedido'");
+$rs_alterar = mysqli_query($link, $sql_nfe);
 
 header("Location: ../sales/view/$pedido"); // redireciona para a listagem 
 

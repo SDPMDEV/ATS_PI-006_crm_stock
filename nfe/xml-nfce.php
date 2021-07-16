@@ -4,67 +4,65 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 date_default_timezone_set("Brazil/East"); // Brasil
-//require_once("conexao.php"); 
 
-    require_once 'conexao.php';
-    require_once 'conexao.class.php';
-    $con = new conexao(); // instancia classe de conxao
-    $con->connect(); // abre conexao com o banco
+require_once 'conexao.php';
+require_once 'conexao.class.php';
+
 
 function nfce($string)
 {
-  $string = str_replace('á','a',$string);
-  $string = str_replace('Á','A',$string);
-  $string = str_replace('à','a',$string);
-  $string = str_replace('À','A',$string);
-  $string = str_replace('â','a',$string);
-  $string = str_replace('Â','A',$string);
-  $string = str_replace('ã','a',$string);
-  $string = str_replace('Ã','A',$string);
-  $string = str_replace('ç','c',$string);
-  $string = str_replace('Ç','C',$string);
-  $string = str_replace('é','e',$string);
-  $string = str_replace('É','E',$string);
-  $string = str_replace('ê','e',$string);
-  $string = str_replace('Ê','E',$string);
-  $string = str_replace('è','e',$string);
-  $string = str_replace('È','E',$string);
-  $string = str_replace('í','i',$string);
-  $string = str_replace('Í','I',$string);
-  $string = str_replace('ó','o',$string);
-  $string = str_replace('Ó','O',$string);
-  $string = str_replace('ô','o',$string);
-  $string = str_replace('Ô','O',$string);
-  $string = str_replace('õ','o',$string);
-  $string = str_replace('Õ','O',$string);
-  $string = str_replace('ú','u',$string);
-  $string = str_replace('Ú','U',$string);
-  $string = str_replace('~','',$string);
-  $string = str_replace('&','e',$string);
-  $string = str_replace('.','',$string);
-  $string = str_replace('-','',$string);
-  $string = str_replace(',','',$string);
-  $string = str_replace(';','',$string);
-  $string = str_replace(':','',$string);
-  $string = str_replace('(','',$string);
-  $string = str_replace(')','',$string);
-  $string = str_replace('/','',$string);
+    $string = mb_convert_encoding($string, "UTF-8");
+    $string = str_replace('Ã¡','a',$string);
+    $string = str_replace('Ã','A',$string);
+    $string = str_replace('Ã ','a',$string);
+    $string = str_replace('Ã€','A',$string);
+    $string = str_replace('Ã¢','a',$string);
+    $string = str_replace('Ã‚','A',$string);
+    $string = str_replace('Ã£','a',$string);
+    $string = str_replace('Ãƒ','A',$string);
+    $string = str_replace('Ã§','c',$string);
+    $string = str_replace('Ã‡','C',$string);
+    $string = str_replace('Ã©','e',$string);
+    $string = str_replace('Ã‰','E',$string);
+    $string = str_replace('Ãª','e',$string);
+    $string = str_replace('ÃŠ','E',$string);
+    $string = str_replace('Ã¨','e',$string);
+    $string = str_replace('Ãˆ','E',$string);
+    $string = str_replace('Ã­','i',$string);
+    $string = str_replace('Ã','I',$string);
+    $string = str_replace('Ã³','o',$string);
+    $string = str_replace('Ã“','O',$string);
+    $string = str_replace('Ã´','o',$string);
+    $string = str_replace('Ã”','O',$string);
+    $string = str_replace('Ãµ','o',$string);
+    $string = str_replace('Ã•','O',$string);
+    $string = str_replace('Ãº','u',$string);
+    $string = str_replace('Ãš','U',$string);
+    $string = str_replace('~','',$string);
+    $string = str_replace('&','e',$string);
+    $string = str_replace('.','',$string);
+    $string = str_replace('-','',$string);
+    $string = str_replace(',','',$string);
+    $string = str_replace(';','',$string);
+    $string = str_replace(':','',$string);
+    $string = str_replace('(','',$string);
+    $string = str_replace(')','',$string);
+    $string = str_replace('/','',$string);
   return $string;
   
   }
 
-$pedido = $_GET['pedido'];
+
     
-/* NFe Bling Integração API v1 */
+/* NFe Bling Integraï¿½ï¿½o API v1 */
+
+$pedido = $_GET['pedido'];
 
 $connection = mysqli_connect(HOST, LOGIN, SENHA,BANCO);
+
 $query = "SELECT * FROM sma_sales WHERE id = '$pedido'";
 $query_sale = mysqli_query($connection, $query);
 
-//$sql = "SELECT * FROM sma_sales WHERE id = '$pedido'";
-//$query_sale = mysqli_query($con->connect(), $sql);
-
-//$query_sale = mysqli_query("SELECT * FROM sma_sales WHERE id = '$pedido'");
 $sales = mysqli_fetch_array($query_sale);
 $row = mysqli_num_rows($query_sale);
 $clienteid = $sales['customer_id'];
@@ -181,7 +179,7 @@ if($row >0) {
 
 $arquivo = "xml/nfce$chave.xml";
 
-// Abre se não cria
+// Abre se nï¿½o cria
 $ponteiro = fopen($arquivo, "w");
 
 // NFCE
@@ -194,10 +192,9 @@ $formapgto = "Outros";
 $digVal = base64_encode($idpedido);
 
 // Escrevendo XML
-fwrite($ponteiro, "<?xml version='1.0' encoding='utf-8'?>");
-fwrite($ponteiro, '<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="3.10">');
+
 fwrite($ponteiro, '<NFe xmlns="http://www.portalfiscal.inf.br/nfe">');
-fwrite($ponteiro, '<infNFe Id="'.$chave.'" versao="3.10">');
+fwrite($ponteiro, '<infNFe Id="'.$chave.'" versao="4.00">');
 fwrite($ponteiro, "<ide>");
 fwrite($ponteiro, "<cUF>13</cUF>");
 fwrite($ponteiro, "<cNF>$idpedido</cNF>");
@@ -218,7 +215,7 @@ fwrite($ponteiro, "<finNFe>1</finNFe>");
 fwrite($ponteiro, "<indFinal>1</indFinal>");
 fwrite($ponteiro, "<indPres>1</indPres>");
 fwrite($ponteiro, "<procEmi>0</procEmi>");
-fwrite($ponteiro, "<verProc>V2.245</verProc>");
+fwrite($ponteiro, "<verProc>V4.13</verProc>");
 fwrite($ponteiro, "</ide>");
 fwrite($ponteiro, "<emit>");
 fwrite($ponteiro, "<CNPJ>$cnpj</CNPJ>");
@@ -402,7 +399,7 @@ dJ63seLxiixrEioXwZ/m68Qyx6abxLndPTPDHDjvdi8JvM/ckzaQiF9+uFR63mlc0omkE9PhElLA
 6wGhvTs0co8QRvLYvOUt8HbF1hqnSWmroivq/WwKgvSf2b3kuMBYGhKmC0vqwzGU6s/Ml9LZky4j
 0K1xxRMV0+pG/R3huuS0WRz3uJ2k7d1WK3mymQ1+gBlcNFBqCtCjo5wGLMLmL9P9ETLQwm+5yCxf
 MzVDDMRQpJddtajP16cvGjZQe0CSnHuDELN3AQJRntdRqs1uMKGUcUzu3Oa5nJSLx6HygqU4z6Ve</X509Certificate></X509Data></KeyInfo></Signature>');
-fwrite($ponteiro, '<protNFe versao="3.00">');
+fwrite($ponteiro, '<protNFe versao="4.00">');
 fwrite($ponteiro, "<infProt>");
 fwrite($ponteiro, "<tpAmb>1</tpAmb>");
 fwrite($ponteiro, "<verAplic>XXXX</verAplic>");
@@ -415,7 +412,6 @@ fwrite($ponteiro, "<xMotivo>Autorizado o uso da NF-e</xMotivo>");
 fwrite($ponteiro, "</infProt>");
 fwrite($ponteiro, "</protNFe>");
 fwrite($ponteiro, "</NFe>");
-fwrite($ponteiro, "</nfeProc>");
 
 // Fecha XML
 fclose($ponteiro);

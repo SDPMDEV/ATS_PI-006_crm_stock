@@ -1,5 +1,5 @@
 <?php
-// CONEXAO PADRÃO
+// CONEXAO PADRï¿½O
 require_once("conexao.php"); 
 date_default_timezone_set("Brazil/East"); // Brasil
 $host = $servername; // servidor
@@ -23,7 +23,7 @@ class conexao
 {
 
     /*
-    CONEXÃO CRUDS
+    CONEXï¿½O CRUDS
     */
 
     private $db_host = HOST; // servidor
@@ -32,52 +32,45 @@ class conexao
     private $db_name = BANCO; // nome do banco
 
     private $con = false;
+    public $link = null;
 
    
     public function connect() // Estabelece conexao
     {
-        if(!$this->con)
+        if(!$this->link)
         {
-            $myconn = @mysqli_connect($this->db_host,$this->db_user,$this->db_pass,$this->db_name);
-            if($myconn)
+            $link = @mysqli_connect($this->db_host,$this->db_user,$this->db_pass,$this->db_name);
+            if($link)
             {
-                $seldb = @mysqli_select_db($this->db_name,$myconn);
-                if($seldb)
-                {
-                    $this->con = true;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                $seldb = @mysqli_select_db($link, $this->db_name);
+                return $seldb ? $this->link : null;
             }
             else
             {
-                return false;
+                return null;
             }
         }
         else
         {
-            return true;
+            return $this->link;
         }
     }
 
    
     public function disconnect() // Fecha conexao
     {
-    if($this->con)
-    {
-        if(@mysqli_close())
+        if($this->link)
         {
-                        $this->con = false;
-            return true;
+            if(@mysqli_close($this->link))
+            {
+                $this->link = null;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-        else
-        {
-            return false;
-        }
-    }
     }
       
 }
