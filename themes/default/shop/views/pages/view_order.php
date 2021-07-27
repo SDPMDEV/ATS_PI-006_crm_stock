@@ -370,6 +370,18 @@
                                         echo '</div><hr class="divider or">';
                                     }
                                     echo '<div class="payment_buttons">';
+                                    echo '<div id="payment_buttons" class="text-center margin010">';
+
+                                    echo '<form action="/boleto/sicoob/boleto_bancoob.php" target="_blank">
+                                            <input type="hidden" id="cpf_cnpj" name="cpf_cnpj" value="John">
+                                            <input type="hidden" id="valor_cobrado" name="valor_cobrado" value="' . (($return_sale ? ($inv->grand_total + $return_sale->grand_total) : $inv->grand_total) - ($return_sale ? ($inv->paid + $return_sale->paid) : $inv->paid)) . '">
+                                            <input type="image" formmethod="post" alt="Sicoob" src="' . site_url('/boleto/sicoob/imagens/logobancoob.jpg'). '">
+                                        </form>';
+
+                                    echo '</div>';
+                                    echo '</div>';
+                                    echo '<hr class="divider or">';
+                                    echo '<div class="payment_buttons">';
                                     $btn_code = '<div id="payment_buttons" class="text-center margin010">';
                                     if ($paypal->active == '1' && $inv->grand_total != '0.00') {
                                         $btn_code .= '<a href="' . site_url('pay/paypal/' . $inv->id) . '"><img src="' . base_url('assets/images/btn-paypal.png') . '" alt="Pay by PayPal"></a> ';
