@@ -139,6 +139,7 @@ $dadosboleto["cpf_cnpj"] = $_POST["cpf_cnpj"];
 $dadosboleto["endereco"] = "";
 $dadosboleto["cidade_uf"] = "";
 $dadosboleto["cedente"] = "SERVICO SOCIAL DA INDUSTRIA DA CONSTRUCAO CIVIL DO DISTRITO FEDERAL";
+$dadosboleto["logo"] = $_POST["logo"];
 
 // NÃO ALTERAR!
 include("include/funcoes_bancoob.php");

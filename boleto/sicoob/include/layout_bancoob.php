@@ -84,7 +84,7 @@
 /* *** CABECALHO *** */
 
 #instr_header {
-	background: url('imagens/logo_empresa.jpg') no-repeat top left;
+	background: url(<?=$dadosboleto["logo"]?>) no-repeat top left;
 	padding-left: 160px;
 	height: 65px;
 }
