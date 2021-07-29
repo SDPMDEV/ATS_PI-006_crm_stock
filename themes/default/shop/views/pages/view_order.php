@@ -375,7 +375,7 @@
                                     echo '<div id="payment_buttons" class="text-center margin010">';
 
                                     echo '<form action="/boleto/sicoob/boleto_bancoob.php" target="_blank">
-                                            <input type="hidden" id="cpf_cnpj" name="cpf_cnpj" value="John">
+                                            <input type="hidden" id="cpf_cnpj" name="cpf_cnpj" value="' . $biller->vat_no . '">
                                             <input type="hidden" id="logo" name="logo" value="' . base_url('assets/uploads/logos/' . $shop_settings->logo) . '">
                                             <input type="hidden" id="valor_cobrado" name="valor_cobrado" value="' . (($return_sale ? ($inv->grand_total + $return_sale->grand_total) : $inv->grand_total) - ($return_sale ? ($inv->paid + $return_sale->paid) : $inv->paid)) . '">
                                             <input type="image" formmethod="post" alt="Sicoob" src="' . site_url('/boleto/sicoob/imagens/logobancoob.jpg'). '">

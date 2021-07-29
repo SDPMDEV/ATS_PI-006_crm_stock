@@ -86,7 +86,7 @@
 #instr_header {
 	background: url(<?=$dadosboleto["logo"]?>) no-repeat top left;
 	padding-left: 160px;
-	height: 65px;
+	height: 90px;
 }
 
 #instr_header h1 {
