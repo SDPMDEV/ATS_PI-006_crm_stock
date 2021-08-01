@@ -2,6 +2,25 @@
 
 Error_reporting(0);
 
+require_once '../../database/conexao.class.php';
+$con = new conexao(); // instancia classe de conxao
+$con->connect(); // abre conexao com o banco
+
+$connection = mysqli_connect(HOST, LOGIN, SENHA,BANCO);
+
+$query = "SELECT
+						sma_boleto_config.agencia AS agencia,
+						sma_boleto_config.conta AS conta,
+						sma_banco_boleto.nome AS banco,
+						sma_banco_boleto.auto_incremento AS auto_incremento
+					FROM
+						sma_boleto_config
+					INNER JOIN sma_banco_boleto ON sma_banco_boleto.id = sma_boleto_config.banco_id
+					WHERE
+						sma_banco_boleto.nome = 'sicoob'";
+$query_boleto_config = mysqli_query($connection, $query);
+$boleto_config = mysqli_fetch_array($query_boleto_config);
+
 // ------------------------- DADOS DINÂMICOS DO SEU CLIENTE PARA A GERAÇÃO DO BOLETO (FIXO OU VIA GET) -------------------- //
 // Os valores abaixo podem ser colocados manualmente ou ajustados p/ formulário c/ POST, GET ou de BD (MySql,Postgre,etc)	//
 
@@ -42,10 +61,10 @@ if (!function_exists('formata_numdoc')) {
 	}
 }
 
-$IdDoSeuSistemaAutoIncremento = '10003'; // Deve informar um numero sequencial a ser passada a função abaixo, Até 6 dígitos
-$agencia = "4364"; // Num da agencia, sem digito
-$conta = "494"; // Num da conta, sem digito
-$convenio = "7641"; //Número do convênio indicado no frontend
+$IdDoSeuSistemaAutoIncremento = $boleto_config['auto_incremento']; // Deve informar um numero sequencial a ser passada a função abaixo, Até 6 dígitos
+$agencia = $boleto_config['agencia']; // Num da agencia, sem digito
+$conta = $boleto_config['conta']; // Num da conta, sem digito
+$convenio = $boleto_config['convenio']; //Número do convênio indicado no frontend
 
 $NossoNumero = formata_numdoc($IdDoSeuSistemaAutoIncremento, 7);
 $qtde_nosso_numero = strlen($NossoNumero);
