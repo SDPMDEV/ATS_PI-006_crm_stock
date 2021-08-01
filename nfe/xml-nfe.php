@@ -57,6 +57,7 @@ function nfce($string)
 $pedido = $_GET['pedido'];
 
 $connection = mysqli_connect(HOST, LOGIN, SENHA,BANCO);
+$connection->set_charset("utf8mb4");
 
 $query = "SELECT * FROM sma_sales WHERE id = '$pedido'";
 $query_sale = mysqli_query($connection, $query);
