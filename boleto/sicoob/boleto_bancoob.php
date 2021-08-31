@@ -12,7 +12,8 @@ $query = "SELECT
 						sma_boleto_config.agencia AS agencia,
 						sma_boleto_config.conta AS conta,
 						sma_banco_boleto.nome AS banco,
-						sma_banco_boleto.auto_incremento AS auto_incremento
+						sma_boleto_config.auto_incremento AS auto_incremento,
+						sma_boleto_config.codigo_cliente AS convenio
 					FROM
 						sma_boleto_config
 					INNER JOIN sma_banco_boleto ON sma_banco_boleto.id = sma_boleto_config.banco_id
@@ -27,10 +28,12 @@ $boleto_config = mysqli_fetch_array($query_boleto_config);
 // DADOS DO BOLETO PARA O SEU CLIENTE
 $dias_de_prazo_para_pagamento = 7;
 $taxa_boleto = 0;
-$data_venc = $_POST['data_venc']; //date("d/m/Y", time() + ($dias_de_prazo_para_pagamento * 86400));  // Prazo de X dias OU informe data: "13/04/2006"; 
+$data_venc = '12/12/2021'; //date("d/m/Y", time() + ($dias_de_prazo_para_pagamento * 86400));  // Prazo de X dias OU informe data: "13/04/2006"; 
 $valor_cobrado = $_POST['valor_cobrado']; // Valor - REGRA: Sem pontos na milhar e tanto faz com "." ou "," ou com 1 ou 2 ou sem casa decimal
-$valor_cobrado = str_replace(",", ".", $valor_cobrado);
-$valor_boleto = number_format($valor_cobrado + $taxa_boleto, 2, ',', '');
+$valor_cobrado = str_replace(".", "", $valor_cobrado);
+$valor_cobrado = str_replace("R$ ", "", $valor_cobrado);
+//$valor_cobrado = str_replace(",", ".", $valor_cobrado);
+$valor_boleto = $valor_cobrado; //number_format($valor_cobrado + $taxa_boleto, 2, ',', '');
 
 //$dadosboleto["nosso_numero"] = "08123456";  // Até 8 digitos, sendo os 2 primeiros o ano atual (Ex.: 08 se for 2008)
 
@@ -145,7 +148,7 @@ $dadosboleto["numero_parcela"] = "001";
 
 
 // DADOS DA SUA CONTA - BANCO SICOOB
-$dadosboleto["agencia"] = $agencia; // Num da agencia, sem digito
+$dadosboleto["agencia"] = '3116'; // Num da agencia, sem digito
 $dadosboleto["conta"] = $conta; // Num da conta, sem digito
 
 // DADOS PERSONALIZADOS - SICOOB

@@ -18,7 +18,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | environments.
 |
 */
-$config['base_url'] = 'https://alliancets.local:444/3_clients/3_exata/';
+$config['base_url'] = 'http://stock.localhost.com';
 
 /*
 |--------------------------------------------------------------------------

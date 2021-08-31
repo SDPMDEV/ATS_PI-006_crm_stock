@@ -2313,6 +2313,40 @@ class system_settings extends MY_Controller
         }
     }
 
+    public function boleto()
+    {
+        $this->form_validation->set_rules('active', $this->lang->line('activate'), 'trim');
+        $this->form_validation->set_rules('account_email', $this->lang->line('paypal_account_email'), 'trim|valid_email');
+        if ($this->input->post('active')) {
+            $this->form_validation->set_rules('account_email', $this->lang->line('paypal_account_email'), 'required');
+        }
+        $this->form_validation->set_rules('fixed_charges', $this->lang->line('fixed_charges'), 'trim');
+        $this->form_validation->set_rules('extra_charges_my', $this->lang->line('extra_charges_my'), 'trim');
+        $this->form_validation->set_rules('extra_charges_other', $this->lang->line('extra_charges_others'), 'trim');
+
+        if ($this->form_validation->run() == true) {
+            $data = ['active'         => $this->input->post('active'),
+                'account_email'       => $this->input->post('account_email'),
+                'fixed_charges'       => $this->input->post('fixed_charges'),
+                'extra_charges_my'    => $this->input->post('extra_charges_my'),
+                'extra_charges_other' => $this->input->post('extra_charges_other'),
+            ];
+        }
+
+        if ($this->form_validation->run() == true && $this->settings_model->updatePaypal($data)) {
+            $this->session->set_flashdata('message', $this->lang->line('paypal_setting_updated'));
+            admin_redirect('system_settings/boleto');
+        } else {
+            $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
+
+            $this->data['paypal'] = $this->settings_model->getPaypalSettings();
+
+            $bc   = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('system_settings'), 'page' => lang('system_settings')], ['link' => '#', 'page' => lang('paypal_settings')]];
+            $meta = ['page_title' => lang('paypal_settings'), 'bc' => $bc];
+            $this->page_construct('settings/boleto', $meta, $this->data);
+        }
+    }
+
     public function permissions($id = null)
     {
         $this->form_validation->set_rules('group', lang('group'), 'is_natural_no_zero');
