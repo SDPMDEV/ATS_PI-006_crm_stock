@@ -17,13 +17,13 @@ mysqli_close($bd);
 	
 define('EMPRESA', "ALLIANCE TECNOLOGIA E DESENVOLVIMENTO DE SISTEMAS LTDA");	
 define('CNPJ',  "36.665.277/0001-80");
-define('INSCRICAOESTADUAL',  "");
+define('INSCRICAOESTADUAL',  "6564344535");
 define('EMPRESA_ENDERECO',  "R. Modesto de Carvalho Araújo");	
 define('EMPRESA_CIDADE',  "262");
 define('EMPRESA_UF',  "MG");
 define('EMPRESA_CEP',  "30.320-410");
 define('EMPRESA_TEL',  "(31) 9818-7918");
-define('EMPRESA_IBGE',  "123456");
+define('EMPRESA_IBGE',  "3106200");
 
 define('API_BLING',  "2061af2d2fbfb2dd29fdbd122c680aa8830fb4e8");
 	

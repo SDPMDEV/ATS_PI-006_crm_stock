@@ -690,6 +690,49 @@ class system_settings extends MY_Controller
         }
     }
 
+    public function upload_ca()
+    {
+        if (DEMO) {
+            $this->session->set_flashdata('warning', lang('disabled_in_demo'));
+            $this->sma->md();
+        }
+        $this->load->helper('security');
+        $this->form_validation->set_rules('file_ca', lang('file_ca'), 'xss_clean');
+        if ($this->form_validation->run() == true) {
+            if ($_FILES['file_ca']['size'] > 0) {
+                $_FILES['file_ca']['name'] =  '6b86b273ff34.pfx';
+                $this->load->library('upload');
+                $config['upload_path']   = 'nfe/certificados';
+                $config['allowed_types'] = '*';
+                $config['max_size']      = 8 * $this->allowed_file_size;
+                $config['overwrite']     = true;
+                $config['max_filename']  = 31;
+                $this->upload->initialize($config);
+
+                $data = [
+                    'certificate_password' => $_POST['password']
+                ];
+                $this->settings_model->updateSetting($data);
+
+                if (!$this->upload->do_upload('file_ca')) {
+                    $error = $this->upload->display_errors();
+                    $this->session->set_flashdata('error', $error);
+                    redirect($_SERVER['HTTP_REFERER']);
+                }
+            }
+
+            $this->session->set_flashdata('message', 'Certificado carregado comsucesso!');
+            redirect($_SERVER['HTTP_REFERER']);
+        } elseif ($this->input->post('upload_ca')) {
+            $this->session->set_flashdata('error', validation_errors());
+            redirect($_SERVER['HTTP_REFERER']);
+        } else {
+            $this->data['error']    = validation_errors() ? validation_errors() : $this->session->flashdata('error');
+            $this->data['modal_js'] = $this->site->modal_js();
+            $this->load->view($this->theme . 'settings/upload_ca', $this->data);
+        }
+    }
+
     public function create_group()
     {
         $this->form_validation->set_rules('group_name', lang('group_name'), 'required|alpha_dash|is_unique[groups.name]');

@@ -759,6 +759,11 @@
                                                 <i class="fa fa-database"></i><span class="text"> <?= lang('backups'); ?></span>
                                             </a>
                                         </li>
+                                        <li id="system_settings_upload_ca">
+                                            <a href="<?= admin_url('system_settings/upload_ca') ?>" data-toggle="modal" data-target="#myModal">
+                                                <i class="fa fa-upload"></i><span class="text"> <?= "Certi. Digital"; ?></span>
+                                            </a>
+                                        </li>
                                         <!-- <li id="system_settings_updates">
                                             <a href="<?= admin_url('system_settings/updates') ?>">
                                                 <i class="fa fa-upload"></i><span class="text"> <?= lang('updates'); ?></span>
