@@ -186,6 +186,7 @@ $ps = ['0' => lang('disable'), '1' => lang('enable')];
                                 $themes = [
                                     'default' => 'Padrão',
                                     'alliancets' => 'ATS Moderno',
+                                    'ats_blue' => 'ATS Azul',
                                 ];
                                 echo form_dropdown('theme', $themes, $Settings->theme, 'id="theme" class="form-control tip" required="required" style="width:100%;"');
                                 ?>
