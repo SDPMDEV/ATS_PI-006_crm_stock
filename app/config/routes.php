@@ -56,3 +56,12 @@ $route['admin/products/(:num)']  = 'admin/products/index/$1';
 $route['admin/purchases/(:num)'] = 'admin/purchases/index/$1';
 $route['admin/quotes/(:num)']    = 'admin/quotes/index/$1';
 $route['admin/returns/(:num)']   = 'admin/returns/index/$1';
+
+//fiscal - api routes
+$route['admin/fiscal/configurar_emitente']   = 'api/fiscal/configure_issuer';
+$route['admin/fiscal/configurar_escritorio']   = 'api/fiscal/configure_office';
+$route['admin/fiscal/manifesto']   = 'api/fiscal/manifest';
+$route['admin/fiscal/natureza_de_operacao']   = 'api/fiscal/nature_operation';
+$route['admin/fiscal/enviar_xml']   = 'api/fiscal/send_xml';
+$route['admin/fiscal/tributacao']   = 'api/fiscal/taxation';
+$route['validate/request']   = 'api/fiscal/send_requests';

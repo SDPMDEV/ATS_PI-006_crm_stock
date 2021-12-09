@@ -47,19 +47,19 @@
                   position: fixed;
                   z-index: 1;
                 }
-                
+
                 @keyframes spin {
                   to {
                     transform: rotate(360deg);
                   }
                 }
-                
+
                 @-webkit-keyframes spin {
                   to {
                     -webkit-transform: rotate(360deg);
                   }
                 }
-                
+
                 * {
                    margin: 0;
                    padding: 0;
@@ -71,21 +71,21 @@
                    -o-box-sizing: border-box;
                    box-sizing: border-box;
                 }
-                
+
                 ::-webkit-scrollbar {
                     width: 13px;
                 }
-                 
+
                 ::-webkit-scrollbar-track {
-                    -webkit-box-shadow: inset 0 0 20px rgba(0,0,0,0.3); 
+                    -webkit-box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
                     border-radius: 10px;
                 }
-                 
+
                 ::-webkit-scrollbar-thumb {
                     border-radius: 10px;
-                    -webkit-box-shadow: inset 0 0 50px rgba(0,68,204,1); 
+                    -webkit-box-shadow: inset 0 0 50px rgba(0,68,204,1);
                 }
-                
+
                 ::-webkit-scrollbar-thumb:hover {
                    -webkit-box-shadow: inset 0 0 50px rgba(44,129,231,1);
                 }
@@ -296,7 +296,7 @@
                                 <li>
                                     <a href="<?= admin_url('welcome/language/' . $entry); ?>">
                                         <img src="<?= base_url('assets/images/' . $entry . '.png'); ?>" class="language-img">
-                                        
+
                                         <?php switch ($entry) {
                                                 case 'english':
                                                 $cal_lang = 'Inglês';
@@ -1503,6 +1503,22 @@
 
                         <?php
                         } ?>
+
+                        <li class="mm_fiscal">
+                            <a class="dropmenu" href="#">
+                                <i class="far fa-sticky-note"></i>
+                                <span class="text"> Fiscal </span>
+                                <span class="chevron closed"></span>
+                            </a>
+                            <ul>
+                                <li><a href="<?= admin_url("fiscal/configurar_emitente") ?>"><i class="fa fa-cog"></i>Configurar Emitente</a></li>
+                                <li><a href="<?= admin_url("fiscal/configurar_escritorio") ?>"><i class="fa fa-cog"></i>Configurar Escritório</a></li>
+                                <li><a href="<?= admin_url("fiscal/natureza_de_operacao") ?>"><i class="fa fa-file"></i>Natureza de Operação</a></li>
+                                <li><a href="<?= admin_url("fiscal/tributacao") ?>"><i class="fa fa-file"></i>Tributação</a></li>
+                                <li><a href="<?= admin_url("fiscal/enviar_xml") ?>"><i class="fa fa-file"></i>Enviar XML</a></li>
+                                <li><a href="<?= admin_url("fiscal/manifesto") ?>"><i class="fa fa-file"></i>Manifesto</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
                 <a href="#" id="main-menu-act" class="full visible-md visible-lg">
@@ -1531,7 +1547,7 @@
                                         $client  = @$_SERVER['HTTP_CLIENT_IP'];
                                         $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
                                         $remote  = $_SERVER['REMOTE_ADDR'];
-                                    
+
                                         if(filter_var($client, FILTER_VALIDATE_IP))
                                         {
                                             $ip = $client;
@@ -1544,13 +1560,13 @@
                                         {
                                             $ip = $remote;
                                         }
-                                    
+
                                         return $ip;
                                     }
-                                    
-                                    
+
+
                                     $user_ip = getUserIP();
-                                
+
                                     ?>
                                 <?= lang('your_ip') . ': ' . $user_ip . " <span class='hidden-sm'>( " . lang('last_login_at') . ': ' . date($dateFormats['php_ldate'], $this->session->userdata('old_last_login')) . ' ' . ($this->session->userdata('last_ip') != $ip_address ? lang('ip:') . ' ' . $this->session->userdata('last_ip') : '') . ' )</span>' ?>
                             </li>

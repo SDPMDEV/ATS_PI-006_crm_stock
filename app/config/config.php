@@ -18,8 +18,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | environments.
 |
 */
-$config['base_url'] = 'https://alliancets.local:444/1_alliancetsApp/1_ATS_sma/';
-
+$config['base_url'] = 'http://localhost/';
+$config['api_url'] = 'http://127.0.0.1:8000/api';
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -305,7 +305,7 @@ $config['cache_query_string'] = false;
 | http://codeigniter.com/user_guide/libraries/encryption.html
 |
 */
-$config['encryption_key'] = 'o9eFBVhivruORflAdJN01DxQwM8ZL76PUYmcK';
+$config['encryption_key'] = 'FPXZdivtwzRNgEH0TVsYpcBAC9l3Mb1meOoxa';
 
 /*
 |--------------------------------------------------------------------------
