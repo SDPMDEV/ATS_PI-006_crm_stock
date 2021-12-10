@@ -7,9 +7,9 @@ class Fiscal extends MY_Controller
 {
     private $path = "../themes/ats_blue/admin/views/fiscal/";
 
-    private $api_url;
+    public $api_url;
 
-    private $api_token = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
+    public $api_token = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
 
     private $post;
 
@@ -196,10 +196,12 @@ class Fiscal extends MY_Controller
         exit(json_encode($json));
     }
 
-    public function send_requests()
+    public function send_requests($endpoint = '', $data = [])
     {
         if(isset($this->post->api_url)) {
             $this->responseJson((array) $this->returnApiProps($this->post->api_url, (array) $this->post));
+        } else if(!empty($api_url)) {
+            $this->responseJson((array) $this->returnApiProps($endpoint, $data));
         } else {
             $this->responseJson(["error" => true, "message" => "Url da api não informada."]);
         }

@@ -3,7 +3,10 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Products extends MY_Controller
-{
+{  
+    private $api_url;
+    private $api_token = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
+
     public function __construct()
     {
         parent::__construct();
@@ -11,6 +14,9 @@ class Products extends MY_Controller
             $this->session->set_userdata('requested_page', $this->uri->uri_string());
             $this->sma->md('login');
         }
+
+        $config = new CI_Config();
+        $this->api_url = $config->config["api_url"];
         $this->lang->admin_load('products', $this->Settings->user_language);
         $this->load->library('form_validation');
         $this->load->admin_model('products_model');
@@ -96,6 +102,32 @@ class Products extends MY_Controller
                 'hsn_code'          => $this->input->post('hsn_code'),
                 'hide'              => $this->input->post('hide') ? $this->input->post('hide') : 0,
                 'second_name'       => $this->input->post('second_name'),
+                'fiscal'            => $this->input->post('modulo_fiscal'),
+                'NCM'               => $this->input->post('ncm'),
+                'conversao_unitaria'=> $this->input->post('conversao_estoque'),
+                'unidade_compra'    => $this->input->post('unidade_compra'),
+                'unidade_venda'     => $this->input->post('unidade_venda'),
+                'CEST'              => $this->input->post('cest'),
+                'cor'               => $this->input->post('cor'),
+                'CST_CSOSN'         => $this->input->post('cst_CSOSN'),
+                'CST_PIS'           => $this->input->post('cst_PIS'),
+                'CST_COFINS'        => $this->input->post('cst_COFINS'),
+                'CST_IPI'           => $this->input->post('cst_IPI'),
+                'estoque_minimo'    => $this->input->post('estoque_min'),
+                'alerta_vencimento' => $this->input->post('alerta_venc'),
+                'codBarras'         => $this->input->post('cod_barras_ean13'),
+                'CFOP_saida_inter_estadual' => $this->input->post('cfop_saida_externo'),
+                'CFOP_saida_estadual'       => $this->input->post('cfop_saida_interno'),
+                'perc_icms'                 => $this->input->post('perc_icms'),
+                'perc_pis'                  => $this->input->post('perc_pis'),
+                'perc_cofins'               => $this->input->post('perc_cofins'),
+                'perc_ipi'                  => $this->input->post('perc_ipi'),
+                'perc_iss'                  => $this->input->post('perc_iss'),
+                'cListServ'                 => $this->input->post('cod_lista_iss'),
+                'codigo_anp'                => $this->input->post('ident_anp'),
+                'gerenciar_estoque'         => $this->input->post('gerenciar_estoque'),
+                'valor_livre'               => $this->input->post('valor_livre'),
+                'quantity'                  => $this->input->post('quantidade')
             ];
             $warehouse_qty      = null;
             $product_attributes = null;
@@ -307,7 +339,7 @@ class Products extends MY_Controller
             $data['quantity'] = $wh_total_quantity ?? 0;
             // $this->sma->print_arrays($data, $warehouse_qty, $product_attributes);
         }
-
+        
         if ($this->form_validation->run() == true && $this->products_model->addProduct($data, $items, $warehouse_qty, $product_attributes, $photos)) {
             $this->session->set_flashdata('message', lang('product_added'));
             admin_redirect('products');
@@ -319,6 +351,7 @@ class Products extends MY_Controller
             $this->data['brands']              = $this->site->getAllBrands();
             $this->data['base_units']          = $this->site->getAllBaseUnits();
             $this->data['warehouses']          = $warehouses;
+            $this->data['fiscalConfigs']       = $this->returnApiProps("/get_fiscal_settings");
             $this->data['warehouses_products'] = $id ? $this->products_model->getAllWarehousesWithPQ($id) : null;
             $this->data['product']             = $id ? $this->products_model->getProductByID($id) : null;
             $this->data['variants']            = $this->products_model->getAllVariants();
@@ -1784,10 +1817,39 @@ class Products extends MY_Controller
             $this->data['warehouse']    = $this->session->userdata('warehouse_id') ? $this->site->getWarehouseByID($this->session->userdata('warehouse_id')) : null;
         }
 
-        $this->data['supplier'] = $this->input->get('supplier') ? $this->site->getCompanyByID($this->input->get('supplier')) : null;
-        $bc                     = [['link' => base_url(), 'page' => lang('home')], ['link' => '#', 'page' => lang('products')]];
-        $meta                   = ['page_title' => lang('products'), 'bc' => $bc];
+        $this->data['supplier']    = $this->input->get('supplier') ? $this->site->getCompanyByID($this->input->get('supplier')) : null;
+        $bc                        = [['link' => base_url(), 'page' => lang('home')], ['link' => '#', 'page' => lang('products')]];
+        $meta                      = ['page_title' => lang('products'), 'bc' => $bc];
+
+
         $this->page_construct('products/index', $meta, $this->data);
+    }
+
+    private function getFiscalInfos($data = [])
+    {
+        $api_url = (new Fiscal())->api_url;
+
+        $ch = curl_init($api_url . '/get_issuer_configs');
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        if(!empty($data)) {
+            unset($data["api_url"]);
+            unset($data["ajax"]);
+            $data["api_token"] = $api_url;
+
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$api_url&".http_build_query($data));
+        } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$api_url");
+        }
+
+        if(curl_exec($ch)) {
+            return json_decode(curl_exec($ch));
+        } else {
+            return curl_error($ch);
+        }
     }
 
     /* --------------------------------------------------------------------------------------------- */
@@ -2448,5 +2510,30 @@ class Products extends MY_Controller
         $this->data['warehouse']         = $this->site->getWarehouseByID($stock_count->warehouse_id);
         $this->data['adjustment']        = $this->products_model->getAdjustmentByCountID($id);
         $this->load->view($this->theme . 'products/view_count', $this->data);
+    }
+
+    private function returnApiProps(string $endpoint, array $data = [])
+    {
+        $ch = curl_init($this->api_url . $endpoint);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        if(!empty($data)) {
+            unset($data["api_url"]);
+            unset($data["ajax"]);
+            $data["api_token"] = $this->api_token;
+
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token&".http_build_query($data));
+        } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token");
+        }
+
+        if(curl_exec($ch)) {
+            return json_decode(curl_exec($ch));
+        } else {
+            return curl_error($ch);
+        }
     }
 }

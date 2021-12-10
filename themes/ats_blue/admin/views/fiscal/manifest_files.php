@@ -249,7 +249,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="ncm"><b>NCM *</b></label>
-                                            <input required type="text" class="form-control" name="ncm" id="ncm" v-bind:value="productToAdd.NCM[0]">
+                                            <input required type="text" class="form-control" name="ncm" id="ncm" v-bind:value="productToAdd.NCM[0]" maxlength="10">
                                         </div>
                                     </div>
 
