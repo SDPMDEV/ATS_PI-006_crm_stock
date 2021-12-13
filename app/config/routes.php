@@ -65,3 +65,4 @@ $route['admin/fiscal/natureza_de_operacao']   = 'api/fiscal/nature_operation';
 $route['admin/fiscal/enviar_xml']   = 'api/fiscal/send_xml';
 $route['admin/fiscal/tributacao']   = 'api/fiscal/taxation';
 $route['validate/request']   = 'api/fiscal/send_requests';
+$route['fiscal/add_product']   = 'api/fiscal/addProduct';

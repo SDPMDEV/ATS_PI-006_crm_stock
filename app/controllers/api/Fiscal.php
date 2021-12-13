@@ -20,6 +20,7 @@ class Fiscal extends MY_Controller
         $this->post = $this->toJson($_POST);
         $config = new CI_Config();
         $this->api_url = $config->config["api_url"];
+        $this->load->admin_model('products_model');
 
         if(!isset($this->post->ajax) && !$this->post->ajax) {
             if (!$this->loggedIn) {
@@ -143,7 +144,8 @@ class Fiscal extends MY_Controller
         if($this->returnApiProps('/validate_certificate')->manifest_perm) {
             $this->renderView("manifest_files", [
                 'configs' => $this->returnApiProps("/get_docs"),
-                'remote_url' => $this->api_url
+                'remote_url' => $this->api_url,
+                'categories' => $this->site->getAllCategories(),
             ]);   
         } else {
             $this->load->helper('url');
@@ -199,11 +201,83 @@ class Fiscal extends MY_Controller
     public function send_requests($endpoint = '', $data = [])
     {
         if(isset($this->post->api_url)) {
-            $this->responseJson((array) $this->returnApiProps($this->post->api_url, (array) $this->post));
+            if(strpos($this->post->api_url, 'get_download_configs') !== false) {
+                $data = $this->returnApiProps($this->post->api_url, (array) $this->post);
+                foreach($data->itens as $dt) {
+                    $code = (array) $dt->codigo;
+                    $dt->produtoNovo = $this->check_product($code[0]);
+                    $dt->id = $this->getProductId($code[0]);
+                }
+                $this->responseJson((array)$data);
+            } else {
+                $this->responseJson((array) $this->returnApiProps($this->post->api_url, (array) $this->post));
+            }
         } else if(!empty($api_url)) {
             $this->responseJson((array) $this->returnApiProps($endpoint, $data));
         } else {
             $this->responseJson(["error" => true, "message" => "Url da api não informada."]);
         }
+    }
+
+    public function addProduct()
+    {
+        if($this->input->method() != 'post' || $this->input->method() == 'POST') {
+            redirect('/', 'refresh');
+        }
+
+        $data = [
+            'code' => $this->input->post('code'),
+            'price' => $this->input->post('valor_venda'),
+            'cost' => $this->input->post('valor'),
+            'category_id' => $this->input->post('category'),
+            'type' => 'standard',
+            'barcode_symbology' => $this->input->post('barcode_symbology'),
+            'hide' => $this->input->post('hide') ? $this->input->post('hide') : 0,
+            'hide_pos' => $this->input->post('hide_pos') ? $this->input->post('hide_pos') : 0,
+            'name' => $this->input->post('name'),
+            'NCM' => $this->input->post('ncm'),
+            'fiscal' => 1,
+            'CFOP_saida_estadual' => $this->input->post('cfop_saida_estudal'),
+            'codBarras' => $this->input->post('codigo_barras'),
+            'unidade_compra' => $this->input->post('unidade_compras'),
+            'unidade_venda' => $this->input->post('unidade_vendas'),
+            'quantity' => $this->input->post('quantidade'),
+            'CST_IPI' => $this->input->post('cst_IPI'),
+            'conversao_unitaria' => $this->input->post('conversao_estoque'),
+            'cor' => $this->input->post('cor'),
+            'CST_PIS' => $this->input->post('cst_PIS'),
+            'CST_CSOSN' => $this->input->post('cst_CSOSN'),
+            'CST_COFINS' => $this->input->post('cst_COFINS'),
+            'CEST' => $this->input->post('cest'),
+            'views' => 0,
+            'referencia' => $this->input->post('referencia')
+        ];
+
+        foreach($data as $index => $dt) {
+            if(empty($dt) && $index != 'hide' && $index != 'hide_pos' && $index != 'type' && $index != 'views')
+                $this->responseJson(["error" => true, "message" => "Preencha todos os campos corretamente para prosseguir. Campo não pode ser nulo: ".lang($index, $index)]);
+        }
+
+        try {
+            if($this->products_model->addAjaxProduct($data))
+                $this->responseJson(["error" => false, "message" => "Produto salvo com sucesso!"]);
+            else
+                $this->responseJson(["error" => true, "message" => "Erro ao salvar produto."]);
+        } catch (Exception $e) {
+            $this->responseJson([
+                "error" => true,
+                "message" => $e->getMessage()
+            ]);
+        }
+    }
+
+    private function check_product($product_ref = '')
+    {
+        return (!$this->products_model->getProductByRef($product_ref));
+    }
+
+    private function getProductId($product_ref = '')
+    {
+        return $this->products_model->getProductId($product_ref);
     }
 }

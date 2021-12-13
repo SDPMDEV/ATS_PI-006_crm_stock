@@ -487,6 +487,13 @@ if (!empty($variants)) {
 
                             </div>
                         </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="referencia"><b>Referência</b></label>
+                                <input type="text" name="referencia" id="referencia" class="form-control"/>
+                            </div>
+                        </div>
 
                         <div class="col-md-6">
                             <div class="form-group">

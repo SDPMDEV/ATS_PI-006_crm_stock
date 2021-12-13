@@ -127,7 +127,8 @@ class Products extends MY_Controller
                 'codigo_anp'                => $this->input->post('ident_anp'),
                 'gerenciar_estoque'         => $this->input->post('gerenciar_estoque'),
                 'valor_livre'               => $this->input->post('valor_livre'),
-                'quantity'                  => $this->input->post('quantidade')
+                'quantity'                  => $this->input->post('quantidade'),
+                'referencia'                => $this->input->post('referencia')
             ];
             $warehouse_qty      = null;
             $product_attributes = null;
@@ -994,6 +995,33 @@ class Products extends MY_Controller
                 'hide'              => $this->input->post('hide') ? $this->input->post('hide') : 0,
                 'hide_pos'          => $this->input->post('hide_pos') ? $this->input->post('hide_pos') : 0,
                 'second_name'       => $this->input->post('second_name'),
+                'fiscal'            => $this->input->post('modulo_fiscal'),
+                'NCM'               => $this->input->post('ncm'),
+                'conversao_unitaria'=> $this->input->post('conversao_estoque'),
+                'unidade_compra'    => $this->input->post('unidade_compra'),
+                'unidade_venda'     => $this->input->post('unidade_venda'),
+                'CEST'              => $this->input->post('cest'),
+                'cor'               => $this->input->post('cor'),
+                'CST_CSOSN'         => $this->input->post('cst_CSOSN'),
+                'CST_PIS'           => $this->input->post('cst_PIS'),
+                'CST_COFINS'        => $this->input->post('cst_COFINS'),
+                'CST_IPI'           => $this->input->post('cst_IPI'),
+                'estoque_minimo'    => $this->input->post('estoque_min'),
+                'alerta_vencimento' => $this->input->post('alerta_venc'),
+                'codBarras'         => $this->input->post('cod_barras_ean13'),
+                'CFOP_saida_inter_estadual' => $this->input->post('cfop_saida_externo'),
+                'CFOP_saida_estadual'       => $this->input->post('cfop_saida_interno'),
+                'perc_icms'                 => $this->input->post('perc_icms'),
+                'perc_pis'                  => $this->input->post('perc_pis'),
+                'perc_cofins'               => $this->input->post('perc_cofins'),
+                'perc_ipi'                  => $this->input->post('perc_ipi'),
+                'perc_iss'                  => $this->input->post('perc_iss'),
+                'cListServ'                 => $this->input->post('cod_lista_iss'),
+                'codigo_anp'                => $this->input->post('ident_anp'),
+                'gerenciar_estoque'         => $this->input->post('gerenciar_estoque'),
+                'valor_livre'               => $this->input->post('valor_livre'),
+                'quantity'                  => $this->input->post('quantidade'),
+                'referencia'                => $this->input->post('referencia')
             ];
             $warehouse_qty      = null;
             $product_attributes = null;
@@ -1222,6 +1250,11 @@ class Products extends MY_Controller
             $this->data['warehouses']          = $warehouses;
             $this->data['warehouses_products'] = $warehouses_products;
             $this->data['product']             = $product;
+            $this->data['fiscalConfigs']       = $this->returnApiProps("/get_fiscal_settings");
+            $this->data['productConfigs']      = $this->products_model->getProductConfigs($id);
+            $this->data['productConfigs']->NCM = ( strpos($this->data['productConfigs']->NCM, '.') ) === false ? $this->mask("####.##.##", $this->data['productConfigs']->NCM) : $this->data['productConfigs']->NCM;
+            $this->data['productConfigs']->CEST = ( strpos($this->data['productConfigs']->CEST, '.') === false ) ? $this->mask("##.###.##", $this->data['productConfigs']->CEST) : $this->data['productConfigs']->CEST;
+            $this->data['productConfigs']->cListServ = ( strpos($this->data['productConfigs']->cListServ, '.') === false ) ? $this->mask("##.##", $this->data['productConfigs']->cListServ) : $this->data['productConfigs']->cListServ;
             $this->data['variants']            = $this->products_model->getAllVariants();
             $this->data['subunits']            = $this->site->getUnitsByBUID($product->unit);
             $this->data['product_variants']    = $this->products_model->getProductOptions($id);
@@ -2535,5 +2568,16 @@ class Products extends MY_Controller
         } else {
             return curl_error($ch);
         }
+    }
+
+    private function mask($mask, $str)
+    {
+        $str = str_replace(" ","",$str);
+
+        for($i=0;$i<strlen($str);$i++){
+            $mask[strpos($mask,"#")] = $str[$i];
+        }
+
+        return $mask;
     }
 }

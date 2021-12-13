@@ -188,8 +188,8 @@
                                                     </span>
                                                 </a>
 
-                                                <a v-if="item.produtoNovo === false && item.produtoSetadoEstoque === false"
-                                                   title="Setar Estoque" class="btn btn-sm btn-clean btn-icon mr-2">
+                                                <a v-if="item.produtoNovo === false"
+                                                   title="Editar Produto" class="btn btn-sm btn-clean btn-icon mr-2" v-bind:href="'/admin/products/edit/'+item.id">
                                                     <span class="svg-icon svg-icon-warning">
                                                         <svg xmlns="http://www.w3.org/2000/svg"
                                                              xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
@@ -235,8 +235,8 @@
                                 </div>
                             </div>
 
-                            <form id="cadNewProduct">
-
+                            <form method="POST" id="cadNewProduct" v-on:submit="addProduct($event)">
+                                <input required type="hidden" id="csrf" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="name"><b>Nome do produto *</b></label>
@@ -255,8 +255,8 @@
 
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="cpop"><b>CFOP *</b></label>
-                                            <input required type="text" class="form-control" name="cpop" id="cpop" v-bind:value="productToAdd.CFOP[0]">
+                                            <label for="cfop_saida_estudal"><b>CFOP *</b></label>
+                                            <input required type="text" class="form-control" name="cfop_saida_estudal" id="cfop_saida_estudal" v-bind:value="productToAdd.CFOP[0]">
                                         </div>
                                     </div>
 
@@ -276,54 +276,8 @@
 
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="valor"><b>Valor de Compra</b></label>
-                                            <input type="text" class="form-control" name="valor" id="valor" v-bind:value="productToAdd.vUnCom[0]">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="conversao_estoque"><b>Conversão unitária para estoque</b></label>
-                                            <input type="text" class="form-control" name="conversao_estoque" id="conversao_estoque" v-bind:value="(productToAdd.conversao_unitaria) ? productToAdd.conversao_unitaria : 1">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="qtd"><b>Quantidade *</b></label>
-                                            <input type="text" class="form-control" name="quantidade" id="qtd" v-bind:value="productToAdd.qCom[0]">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label for="cst_IPI"><b>CST IPI</b></label>
-                                            <select class="form-control" name="cst_IPI" id="cst_IPI">
-                                                <option v-for="(cst_ipi, index) in downloadConfigs.listaCST_IPI" v-bind:value="index">{{ index }} - {{ cst_ipi }}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="subtotal"><b>SubTotal *</b></label>
-                                            <input type="text" class="form-control" name="subtotal" id="subtotal" v-bind:value=" number_format(parseFloat(productToAdd.qCom[0]) * parseFloat(productToAdd.vUnCom[0]), 2, ',', '.')">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="valor_venda"><b>Valor de venda</b></label>
-                                            <input type="text" class="form-control" name="valor_venda" id="valor_venda" value="0">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-12">
-                                        <div class="form-group">
                                             <label for="unidade_vendas"><b>UN. Venda</b></label>
-                                            <select class="form-control" id="unidade_vendas" name="unidade_vendas">
+                                            <select required class="form-control" id="unidade_vendas" name="unidade_vendas">
                                                 <option v-for="unv in downloadConfigs.unidadesDeMedida" v-bind:value="unv">{{ unv }}</option>
                                             </select>
                                         </div>
@@ -331,8 +285,73 @@
 
                                     <div class="col-md-12">
                                         <div class="form-group">
+                                            <label for="qtd"><b>Quantidade *</b></label>
+                                            <input required type="text" class="form-control" name="quantidade" id="qtd" v-bind:value="productToAdd.qCom[0]">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="cst_IPI"><b>CST IPI</b></label>
+                                            <select required class="form-control" name="cst_IPI" id="cst_IPI">
+                                                <option v-for="(cst_ipi, index) in downloadConfigs.listaCST_IPI" v-bind:value="index">{{ index }} - {{ cst_ipi }}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label  for="cest">CEST</label>
+                                            <input required type="text" class="form-control" name="cest" id="cest" v-bind:value="productToAdd.cest[0]">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group all">
+                                            <?= lang('barcode_symbology', 'barcode_symbology') ?>
+
+                                            <?php
+                                                $bs = ['code25' => 'Code25', 'code39' => 'Code39', 'code128' => 'Code128', 'ean8' => 'EAN8', 'ean13' => 'EAN13', 'upca' => 'UPC-A', 'upce' => 'UPC-E'];
+                                                echo form_dropdown('barcode_symbology', $bs, ($_POST['barcode_symbology'] ?? ($product ? $product->barcode_symbology : 'code128')), 'class="form-control select" id="barcode_symbology" required="required" style="width:100%;"');
+                                            ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="referencia"><b>Referência *</b></label>
+                                            <input type="text" name="referencia" id="referencia" class="form-control" v-bind:value="productToAdd.codigo[0]">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="valor"><b>Valor de Compra</b></label>
+                                            <input required type="text" class="form-control" name="valor" id="valor" v-bind:value="productToAdd.vUnCom[0]">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="valor_venda"><b>Valor de venda</b></label>
+                                            <input required type="text" class="form-control" name="valor_venda" id="valor_venda" value="0">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="conversao_estoque"><b>Conversão unitária para estoque</b></label>
+                                            <input required type="text" class="form-control" name="conversao_estoque" id="conversao_estoque" v-bind:value="(productToAdd.conversao_unitaria) ? productToAdd.conversao_unitaria : 1">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
                                             <label for="cor"><b>Cor (opicional)</b></label>
-                                            <select class="custom-select form-control" id="cor">
+                                            <select required name="cor" class="custom-select form-control" id="cor">
                                                 <option value="--">--</option>
                                                 <option value="Preto">Preto</option>
                                                 <option value="Branco">Branco</option>
@@ -347,16 +366,26 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="categoria"><b>Categoria</b></label>
-                                            <select class="form-control" id="categoria" name="categoria">
+                                            <select required class="form-control" id="categoria" name="categoria">
                                                 <option v-for="categoria in downloadConfigs.categorias" v-bind:value="categoria.id">{{ categoria.nome }}</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="code"><b>Código do Produto *</b></label>
+                                            <input required maxlength="8" type="text" name="code" id="code" class="form-control">
+                                            <span class="input-group-addon pointer" id="random_num" style="padding: 1px 10px;" onclick="generate(8)">
+                                                <i class="fa fa-random"></i>
+                                            </span>
                                         </div>
                                     </div>
 
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="cst_CSOSN"><b>CST/CSOSN</b></label>
-                                            <select class="form-control" name="cst_CSOSN" id="cst_CSOSN">
+                                            <select required class="form-control" name="cst_CSOSN" id="cst_CSOSN">
                                                 <option value="00">00 - Tributa Integralmente</option>
                                                 <option v-for="(cst_cson, index) in downloadConfigs.listaCSTCSOSN" v-bind:value="index" v-if="index !== '00' ">{{ index }} - {{ cst_cson }}</option>
                                             </select>
@@ -366,7 +395,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="cst_PIS"><b>CST PIS</b></label>
-                                            <select class="form-control" name="cst_PIS" id="cst_PIS">
+                                            <select required class="form-control" name="cst_PIS" id="cst_PIS">
                                                 <option v-for="(cst_pis, index) in downloadConfigs.listaCST_PIS_COFINS" v-bind:value="index">{{ index }} - {{ cst_pis }}</option>
                                             </select>
                                         </div>
@@ -375,25 +404,46 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="cst_COFINS"><b>CST COFINS</b></label>
-                                            <select class="form-control" name="cst_COFINS" id="cst_COFINS">
+                                            <select required class="form-control" name="cst_COFINS" id="cst_COFINS">
                                                 <option v-for="(cst_confins, index) in downloadConfigs.listaCST_PIS_COFINS" v-bind:value="index">{{ index }} - {{ cst_confins }}</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div class="col-md-12">
+                                        <div class="form-group all">
+                                            <?= lang('category', 'category') ?>
+                                            <?php
+                                                $cat[''] = '';
+                                                foreach ($categories as $category) {
+                                                    $cat[$category->id] = $category->name;
+                                                }
+                                                echo form_dropdown('category', $cat, ($_POST['category'] ?? ($product ? $product->category_id : '')), 'class="form-control select" id="category" placeholder="' . lang('select') . ' ' . lang('category') . '" required="required" style="width:100%"')
+                                            ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="cest">CEST</label>
-                                            <input type="text" class="form-control" name="cest" id="cest" v-bind:value="productToAdd.cest[0]">
+                                            <input type="checkbox" name="hide" id="hide">
+                                            <label for="hide" class="padding05"><b>Esconder na loja</b></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input name="hide_pos" type="checkbox" id="hide_pos"/>
+                                            <label for="hide_pos" class="padding05"><b>Esconder no Módulo POS</b></label>
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-md-12" style="text-align: end; margin-top: 10px">
+                                    <a onclick="$('#modal-cad').modal('toggle')" class="btn btn-danger">Fechar</a>
+                                    <input type="submit" class="btn btn-success" value="Salvar Produto" />
+                                </div>
                             </form>
                         </fieldset>
-                    </div>
-                    <div class="modal-footer">
-                        <a onclick="$('#modal-cad').modal('toggle')" class="btn btn-danger">Fechar</a>
-                        <a href="#" class="btn btn-success">Salvar Produto</a>
                     </div>
                 </div>
             </div>
@@ -402,12 +452,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"
-        integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7-beta.29/jquery.inputmask.min.js"
-        integrity="sha512-Ax4+qW2rAVWrk3SU1ef/L8O0jF6vKSfaMIR3du6efzf5v/pibzDcLFx29YCeR7WphoPO4zranQFsFUf+9Rb+dg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7-beta.29/jquery.inputmask.min.js" integrity="sha512-Ax4+qW2rAVWrk3SU1ef/L8O0jF6vKSfaMIR3du6efzf5v/pibzDcLFx29YCeR7WphoPO4zranQFsFUf+9Rb+dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     const app = new Vue({
         el: "#app",
@@ -419,6 +465,7 @@
             token: $("#csrf").val(),
             downloadConfigs: '',
             productToAdd: '',
+            actChave: '',
         },
         methods: {
             filterManifest: function (type = $("#tipo").val()) {
@@ -437,7 +484,7 @@
                     }
                 }).fail(err => {
                     toastr.error("Erro interno do servidor", 'Erro');
-                    console.log(err.responseText);
+                    console.error(err.responseText);
                 });
             },
             formatDate: function (dateString) {
@@ -457,19 +504,21 @@
                     }
                 }).fail(err => {
                     toastr.error("Erro interno do servidor", 'Erro');
-                    console.log(err.responseText);
+                    console.error(err.responseText);
                 });
             },
             getDownloadConfigs: function (chave) {
+                this.actChave = chave;
                 $.post('/validate/request', {
                     api_url: `/get_download_configs/${chave}`,
                     token: this.token
                 }).then(res => {
                     this.downloadConfigs = res;
+                    console.log(res.itens)
                     $('#modal-completa').modal('show');
                 }).fail(err => {
                     toastr.error("Erro interno do servidor", 'Erro');
-                    console.log(err.responseText);
+                    console.error(err.responseText);
                 });
             },
             number_format: function (number, decimals, dec_point, thousands_sep) {
@@ -504,8 +553,45 @@
 
                 $('#modal-cad').modal('show');
             },
-            cadProd: function (codigo, nome, codBarras, ncm, cfop, unidade, valor, quantidade, cfop_entrada) {
-                //
+            addProduct: function(event){
+                event.preventDefault();
+                let data = this.getFormData($("#cadNewProduct"));
+
+                $.post('fiscal/add_product', data).then(res=>{
+                    if(!res.error) {
+                        toastr.success(res.message, 'Sucesso');
+
+                        $('#modal-cad').modal('toggle');
+                        this.updateDownloadConfigs(this.actChave);
+                    } else {
+                        toastr.warning(res.message, 'Error');
+                    }
+                }).fail(err=>{
+                    toastr.error('Erro interno do servidor.', 'Error');
+                    console.error(err.responseText);
+                })
+            },
+            getFormData: function($form){
+                var unindexed_array = $form.serializeArray();
+                var indexed_array = {};
+
+                $.map(unindexed_array, function(n, i){
+                    indexed_array[n['name']] = n['value'];
+                });
+
+                return indexed_array;
+            },
+            updateDownloadConfigs: function(chave)
+            {
+                $.post('/validate/request', {
+                    api_url: `/get_download_configs/${chave}`,
+                    token: this.token
+                }).then(res => {
+                    this.downloadConfigs = res;
+                }).fail(err => {
+                    toastr.error("Erro interno do servidor", 'Erro');
+                    console.error(err.responseText);
+                });
             }
         },
         created: function () {
@@ -513,7 +599,7 @@
                 this.docs = res.docs;
             }).fail(err => {
                 toastr.error("Erro interno do servidor", 'Erro');
-                console.log(err.responseText);
+                console.error(err.responseText);
             });
         }
     })
@@ -523,4 +609,19 @@
             $('body').addClass('modal-open');
         }
     });
+</script>
+<script>
+    function generate(n) {
+        var add = 1, max = 12 - add;   // 12 is the min safe number Math.random() can generate without it starting to pad the end with zeros.
+
+        if ( n > max ) {
+                return generate(max) + generate(n - max);
+        }
+
+        max        = Math.pow(10, n+add);
+        var min    = max/10; // Math.pow(10, n) basically
+        var number = Math.floor( Math.random() * (max - min + 1) ) + min;
+
+        $("#code").val(("" + number).substring(add)); 
+    }
 </script>
