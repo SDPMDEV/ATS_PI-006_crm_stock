@@ -12,17 +12,19 @@
         <div class="col-md-12">
             <fieldset class="scheduler-border">
                 <legend class="scheduler-border">Filtro</legend>
-                <input required type="hidden" id="csrf" name="<?= $this->security->get_csrf_token_name() ?>"
-                       value="<?= $this->security->get_csrf_hash() ?>">
-                <div class="form-group">
+                <input required type="hidden" id="csrf" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
+
+                <div class="col-md-4">
                     <label for="dataInicial">Data Inicial</label>
                     <input v-model="initDate" class="form-control" type="date" name="data_inical" id="dataInicial">
                 </div>
-                <div class="form-group">
+
+                <div class="col-md-4">
                     <label for="dataFinal">Data Final</label>
                     <input v-model="finalDate" class="form-control" type="date" name="data_final" id="dataFinal">
                 </div>
-                <div class="form-group">
+
+                <div class="col-md-4">
                     <label for="tipo">Tipo</label>
                     <select name="tipo" id="tipo" class="form-control">
                         <option value="--">TODOS</option>
@@ -33,8 +35,11 @@
                         <option value="0">SEM AÇÃO</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <input v-on:click="filterManifest()" type="submit" class="btn btn-info" value="Pesquisa"/>
+
+                <div class="col-md-12">
+                    <div class="form-group" style="margin-top: 15px; text-align: end">
+                        <input v-on:click="filterManifest()" type="submit" class="btn btn-info" value="Pesquisa"/>
+                    </div>
                 </div>
             </fieldset>
         </div>
@@ -54,7 +59,7 @@
         </div>
     </div>
     <hr>
-    <div class="row">
+    <div class="row table-responsive">
         <table class="table">
             <thead>
             <tr>
@@ -78,14 +83,11 @@
                 <td>{{ doc.chave }}</td>
                 <td>{{ doc.estado }}</td>
                 <td>
-                    <a v-if="doc.tipo === 1 || doc.tipo === 2" style="width: 100%;" class="btn btn-success"
-                       v-on:click="getDownloadConfigs(doc.chave)">Completa</a>
-                    <a v-if="doc.tipo === 1 || doc.tipo === 2" style="width: 100%;" class="btn btn-primary"
-                       v-bind:href="remote_url.replaceAll('/api', '')+'/dfe/imprimirDanfe/'+doc.chave" target="_blank">Imprimir</a>
+                    <a v-if="doc.tipo === 1 || doc.tipo === 2" style="width: 100%;" class="btn btn-success" v-on:click="getDownloadConfigs(doc.chave)">Completa</a>
+                    <a v-if="doc.tipo === 1 || doc.tipo === 2" style="width: 100%;" class="btn btn-primary" v-bind:href="remote_url.replaceAll('/api', '')+'/dfe/imprimirDanfe/'+doc.chave" target="_blank">Imprimir</a>
                     <a v-if="doc.tipo === 3" style="width: 100%;" class="btn btn-danger">Desconhecida</a>
                     <a v-if="doc.tipo === 4" class="btn btn-warning">Não realizada</a>
-                    <a v-if="doc.tipo === 0" style="width: 100%;" class="btn btn-info" onclick="" data-toggle="modal"
-                       data-target="#modal1">Manifestar</a>
+                    <a v-if="doc.tipo === 0" style="width: 100%;" class="btn btn-info" onclick="" data-toggle="modal" data-target="#modal-manifest" v-on:click="prepareManifest(doc.chave)">Manifestar</a>
                 </td>
             </tr>
             </tbody>
@@ -216,6 +218,42 @@
             </div>
         </div>
 
+        <div class="modal" id="modal-manifest" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Manifestação de Destinatário</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="nome" name="nome" />
+                        <input type="hidden" id="cnpj" name="cnpj" />
+                        <input type="hidden" id="valor" name="valor" />
+                        <input type="hidden" id="data_emissao" name="data_emissao" />
+                        <input type="hidden" id="num_prot" name="num_prot" />
+                        <input type="hidden" id="chave" name="chave" />
+
+                        <label for="tipo_evento" class="col-form-label">Unidade de venda</label>
+                        <select class="custom-select form-control" name="evento" id="tipo_evento" onchange="getTipoEvento(this)">
+                            <option value="1">Ciência de operação</option>
+                            <option value="2">Confirmação</option>
+                            <option value="3">Desconhecimento</option>
+                            <option value="4">Operação não realizada</option>
+                        </select>
+                        <div id="div-just" style="display: none; margin-top: 15px;">
+                            <label for="justificativa" class="col-form-label">Justificativa</label>
+                            <input id="justificativa" type="text" class="form-control" name="justificativa" value="">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a onclick="$('#modal-manifest').modal('toggle')" class="btn btn-danger">Fechar</a>
+                        <a id="btnManifest" class="btn btn-success" v-on:click="manifest">Manifestar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="modal" id="modal-cad">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -466,6 +504,7 @@
             downloadConfigs: '',
             productToAdd: '',
             actChave: '',
+            manifestChave: ''
         },
         methods: {
             filterManifest: function (type = $("#tipo").val()) {
@@ -514,7 +553,6 @@
                     token: this.token
                 }).then(res => {
                     this.downloadConfigs = res;
-                    console.log(res.itens)
                     $('#modal-completa').modal('show');
                 }).fail(err => {
                     toastr.error("Erro interno do servidor", 'Erro');
@@ -592,6 +630,30 @@
                     toastr.error("Erro interno do servidor", 'Erro');
                     console.error(err.responseText);
                 });
+            },
+            prepareManifest: function(chave) {
+                this.manifestChave = chave;
+            },
+            manifest: function () {
+                $.post('/validate/request', {
+                    api_url: '/manifest',
+                    token: this.token,
+                    evento: $('#tipo_evento').val(),
+                    chave: this.manifestChave
+                }).then(res=>{
+                    console.log(res);
+                    if(!res.error) {
+                        toastr.success(res.message, 'Sucesso');
+                    } else {
+                        toastr.warning(res.message, 'Erro');
+                        setTimeout(()=>{
+                            location.reload();
+                        }, 1500);
+                    }
+                }).fail(err=>{
+                    toastr.error("Erro interno do servidor", 'Erro');
+                    console.error(err.responseText)
+                })
             }
         },
         created: function () {
@@ -623,5 +685,14 @@
         var number = Math.floor( Math.random() * (max - min + 1) ) + min;
 
         $("#code").val(("" + number).substring(add)); 
+    }
+
+    function getTipoEvento(el)
+    {
+        if(el.value == 3 || el.value == 4) {
+            $("#div-just").slideDown();
+        }  else {
+            $("#div-just").slideUp();
+        }
     }
 </script>

@@ -116,6 +116,7 @@ class Fiscal extends MY_Controller
             "remote_url" => $this->api_url,
             "configs" => $this->returnApiProps("/get_issuer_configs"),
             "token" => $this->api_token,
+            'issuer' => $this->returnApiProps('/get_issuer'),
             'message' => $this->session->flashdata('error')
         ];
 

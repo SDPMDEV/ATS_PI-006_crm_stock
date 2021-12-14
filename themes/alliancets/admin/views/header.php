@@ -1518,6 +1518,21 @@
                                 <li><a href="<?= admin_url("fiscal/manifesto") ?>"><i class="fa fa-file"></i>Manifesto</a></li>
                             </ul>
                         </li>
+
+                        <li class="mm_financeiro">
+                            <a class="dropmenu" href="#">
+                                <i class="fas fa-chart-line"></i>
+                                <span class="text"> Financeiro </span>
+                                <span class="chevron closed"></span>
+                            </a>
+                            <ul>
+                                <li><a href="<?= admin_url('') ?>"><i class="fas fa-receipt"></i>Contas a pagar</a></li>
+                                <li><a href="<?= admin_url('') ?>"><i class="far fa-money-bill-alt"></i>Contas a receber</a></li>
+                                <li><a href="<?= admin_url('') ?>"><i class="fas fa-cash-register"></i>Fluxo de caixa</a></li>
+                                <li><a href="<?= admin_url('') ?>"><i class="fas fa-chart-bar"></i>Gráficos</a></li>
+                                <li><a href="<?= admin_url('') ?>"><i class="fas fa-clipboard-list"></i>Relatórios</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
                 <a href="#" id="main-menu-act" class="full visible-md visible-lg">

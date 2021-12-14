@@ -340,8 +340,13 @@
                     <div class="form-group">
                         <span>Ambiente</span>
                         <select required name="ambiente" class="form-control">
-                            <option value="1">Produção</option>
-                            <option value="2">Homologação</option>
+                            <?php if($issuer->ambiente == 1) { ?>
+                                <option value="1">Produção</option>
+                                <option value="2">Homologação</option>
+                            <?php } else { ?>
+                                <option value="2">Homologação</option>
+                                <option value="1">Produção</option>
+                            <?php } ?>
                         </select>
                     </div>
                 </div>
