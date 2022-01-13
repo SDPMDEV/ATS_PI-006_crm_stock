@@ -3,7 +3,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Products extends MY_Controller
-{  
+{
     private $api_url;
     private $api_token = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
 
@@ -113,9 +113,9 @@ class Products extends MY_Controller
                 'CST_PIS'           => $this->input->post('cst_PIS'),
                 'CST_COFINS'        => $this->input->post('cst_COFINS'),
                 'CST_IPI'           => $this->input->post('cst_IPI'),
-                'estoque_minimo'    => $this->input->post('estoque_min'),
-                'alerta_vencimento' => $this->input->post('alerta_venc'),
-                'codBarras'         => $this->input->post('cod_barras_ean13'),
+                'estoque_minimo'    => $this->input->post('estoque_min') ?? 0,
+                'alerta_vencimento' => $this->input->post('alerta_venc') ?? 0,
+                'codBarras'         => $this->input->post('cod_barras_ean13') ?? 'SEM GTIN',
                 'CFOP_saida_inter_estadual' => $this->input->post('cfop_saida_externo'),
                 'CFOP_saida_estadual'       => $this->input->post('cfop_saida_interno'),
                 'perc_icms'                 => $this->input->post('perc_icms'),
@@ -124,9 +124,9 @@ class Products extends MY_Controller
                 'perc_ipi'                  => $this->input->post('perc_ipi'),
                 'perc_iss'                  => $this->input->post('perc_iss'),
                 'cListServ'                 => $this->input->post('cod_lista_iss'),
-                'codigo_anp'                => $this->input->post('ident_anp'),
-                'gerenciar_estoque'         => $this->input->post('gerenciar_estoque'),
-                'valor_livre'               => $this->input->post('valor_livre'),
+                'codigo_anp'                => $this->input->post('ident_anp') == '--' ?? '',
+                'gerenciar_estoque'         => $this->input->post('gerenciar_estoque') ?? false,
+                'valor_livre'               => $this->input->post('valor_livre') ?? false,
                 'quantity'                  => $this->input->post('quantidade'),
                 'referencia'                => $this->input->post('referencia')
             ];
@@ -340,7 +340,7 @@ class Products extends MY_Controller
             $data['quantity'] = $wh_total_quantity ?? 0;
             // $this->sma->print_arrays($data, $warehouse_qty, $product_attributes);
         }
-        
+
         if ($this->form_validation->run() == true && $this->products_model->addProduct($data, $items, $warehouse_qty, $product_attributes, $photos)) {
             $this->session->set_flashdata('message', lang('product_added'));
             admin_redirect('products');
@@ -1006,9 +1006,9 @@ class Products extends MY_Controller
                 'CST_PIS'           => $this->input->post('cst_PIS'),
                 'CST_COFINS'        => $this->input->post('cst_COFINS'),
                 'CST_IPI'           => $this->input->post('cst_IPI'),
-                'estoque_minimo'    => $this->input->post('estoque_min'),
-                'alerta_vencimento' => $this->input->post('alerta_venc'),
-                'codBarras'         => $this->input->post('cod_barras_ean13'),
+                'estoque_minimo'    => $this->input->post('estoque_min') ?? 0,
+                'alerta_vencimento' => $this->input->post('alerta_venc') ?? 0,
+                'codBarras'         => $this->input->post('cod_barras_ean13') ?? 'SEM GTIN',
                 'CFOP_saida_inter_estadual' => $this->input->post('cfop_saida_externo'),
                 'CFOP_saida_estadual'       => $this->input->post('cfop_saida_interno'),
                 'perc_icms'                 => $this->input->post('perc_icms'),
@@ -1017,9 +1017,9 @@ class Products extends MY_Controller
                 'perc_ipi'                  => $this->input->post('perc_ipi'),
                 'perc_iss'                  => $this->input->post('perc_iss'),
                 'cListServ'                 => $this->input->post('cod_lista_iss'),
-                'codigo_anp'                => $this->input->post('ident_anp'),
-                'gerenciar_estoque'         => $this->input->post('gerenciar_estoque'),
-                'valor_livre'               => $this->input->post('valor_livre'),
+                'codigo_anp'                => $this->input->post('ident_anp') == '--' ?? '',
+                'gerenciar_estoque'         => $this->input->post('gerenciar_estoque') ?? false,
+                'valor_livre'               => $this->input->post('valor_livre') ?? false,
                 'quantity'                  => $this->input->post('quantidade'),
                 'referencia'                => $this->input->post('referencia')
             ];
@@ -1598,19 +1598,19 @@ class Products extends MY_Controller
         $this->load->library('datatables');
         if ($warehouse_id) {
             $this->datatables
-            ->select($this->db->dbprefix('products') . ".id as productid, {$this->db->dbprefix('products')}.image as image, {$this->db->dbprefix('products')}.code as code, {$this->db->dbprefix('products')}.name as name, {$this->db->dbprefix('brands')}.name as brand, {$this->db->dbprefix('categories')}.name as cname, cost as cost, price as price, COALESCE(wp.quantity, 0) as quantity, {$this->db->dbprefix('units')}.code as unit, wp.rack as rack, alert_quantity", false)
-            ->from('products');
+                ->select($this->db->dbprefix('products') . ".id as productid, {$this->db->dbprefix('products')}.image as image, {$this->db->dbprefix('products')}.code as code, {$this->db->dbprefix('products')}.name as name, {$this->db->dbprefix('brands')}.name as brand, {$this->db->dbprefix('categories')}.name as cname, cost as cost, price as price, COALESCE(wp.quantity, 0) as quantity, {$this->db->dbprefix('units')}.code as unit, wp.rack as rack, alert_quantity", false)
+                ->from('products');
             if ($this->Settings->display_all_products) {
                 $this->datatables->join("( SELECT product_id, quantity, rack from {$this->db->dbprefix('warehouses_products')} WHERE warehouse_id = {$warehouse_id}) wp", 'products.id=wp.product_id', 'left');
             } else {
                 $this->datatables->join('warehouses_products wp', 'products.id=wp.product_id', 'left')
-                ->where('wp.warehouse_id', $warehouse_id)
-                ->where('wp.quantity !=', 0);
+                    ->where('wp.warehouse_id', $warehouse_id)
+                    ->where('wp.quantity !=', 0);
             }
             $this->datatables->join('categories', 'products.category_id=categories.id', 'left')
-            ->join('units', 'products.unit=units.id', 'left')
-            ->join('brands', 'products.brand=brands.id', 'left');
-        // ->group_by("products.id");
+                ->join('units', 'products.unit=units.id', 'left')
+                ->join('brands', 'products.brand=brands.id', 'left');
+            // ->group_by("products.id");
         } else {
             $this->datatables
                 ->select($this->db->dbprefix('products') . ".id as productid, {$this->db->dbprefix('products')}.image as image, {$this->db->dbprefix('products')}.code as code, {$this->db->dbprefix('products')}.name as name, {$this->db->dbprefix('brands')}.name as brand, {$this->db->dbprefix('categories')}.name as cname, cost as cost, price as price, COALESCE(quantity, 0) as quantity, {$this->db->dbprefix('units')}.code as unit, '' as rack, alert_quantity", false)
@@ -1630,12 +1630,12 @@ class Products extends MY_Controller
         }
         if ($supplier) {
             $this->datatables->group_start()
-            ->where('supplier1', $supplier)
-            ->or_where('supplier2', $supplier)
-            ->or_where('supplier3', $supplier)
-            ->or_where('supplier4', $supplier)
-            ->or_where('supplier5', $supplier)
-            ->group_end();
+                ->where('supplier1', $supplier)
+                ->or_where('supplier2', $supplier)
+                ->or_where('supplier3', $supplier)
+                ->or_where('supplier4', $supplier)
+                ->or_where('supplier5', $supplier)
+                ->group_end();
         }
         $this->datatables->add_column('Actions', $action, 'productid, image, code, name');
         echo $this->datatables->generate();

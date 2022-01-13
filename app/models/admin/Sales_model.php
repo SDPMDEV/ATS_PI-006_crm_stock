@@ -953,4 +953,34 @@ class Sales_model extends CI_Model
         }
         return false;
     }
+
+    public function getLastSaleId()
+    {
+        $this->db->from('sales');
+        $this->db->order_by("id", "asc");
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            return $query->result()[0]->id;
+        }
+
+        return 0;
+    }
+
+    public function getSale($id)
+    {
+        $query = $this->db->get_where('sales', ['id' => $id]);
+
+        if ($query->num_rows() > 0) {
+            return $query->result()[0];
+        }
+
+        return false;
+    }
+
+    public function upSale($sale_id, $updates) {
+        $this->db->where('id', $sale_id);
+
+        return $this->db->update('sales', $updates);
+    }
 }

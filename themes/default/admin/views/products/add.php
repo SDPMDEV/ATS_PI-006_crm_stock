@@ -234,16 +234,6 @@ if (!empty($variants)) {
                         </div>
                     <?php
                         } ?>
-                    <div class="form-group standard">
-                        <?= lang('alert_quantity', 'alert_quantity') ?>
-                        <div
-                            class="input-group"> <?= form_input('alert_quantity', ($_POST['alert_quantity'] ?? ($product ? $this->sma->formatQuantityDecimal($product->alert_quantity) : '')), 'class="form-control tip" id="alert_quantity"') ?>
-                            <span class="input-group-addon">
-                            <input type="checkbox" name="track_quantity" id="track_quantity"
-                                   value="1" <?= ($product ? (isset($product->track_quantity) ? 'checked="checked"' : '') : 'checked="checked"') ?>>
-                        </span>
-                        </div>
-                    </div>
 
                     <div class="form-group all">
                         <?= lang('product_image', 'product_image') ?>
@@ -647,7 +637,7 @@ if (!empty($variants)) {
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="ident_anp"><b>Identificação ANP</b></label>
-                                <select name="ident_anp" id="ident_anp" class="form-control">
+                                <select id="ident_anp" class="form-control" name="ident_anp">
                                     <option value="--">--</option>
                                     <?php foreach($fiscalConfigs->anps as $value_anps => $anps) { ?>
                                         <option value="<?= $value_anps ?>">

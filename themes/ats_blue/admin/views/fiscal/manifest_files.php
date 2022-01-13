@@ -361,14 +361,30 @@
                                             <input type="text" name="referencia" id="referencia" class="form-control" v-bind:value="productToAdd.codigo[0]">
                                         </div>
                                     </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <?= lang('tax_method', 'tax_method') ?>
+                                            <?php
+                                            $tm = ['1' => lang('exclusive'), '0' => lang('inclusive')];
+                                            echo form_dropdown('tax_method', $tm, ($_POST['tax_method'] ?? ($product ? $product->tax_method : '')), 'class="form-control select" id="tax_method" placeholder="' . lang('select') . ' ' . lang('tax_method') . '" style="width:100%"'); ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input name="hide_pos" type="checkbox" id="hide_pos"/>
+                                            <label for="hide_pos" class="padding05"><b>Esconder no Módulo POS</b></label>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="valor"><b>Valor de Compra</b></label>
-                                            <input required type="text" class="form-control" name="valor" id="valor" v-bind:value="productToAdd.vUnCom[0]">
+                                            <label for="valor_compra"><b>Valor de Compra</b></label>
+                                            <input required type="text" class="form-control" name="valor_compra" id="valor_compra" v-bind:value="productToAdd.vUnCom[0]" v-on:change="calcularValorVenda">
                                         </div>
                                     </div>
 
@@ -382,7 +398,7 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="conversao_estoque"><b>Conversão unitária para estoque</b></label>
-                                            <input required type="text" class="form-control" name="conversao_estoque" id="conversao_estoque" v-bind:value="(productToAdd.conversao_unitaria) ? productToAdd.conversao_unitaria : 1">
+                                            <input required type="text" class="form-control" name="conversao_estoque" id="conversao_estoque" v-bind:value="(productToAdd.conversao_unitaria) ? productToAdd.conversao_unitaria : 1" v-on:change="calcularValorVenda">
                                         </div>
                                     </div>
 
@@ -413,10 +429,11 @@
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="code"><b>Código do Produto *</b></label>
-                                            <input required maxlength="8" type="text" name="code" id="code" class="form-control">
-                                            <span class="input-group-addon pointer" id="random_num" style="padding: 1px 10px;" onclick="generate(8)">
-                                                <i class="fa fa-random"></i>
-                                            </span>
+
+                                            <div style="display: flex; width: 100%; align-items: center; background: #e1e1e1">
+                                                <input required maxlength="8" type="text" name="code" id="code" class="form-control">
+                                                <span class="pointer" id="random_num" style="padding: 1px 10px; background: #e1e1e1" onclick="generate(8)"><i class="fa fa-random"></i></span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -463,15 +480,33 @@
 
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <input type="checkbox" name="hide" id="hide">
-                                            <label for="hide" class="padding05"><b>Esconder na loja</b></label>
+                                            <?= lang('warehouse', 'qawarehouse'); ?>
+                                            <?php
+                                            $wh[''] = '';
+                                            foreach ($warehouses as $warehouse) {
+                                                $wh[$warehouse->id] = $warehouse->name;
+                                            }
+                                            echo form_dropdown('warehouse', $wh, (isset($_POST['warehouse']) ? $_POST['warehouse'] : ($warehouse_id ? $warehouse_id : $Settings->default_warehouse)), 'id="qawarehouse" class="form-control input-tip select" data-placeholder="' . lang('select') . ' ' . lang('warehouse') . '" required="required" ' . ($warehouse_id ? 'readonly' : '') . ' style="width:100%;"'); ?>
                                         </div>
                                     </div>
 
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <input name="hide_pos" type="checkbox" id="hide_pos"/>
-                                            <label for="hide_pos" class="padding05"><b>Esconder no Módulo POS</b></label>
+                                            <?= lang('product_tax', 'tax_rate') ?>
+                                            <?php
+                                            $tr[''] = '';
+                                            foreach ($tax_rates as $tax) {
+                                                $tr[$tax->id] = $tax->name;
+                                            }
+                                            echo form_dropdown('tax_rate', $tr, ($_POST['tax_rate'] ?? ($product ? $product->tax_rate : $Settings->default_tax_rate)), 'class="form-control select" id="tax_rate" placeholder="' . lang('select') . ' ' . lang('product_tax') . '" style="width:100%"')
+                                            ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <input type="checkbox" name="hide" id="hide">
+                                            <label for="hide" class="padding05"><b>Esconder na loja</b></label>
                                         </div>
                                     </div>
                                 </div>
@@ -654,7 +689,11 @@
                     toastr.error("Erro interno do servidor", 'Erro');
                     console.error(err.responseText)
                 })
+            },
+            calcularValorVenda: function() {
+                document.querySelector('#valor_venda').value = document.querySelector("#valor_compra").value / document.querySelector('#conversao_estoque').value;
             }
+
         },
         created: function () {
             $.post('/validate/request', {api_url: '/get_docs', token: this.token}).then(res => {

@@ -31,6 +31,7 @@
                     paid += parseFloat(aaData[aiDisplay[i]][7]);
                     balance += parseFloat(formatDecimals(aaData[aiDisplay[i]][8]));
                 }
+                localStorage.setItem('grand_total', gtotal);
                 var nCells = nRow.getElementsByTagName('th');
                 nCells[6].innerHTML = currencyFormat(parseFloat(gtotal));
                 nCells[7].innerHTML = currencyFormat(parseFloat(paid));
@@ -300,7 +301,6 @@
     <div class="box-content">
         <div class="row">
             <div class="col-lg-12">
-
                 <p class="introtext"><?=lang('list_results');?></p>
 
                 <div class="table-responsive">
@@ -325,9 +325,9 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td colspan="12" class="dataTables_empty"><?= lang('loading_data'); ?></td>
-                        </tr>
+                            <tr>
+                                <td colspan="12" class="dataTables_empty"><?= lang('loading_data'); ?></td>
+                            </tr>
                         </tbody>
                         <tfoot class="dtFilter">
                         <tr class="active">
@@ -345,11 +345,179 @@
                         </tr>
                         </tfoot>
                     </table>
+
+                    <fieldset class="scheduler-border" style="margin-top: 30px !important;">
+                        <legend class="scheduler-border">Receita Federal</legend>
+
+                        <div class="col-md-12" style="margin-top: 30px;">
+                            <input type="hidden" id="csrf" name="<?= $this->security->get_csrf_token_name() ?>" value="<?=$this->security->get_csrf_hash()?>">
+                            <input type="hidden" name="api_url" value="/generate_danfe">
+                            <input type="hidden" name="grand_total" id="grand_total">
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a id="enviar" class="btn btn-success btn-block">Enviar</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a id="imprimir" class="btn btn-info btn-block">Imprimir</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a id="consultar" class="btn btn-info btn-block">Consultar</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a class="btn btn-danger btn-block" id="cancelar">Cancelar</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a id="correcao" class="btn btn-warning btn-block">CC-e</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a data-toggle="modal" data-target="#inutilizarModal" class="btn btn-info btn-block">Inutilizar</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a id="gerar_danfe" target="_blank" class="btn btn-info btn-block">Gerar Danfe</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a id="baixar_xml" class="btn btn-success btn-block">Baixar XML</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a class="btn btn-warning btn-block" id="enviar_xml">Baixar zip com XML e Danfe para Email</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a class="btn btn-warning btn-block" id="imprimir_cce">Imprimir CC-e</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <a  id="imprimir_cancela" class="btn btn-danger btn-block">Imprimir Cancela</a>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="cancelar-modal" tabindex="-1" role="dialog" aria-labelledby="cancelar-modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">CANCELAR NFe: </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="form-justify-cancel">
+                <div class="modal-body">
+                    <label for="justificativa_cancelar">Justificativa</label>
+                    <input type="text" name="justificativa_cancelar" id="justificativa_cancelar" class="form-control" placeholder="Justificativa mínimo de 15 caracteres" min="15">
+                    <input type="hidden" name="node_values" id="node_values">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-success" id="cancelar_nfe">Cancelar NFe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="correcao-modal" tabindex="-1" role="dialog" aria-labelledby="correcao-modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Correção de NFe: </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/fix/nfe" method="GET" target="_blank">
+                <div class="modal-body">
+                    <label for="correcao">Correção</label>
+                    <input type="text" name="correcao" id="correcao" class="form-control" placeholder="Correção minimo de 15 caracteres" min="15">
+                    <input type="hidden" name="node_values_correcao" id="node_values_correcao">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-success" id="corrigir_nfe">Corrigir NFe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="inutilizarModal" tabindex="-1" role="dialog" aria-labelledby="inutilizarModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Inutilização de NFe: </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <form action="/disable/nfe/" method="GET" target="_blank">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="nfe_inicial"><b>Número NFe Inicial</b></label>
+                        <input type="text" name="nfe_inicial" id="nfe_inicial" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="nfe_final"><b>Número NFe Final</b></label>
+                        <input type="text" name="nfe_final" id="nfe_final" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="justificativa"><b>Justificativa</b></label>
+                        <input type="text" name="justificativa_inutilizar" id="justificativa" class="form-control" placeholder="Justificativa mínimo de 15 caracteres" min="15">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-success" id="inutilizar_nfe">Inutilizar NFe</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
 <?php if ($Owner || ($GP && $GP['bulk_actions'])) {
     ?>
     <div style="display: none;">
@@ -360,3 +528,80 @@
     <?php
 }
 ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    $(document).ready(()=>{
+        function unserialize(serializedData) {
+            let urlParams = new URLSearchParams(serializedData); // get interface / iterator
+            let unserializedData = {}; // prepare result object
+            for ([key, value] of urlParams) { // get pair > extract it to key/value
+                unserializedData[key] = value;
+            }
+
+            return unserializedData;
+        }
+
+        $("#gerar_danfe").click((e)=>{
+            e.preventDefault();
+            $('#grand_total').val(localStorage.getItem('grand_total'));
+            window.open(window.location.origin + "/generate/danfe/?" + $('#action-form').serialize());
+        });
+
+        $("#imprimir").click((e)=>{
+            e.preventDefault();
+            $('#grand_total').val(localStorage.getItem('grand_total'));
+            window.open(window.location.origin + "/generate/danfe/?" + $('#action-form').serialize());
+        });
+
+        $("#enviar").click((e)=>{
+            e.preventDefault();
+            $('#grand_total').val(localStorage.getItem('grand_total'));
+            window.open(window.location.origin + "/send/sale/?" + $('#action-form').serialize());
+        })
+
+        $('#consultar').click((e)=>{
+            $('#grand_total').val(localStorage.getItem('grand_total'));
+            e.preventDefault();
+            window.open(window.location.origin + "/consult/nfe/?" + $('#action-form').serialize());
+        });
+
+        $("#cancelar").click(e=>{
+            e.preventDefault();
+            $("#cancelar-modal").modal('show');
+            $("#node_values").val($("#action-form").serialize());
+        })
+
+        $("#correcao").click(e=>{
+            e.preventDefault();
+            $("#correcao-modal").modal('show');
+            $("#node_values_correcao").val($("#action-form").serialize());
+        })
+
+        $("#baixar_xml").click(e=>{
+            e.preventDefault();
+            window.open(window.location.origin + "/download/xml/?" + $('#action-form').serialize());
+        })
+
+        $("#imprimir_cce").click(e=>{
+            e.preventDefault();
+            window.open(window.location.origin + "/print/cce/?" + $('#action-form').serialize());
+        })
+
+        $("#imprimir_cancela").click(e=>{
+            e.preventDefault();
+            window.open(window.location.origin + "/print/cancel/?" + $('#action-form').serialize());
+        })
+
+        $("#enviar_xml").click(e=>{
+            e.preventDefault();
+            window.open(window.location.origin + "/send/xml/nfe/?" + $('#action-form').serialize());
+        })
+
+        $("#cancelar_nfe").click(e=>{
+            e.preventDefault();
+            window.open(
+                window.location.origin + "/justify/cancel/?justificativa_cancelar=" + $('#justificativa_cancelar').val() + "&" + $('#action-form').serialize()
+            );
+        })
+    })
+</script>

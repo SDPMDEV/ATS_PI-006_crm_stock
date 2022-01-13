@@ -135,5 +135,5 @@
 
     $("#cnpj").inputmask({"mask": "99.999.999/9999-99"});
     $("#cep").inputmask({"mask": "99999-999"});
-    $("#telefone").inputmask({"mask": "(99) 99999-9999"});
+    $("#telefone").inputmask({"mask": "9 99999-9999"});
 </script>

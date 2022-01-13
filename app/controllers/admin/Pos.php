@@ -4,6 +4,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Pos extends MY_Controller
 {
+    private string $api_url;
+
+    private string $api_token = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
+
     public function __construct()
     {
         parent::__construct();
@@ -17,11 +21,19 @@ class Pos extends MY_Controller
             redirect($_SERVER['HTTP_REFERER']);
         }
 
+        $config = new CI_Config();
+        $this->api_url = $config->config["api_url"];
+
         $this->load->admin_model('pos_model');
+        $this->load->admin_model('products_model');
+        $this->load->admin_model('sales_model');
+        $this->load->admin_model('nfe_model');
+
         $this->load->helper('text');
         $this->pos_settings           = $this->pos_model->getSetting();
         $this->pos_settings->pin_code = $this->pos_settings->pin_code ? md5($this->pos_settings->pin_code) : null;
         $this->data['pos_settings']   = $this->pos_settings;
+        $this->data['payment_methods'] = $this->returnApiProps('/get_payment_methods');
         $this->session->set_userdata('last_activity', now());
         $this->lang->admin_load('pos', $this->Settings->user_language);
         $this->load->library('form_validation');
@@ -897,6 +909,35 @@ class Pos extends MY_Controller
             if (empty($products)) {
                 $this->form_validation->set_rules('product', lang('order_items'), 'required');
             } elseif ($this->pos_settings->item_order == 0) {
+                foreach($products as $product) {
+                    $pr = $this->products_model->getProductByID($product['product_id']);
+
+                    $payment_method = $this->input->post('paid_by')[0];
+
+                    $data = [
+                        'id' => (int)$pr->id,
+                        'nome' => $pr->name,
+                        'NCM' => $pr->NCM,
+                        'CST_CSOSN' => $pr->CST_CSOSN,
+                        'CFOP_saida_estadual' => $pr->CFOP_saida_estadual,
+                        'CEST' => $pr->CEST,
+                        'unidade_venda' => $pr->unidade_venda,
+                        'quantidade' => $product['quantity'],
+                        'valor' => $pr->price,
+                        'perc_icms' => number_format($pr->perc_icms, 2),
+                        'CST_PIS' => $pr->CST_PIS,
+                        'perc_pis' => number_format($pr->perc_pis, 2),
+                        'perc_iss' => $pr->perc_iss,
+                        'CST_COFINS' => $pr->CST_COFINS,
+                        'perc_cofins' => number_format($pr->perc_cofins, 2),
+                        'descricao_anp' => $pr->descricao_anp ?? '',
+                        'codigo_anp' => number_format($pr->codigo_anp, 2),
+                        'codBarras' => $pr->codBarras,
+                        'payment_method' => $payment_method
+                    ];
+
+                    $this->nfe_model->saveProductToNfe($data);
+                }
                 krsort($products);
             }
 
@@ -1633,5 +1674,65 @@ class Pos extends MY_Controller
         }
         @chmod($output_path, 0644);
         return false;
+    }
+
+    public function getNFe()
+    {
+        $lastId = $this->sales_model->getLastSaleId();
+
+        $data = [
+            'lastId' => $lastId,
+            'cpf' => $this->input->post('cpf') ?? '',
+            'nome' => '',
+            'cliente' => [
+                'cidade' => [
+                    'uf' => ''
+                ]
+            ],
+            'produtos' => $this->nfe_model->getAll(),
+            'desconto' => $this->sales_model->getSale($lastId+1)->order_discount,
+            'valor_total' => $this->sales_model->getSale($lastId+1)->grand_total,
+            'troco' => $this->input->post('troco'),
+            'tipo_pagamento' => $this->nfe_model->getAll()[0]->payment_method
+        ];
+
+        print_r($this->nfe_model->getAll());
+        die;
+        return $this->returnApiProps('/generate_nfe', $data);
+    }
+
+    private function returnApiProps(string $endpoint, array $data = [])
+    {
+        $ch = curl_init($this->api_url . $endpoint);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        if(!empty($data)) {
+            unset($data["api_url"]);
+            unset($data["ajax"]);
+            echo "api_token=$this->api_token&".http_build_query($data);
+            die;
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token&".http_build_query($data));
+        } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token");
+        }
+
+        if(curl_exec($ch)) {
+            return json_decode(curl_exec($ch));
+        } else {
+            return curl_error($ch);
+        }
+    }
+
+    private function toJson(array $arr)
+    {
+        $json = new stdClass();
+        foreach($arr as $index => $value) {
+            $json->$index = $value;
+        }
+
+        return $json;
     }
 }

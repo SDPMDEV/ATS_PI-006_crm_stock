@@ -303,4 +303,15 @@ class Companies_model extends CI_Model
         }
         return false;
     }
+
+    public function getCustomerById($id)
+    {
+        $query = $this->db->get_where('companies', ['id' => $id]);
+
+        if ($query->num_rows() > 0) {
+            return $query->result()[0];
+        }
+
+        return false;
+    }
 }

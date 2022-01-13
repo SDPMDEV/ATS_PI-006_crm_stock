@@ -89,7 +89,7 @@
             <fieldset class="scheduler-border">
                 <legend class="scheduler-border">Informações básicas</legend>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <b>Razão Social</b>                    
                         <input class="form-control tip" required type="text" value="<?= $props->razao_social ?>" name="razao_social">
@@ -103,22 +103,23 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <b>CNPJ</b>
                         <input class="form-control tip" required type="text" value="<?= $props->cnpj ?>" id="cnpj" name="cnpj" maxlength="18">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <b>Inscrição Estadual</b>
+                        <input class="form-control" required type="text" value="<?= $props->ie ?>" name="ie" id="ie">
                     </div>
                 </div>
             </fieldset>
 
             <fieldset class="scheduler-border">
                 <legend class="scheduler-border">Endereço</legend>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <span>Razão Social</span>
-                        <input class="form-control" required type="text" value="<?= $props->ie ?>" name="ie">
-                    </div>
-                </div>
 
                 <div class="col-md-4">
                     <div class="form-group">
@@ -354,42 +355,42 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <span>Nº Serie NF-e</span>
-                        <input class="form-control" required name="numero_serie_nfe" type="text" value="<?= $props->numero_serie_nfe ?>">
+                        <input class="form-control" required name="numero_serie_nfe" type="text" value="<?= $nfe_configs->num_serie_nfe ?>">
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="form-group">
                         <span>Nº Serie NFC-e</span>
-                            <input class="form-control" required name="numero_serie_nfce" type="text" value="<?= $props->numero_serie_nfce ?>">
+                            <input class="form-control" required name="numero_serie_nfce" type="text" value="<?= $nfe_configs->ultimo_num_nfce ?>">
                     </div>
                 </div>
                 
                 <div class="col-md-4">
                     <div class="form-group">
                         <span>Ultimo Nº NF-e</span>
-                        <input class="form-control" required name="ultimo_numero_nfe" type="text" value="<?= $props->ultimo_numero_nfe ?>">
+                        <input class="form-control" required name="ultimo_numero_nfe" type="text" value="<?= $nfe_configs->ultimo_num_nfe ?>">
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="form-group">
                         <span>Ultimo Nº NFC-e'</span>
-                        <input class="form-control" required name="ultimo_numero_nfce" type="text" value="<?= $props->ultimo_numero_nfce ?>">
+                        <input class="form-control" required name="ultimo_numero_nfce" type="text" value="<?= $nfe_configs->ultimo_num_nfce ?>">
                     </div>
                 </div>
                 
                 <div class="col-md-4">
                     <div class="form-group">
                         <span>Ultimo Nº CT-e</span>
-                        <input class="form-control" required name="ultimo_numero_cte" type="text" value="<?= $props->ultimo_numero_cte ?>">
+                        <input class="form-control" required name="ultimo_numero_cte" type="text" value="<?= $nfe_configs->ultimo_num_cte ?>">
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="form-group">
                         <span>Ultimo Nº MDF-e</span>
-                        <input class="form-control" required name="ultimo_numero_mdfe" type="text" value="<?= $props->ultimo_numero_mdfe ?>">
+                        <input class="form-control" required name="ultimo_numero_mdfe" type="text" value="<?= $nfe_configs->ultimo_num_mdfe ?>">
                     </div>
                 </div>
 
@@ -583,6 +584,6 @@
     $(":input").inputmask();
 
     $("#cnpj").inputmask({"mask": "99.999.999/9999-99"});
-    $("#telefone").inputmask({"mask": "(99) 99999-9999"});
+    $("#telefone").inputmask({"mask": "99 99999-9999"});
     $('#cep').inputmask({"mask": "99999-999"});
 </script>
