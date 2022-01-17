@@ -1082,6 +1082,21 @@ class Fiscal extends MY_Controller
 
                 $res = file_get_contents($this->api_url . '/download_xml/?' . http_build_query(['chave' => $sale->chave]));
 
+                if(!$sale->chave) {
+                    die(
+                        '
+                        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                        <script>
+                            window.onload = function() {
+                                swal("Erro ao baixar xml!", "O XML ainda não foi gerado, para gerar o XML é necessário enviar a venda", "error").then(()=>{
+                                    window.close();
+                                });
+                            };
+                        </script>
+                        '
+                    );
+                }
+
                 if(!$res->error) {
                     echo '
                         <script>
