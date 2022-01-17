@@ -4,9 +4,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Customers extends MY_Controller
 {
-    public $api_url;
+    private $api_url;
 
-    public $api_token = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
+    private $api_token;
 
     public function __construct()
     {
@@ -14,6 +14,7 @@ class Customers extends MY_Controller
 
         $config = new CI_Config();
         $this->api_url = $config->config["api_url"];
+        $this->api_token = $config->config['api_token'];
 
         if (!$this->loggedIn) {
             $this->session->set_userdata('requested_page', $this->uri->uri_string());

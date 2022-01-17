@@ -5,24 +5,48 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Fiscal extends MY_Controller
 {
-    private $path = "../themes/ats_blue/admin/views/fiscal/";
 
-    public $api_url;
+    /**
+     * @var string
+     */
+    private string $path = "../themes/ats_blue/admin/views/fiscal/";
 
-    public $api_token = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
+    /**
+     * @var string|mixed
+     */
+    private string $api_url;
 
-    private $post;
+    /**
+     * @var string|mixed
+     */
+    private string $api_token;
 
-    private $get;
+    /**
+     * @var stdClass
+     */
+    private stdClass $post;
 
+    /**
+     * @var stdClass
+     */
+    private stdClass $get;
+
+
+    /**
+     * Determina valores da api, instancia models e verifica se o usuário está logado
+     * antes de executar qualquer outra função da classe
+     */
     public function __construct()
     {
         parent::__construct();
 
         $this->post = $this->toJson($_POST);
         $this->get = $this->toJson($_GET);
+
         $config = new CI_Config();
         $this->api_url = $config->config["api_url"];
+        $this->api_token = $config->config['api_token'];
+
         $this->load->admin_model('products_model');
         $this->load->admin_model('sales_model');
         $this->load->admin_model('companies_model');
@@ -40,7 +64,13 @@ class Fiscal extends MY_Controller
         }
     }
 
-    private function toJson(array $arr)
+    /**
+     * Converte um array para uma StdClass
+     *
+     * @param array $arr
+     * @return stdClass
+     */
+    private function toJson(array $arr) : stdClass
     {
         $json = new stdClass();
         foreach($arr as $index => $value) {
@@ -50,6 +80,10 @@ class Fiscal extends MY_Controller
         return $json;
     }
 
+    /**
+     * @param string $view_name
+     * @param array $data
+     */
     private function renderView(string $view_name, array $data = [])
     {
         $this->load->view($this->theme . 'header', $this->data);
@@ -58,6 +92,11 @@ class Fiscal extends MY_Controller
     }
 
 
+    /**
+     * @param string $endpoint
+     * @param array $data
+     * @return mixed|string
+     */
     private function returnApiProps(string $endpoint, array $data = [])
     {
         $ch = curl_init($this->api_url . $endpoint);
@@ -83,42 +122,45 @@ class Fiscal extends MY_Controller
         }
     }
 
-    private function formatCNPJ($doc) 
+    /**
+     * @param $doc
+     * @return string
+     */
+    private function formatCNPJ($doc): string
     {
- 
         $doc = preg_replace("/[^0-9]/", "", $doc);
         $qtd = strlen($doc);
- 
+
         if($qtd >= 11) {
- 
             if($qtd === 11 ) {
- 
                 $docFormatado = substr($doc, 0, 3) . '.' .
-                                substr($doc, 3, 3) . '.' .
-                                substr($doc, 6, 3) . '.' .
-                                substr($doc, 9, 2);
+                substr($doc, 3, 3) . '.' .
+                substr($doc, 6, 3) . '.' .
+                substr($doc, 9, 2);
             } else {
                 $docFormatado = substr($doc, 0, 2) . '.' .
-                                substr($doc, 2, 3) . '.' .
-                                substr($doc, 5, 3) . '/' .
-                                substr($doc, 8, 4) . '-' .
-                                substr($doc, -2);
+                substr($doc, 2, 3) . '.' .
+                substr($doc, 5, 3) . '/' .
+                substr($doc, 8, 4) . '-' .
+                substr($doc, -2);
             }
- 
+
             return $docFormatado;
- 
         } else {
             return '';
         }
     }
 
+    /**
+     * Renderiza a view de configurar emitente
+     */
     public function configure_issuer()
     {
         $props = $this->returnApiProps("/get_issuer");
         $props->cnpj = $this->formatCNPJ($props->cnpj);
 
         $data = [
-            "props" => $props, 
+            "props" => $props,
             "remote_url" => $this->api_url,
             "configs" => $this->returnApiProps("/get_issuer_configs"),
             "token" => $this->api_token,
@@ -131,6 +173,9 @@ class Fiscal extends MY_Controller
         $this->renderView("configure_issuer", $data);
     }
 
+    /**
+     * Renderiza a view de configurar escritório
+     */
     public function configure_office()
     {
         $data = [
@@ -142,11 +187,17 @@ class Fiscal extends MY_Controller
         $this->renderView("configure_office", $data);
     }
 
+    /**
+     * @return mixed|string
+     */
     private function returnOfficeConfigs()
     {
         return $this->returnApiProps("/get_office_configs");
     }
 
+    /**
+     * Renderiza a view de Manifesto
+     */
     public function manifest()
     {
         if($this->returnApiProps('/validate_certificate')->manifest_perm) {
@@ -164,6 +215,9 @@ class Fiscal extends MY_Controller
         }
     }
 
+    /**
+     * Renderiza view de natureza de operação
+     */
     public function nature_operation()
     {
         $data = [
@@ -176,6 +230,11 @@ class Fiscal extends MY_Controller
         $this->renderView("nature_operation", $data);
     }
 
+    /**
+     * Renderiza a view de enviar xml
+     *
+     * @deprecated
+     */
     public function send_xml()
     {
         $data = [
@@ -185,6 +244,9 @@ class Fiscal extends MY_Controller
         $this->renderView("send_xml", $data);
     }
 
+    /**
+     * Renderiza a view de tributação
+     */
     public function taxation()
     {
         $data = [
@@ -196,6 +258,9 @@ class Fiscal extends MY_Controller
         $this->renderView("taxation", $data);
     }
 
+    /**
+     * @param array $data
+     */
     private function responseJson(array $data)
     {
         $json = new stdClass();
@@ -208,7 +273,14 @@ class Fiscal extends MY_Controller
         exit(json_encode($json));
     }
 
-    public function send_requests($endpoint = '', $data = [])
+    /**
+     * Função responsável por capturar requisições Ajax do frontend
+     * sem utilizar o token csrf
+     *
+     * @param string $endpoint
+     * @param array $data
+     */
+    public function send_requests(string $endpoint = '', array $data = [])
     {
         $this->saveLastNumbers();
 
@@ -231,6 +303,9 @@ class Fiscal extends MY_Controller
         }
     }
 
+    /**
+     * Função personalizada para inserir um produto no banco de dados
+     */
     public function addProduct()
     {
         if($this->input->method() != 'post' || $this->input->method() == 'POST') {
@@ -337,12 +412,20 @@ class Fiscal extends MY_Controller
             $this->responseJson(["error" => true, "message" => "Erro ao salvar produto."]);
     }
 
-    private function check_product($product_ref = '')
+    /**
+     * @param string $product_ref
+     * @return bool
+     */
+    private function check_product(string $product_ref = ''): bool
     {
         return (!$this->products_model->getProductByRef($product_ref));
     }
 
-    private function getProductId($product_ref = '')
+    /**
+     * @param string $product_ref
+     * @return mixed
+     */
+    private function getProductId(string $product_ref = '')
     {
         return $this->products_model->getProductId($product_ref);
     }

@@ -7,7 +7,7 @@ class Sales extends MY_Controller
 
     private $api_url;
 
-    private $api_token = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
+    private $api_token;
 
     public function __construct()
     {
@@ -24,6 +24,8 @@ class Sales extends MY_Controller
 
         $config = new CI_Config();
         $this->api_url = $config->config["api_url"];
+        $this->api_token = $config->config['api_token'];
+
         $this->lang->admin_load('sales', $this->Settings->user_language);
         $this->load->library('form_validation');
         $this->load->admin_model('sales_model');

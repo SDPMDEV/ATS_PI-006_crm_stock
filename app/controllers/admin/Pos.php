@@ -6,7 +6,7 @@ class Pos extends MY_Controller
 {
     private string $api_url;
 
-    private string $api_token = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
+    private string $api_token;
 
     public function __construct()
     {
@@ -23,6 +23,7 @@ class Pos extends MY_Controller
 
         $config = new CI_Config();
         $this->api_url = $config->config["api_url"];
+        $this->api_token = $config->config['api_token'];
 
         $this->load->admin_model('pos_model');
         $this->load->admin_model('products_model');
