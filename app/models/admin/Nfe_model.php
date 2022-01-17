@@ -11,17 +11,18 @@ class Nfe_model extends CI_Model
 
     public function saveProductToNfe($data = [])
     {
-        return $this->db->insert('products_nfe', $data);
+        $query = $this->db->insert('products_nfe', $data);
+
+        if (!$query) {
+            return $this->db->error();
+        }
+
+        return true;
     }
 
     public function getAll()
     {
         return $this->db->get('products_nfe')->result();
-    }
-
-    public function setLastNumNfe($newNumber)
-    {
-        return $this->db->insert('ultimos_numeros', ['ultimo_num_nfe' => $newNumber]);
     }
 
     public function getAllLastNumbers()
@@ -34,5 +35,10 @@ class Nfe_model extends CI_Model
         $this->db->where('id', 1);
 
         return $this->db->update('ultimos_numeros', $newValue);
+    }
+
+    public function truncate($tableName)
+    {
+        return $this->db->truncate($tableName);
     }
 }

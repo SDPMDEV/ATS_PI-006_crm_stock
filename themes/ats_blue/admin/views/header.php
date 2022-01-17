@@ -1515,7 +1515,6 @@
                                 <li><a href="<?= admin_url("fiscal/configurar_escritorio") ?>"><i class="fa fa-cog"></i>Configurar Escritório</a></li>
                                 <li><a href="<?= admin_url("fiscal/natureza_de_operacao") ?>"><i class="fa fa-file"></i>Natureza de Operação</a></li>
                                 <li><a href="<?= admin_url("fiscal/tributacao") ?>"><i class="fa fa-file"></i>Tributação</a></li>
-                                <li><a href="<?= admin_url("fiscal/enviar_xml") ?>"><i class="fa fa-file"></i>Enviar XML</a></li>
                                 <li><a href="<?= admin_url("fiscal/manifesto") ?>"><i class="fa fa-file"></i>Manifesto</a></li>
                             </ul>
                         </li>

@@ -184,8 +184,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="cMun">Código do Municipio</label>
-                        <input readonly type="text" name="cMun" id="cMun" class="form-control" placeholder="Preenchimento automático" value="<?= $customer->cMun ?>">
+                        <label for="UF">UF</label>
+                        <input readonly type="text" name="UF" id="UF" class="form-control" placeholder="Preenchimento automático" value="<?= $customer->cMun ?>">
                     </div>
                 </div>
             </div>
@@ -199,10 +199,10 @@
 <?= $modal_js ?>
 <script>
     $(document).ready(function(e){
-        $('#cMun').val($('#state').find(":selected").val().substring(0,2))
+        $('#UF').val($('#state').find(":selected").val().substring(0,2))
 
         $("#state").change(()=>{
-            $('#cMun').val($('#state').find(":selected").val().substring(0,2))
+            $('#UF').val($('#state').find(":selected").val().substring(0,2))
         });
     })
 </script>

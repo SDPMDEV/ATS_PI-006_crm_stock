@@ -540,10 +540,10 @@ class Pos extends MY_Controller
 
         $this->load->library('datatables');
         $this->datatables
-        ->select('id, title, type, profile, path, ip_address, port')
-        ->from('printers')
-        ->add_column('Actions', "<div class='text-center'> <a href='" . admin_url('pos/edit_printer/$1') . "' class='btn-warning btn-xs tip' title='" . lang('edit_printer') . "'><i class='fa fa-edit'></i></a> <a href='#' class='btn-danger btn-xs tip po' title='<b>" . lang('delete_printer') . "</b>' data-content=\"<p>" . lang('r_u_sure') . "</p><a class='btn btn-danger po-delete' href='" . admin_url('pos/delete_printer/$1') . "'>" . lang('i_m_sure') . "</a> <button class='btn po-close'>" . lang('no') . "</button>\"  rel='popover'><i class=\"fa fa-trash-o\"></i></a></div>", 'id')
-        ->unset_column('id');
+            ->select('id, title, type, profile, path, ip_address, port')
+            ->from('printers')
+            ->add_column('Actions', "<div class='text-center'> <a href='" . admin_url('pos/edit_printer/$1') . "' class='btn-warning btn-xs tip' title='" . lang('edit_printer') . "'><i class='fa fa-edit'></i></a> <a href='#' class='btn-danger btn-xs tip po' title='<b>" . lang('delete_printer') . "</b>' data-content=\"<p>" . lang('r_u_sure') . "</p><a class='btn btn-danger po-delete' href='" . admin_url('pos/delete_printer/$1') . "'>" . lang('i_m_sure') . "</a> <button class='btn po-close'>" . lang('no') . "</button>\"  rel='popover'><i class=\"fa fa-trash-o\"></i></a></div>", 'id')
+            ->unset_column('id');
         echo $this->datatables->generate();
     }
 
@@ -912,8 +912,6 @@ class Pos extends MY_Controller
                 foreach($products as $product) {
                     $pr = $this->products_model->getProductByID($product['product_id']);
 
-                    $payment_method = $this->input->post('paid_by')[0];
-
                     $data = [
                         'id' => (int)$pr->id,
                         'nome' => $pr->name,
@@ -933,7 +931,7 @@ class Pos extends MY_Controller
                         'descricao_anp' => $pr->descricao_anp ?? '',
                         'codigo_anp' => number_format($pr->codigo_anp, 2),
                         'codBarras' => $pr->codBarras,
-                        'payment_method' => $payment_method
+                        'payment_method' => $this->input->post('paid_by')[0] == 'cash' ? '01' : $this->input->post('paid_by')[0]
                     ];
 
                     $this->nfe_model->saveProductToNfe($data);
@@ -980,6 +978,10 @@ class Pos extends MY_Controller
                 'paid'              => $this->input->post('amount-paid') ? $this->input->post('amount-paid') : 0,
                 'created_by'        => $this->session->userdata('user_id'),
                 'hash'              => hash('sha256', microtime() . mt_rand()),
+                'estado'            => 'DISPONIVEL',
+                'sequencia_cce'     => 0,
+                'payment_method'    => 'a_vista',
+                'tipo_pagamento'    => $this->input->post('paid_by')[0]
             ];
             if ($this->Settings->indian_gst) {
                 $data['cgst'] = $total_cgst;
@@ -1179,7 +1181,7 @@ class Pos extends MY_Controller
                 }
 
                 $this->data['items'] = json_encode($pr);
-            // $this->sma->print_arrays($this->data['items']);
+                // $this->sma->print_arrays($this->data['items']);
             } else {
                 $this->data['customer']       = $this->pos_model->getCompanyByID($this->pos_settings->default_customer);
                 $this->data['reference_note'] = null;
@@ -1674,31 +1676,6 @@ class Pos extends MY_Controller
         }
         @chmod($output_path, 0644);
         return false;
-    }
-
-    public function getNFe()
-    {
-        $lastId = $this->sales_model->getLastSaleId();
-
-        $data = [
-            'lastId' => $lastId,
-            'cpf' => $this->input->post('cpf') ?? '',
-            'nome' => '',
-            'cliente' => [
-                'cidade' => [
-                    'uf' => ''
-                ]
-            ],
-            'produtos' => $this->nfe_model->getAll(),
-            'desconto' => $this->sales_model->getSale($lastId+1)->order_discount,
-            'valor_total' => $this->sales_model->getSale($lastId+1)->grand_total,
-            'troco' => $this->input->post('troco'),
-            'tipo_pagamento' => $this->nfe_model->getAll()[0]->payment_method
-        ];
-
-        print_r($this->nfe_model->getAll());
-        die;
-        return $this->returnApiProps('/generate_nfe', $data);
     }
 
     private function returnApiProps(string $endpoint, array $data = [])

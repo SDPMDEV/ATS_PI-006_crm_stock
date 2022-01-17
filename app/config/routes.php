@@ -78,3 +78,7 @@ $route['print/cce']   = 'api/fiscal/printCce';
 $route['print/cancel']   = 'api/fiscal/printCancel';
 $route['disable/nfe']   = 'api/fiscal/disableNfe';
 $route['send/xml/nfe']   = 'api/fiscal/sendNfeXml';
+$route['print/nfce']   = 'api/fiscal/printNfce';
+$route['generate/nfce']   = 'api/fiscal/getNfce';
+$route['save/last_numbers']   = 'api/fiscal/saveLastNumbers';
+$route['generate/cupom']   = 'api/fiscal/generateCupom';

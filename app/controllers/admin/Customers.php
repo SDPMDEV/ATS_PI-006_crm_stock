@@ -441,7 +441,7 @@ class Customers extends MY_Controller
                 'rua'               => $this->input->post('rua'),
                 'numero'            => $this->input->post('numero'),
                 'bairro'            => $this->input->post('bairro'),
-                'cMun'              => $this->input->post('cMun')
+                'UF'              => $this->input->post('UF')
             ];
         } elseif ($this->input->post('edit_customer')) {
             $this->session->set_flashdata('error', validation_errors());

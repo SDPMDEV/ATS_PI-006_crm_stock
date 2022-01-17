@@ -86,6 +86,7 @@
         <form method="POST" id="form" enctype="multipart/form-data">
             <input type="hidden" name="ajax" value="1">
             <input required type="hidden" name="api_token" value="<?= $token ?>">
+            <input required type="hidden" id="csrf" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
             <fieldset class="scheduler-border">
                 <legend class="scheduler-border">Informações básicas</legend>
 

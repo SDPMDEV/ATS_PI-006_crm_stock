@@ -390,7 +390,7 @@
                     } ?>
 
                     <button class="btn btn-success btn-block" id="btnCupomFiscal" onclick="$('#cpfNota').modal('toggle')">Cupom Fiscal</button>
-                    <button class="btn btn-success btn-block" id="btnCupomNaoFiscal">Cupom Não Fiscal</button>
+                    <button class="btn btn-success btn-block" id="btnCupomNaoFiscal" onclick="emitirCupomNaoFiscal()">Cupom Não Fiscal</button>
                 </span>
                 <span class="pull-left col-xs-12"><a class="btn btn-block btn-success" href="#" id="email"><?= lang('email'); ?></a></span>
                 <span class="col-xs-12">
@@ -506,19 +506,15 @@
         function emitirCupomFiscal()
         {
             if(validaCpf()) {
-                $.post('fiscal/get_nfe', {
-                    token: $('#csrf').val(),
-                    cpf: $('#cpf').val(),
-                    troco: $('#troco').val()
-                }).then(res=>{
-                    console.log(res);
-                }).fail((err)=>{
-                    swal('Erro', 'Erro interno do servidor!', 'error');
-                    console.log(err.responseText)
-                })
+                window.open(window.location.origin + '/generate/nfce/?cpf=' + $('#cpf').val());
             } else {
                 swal('Erro', 'CPF Inválido!', 'error');
             }
+        }
+
+        function emitirCupomNaoFiscal()
+        {
+            window.open(window.location.origin + '/generate/cupom');
         }
 
         function validaCpf(){
@@ -538,14 +534,14 @@
             Resto = (Soma * 10) % 11;
 
             if ((Resto == 10) || (Resto == 11))  Resto = 0;
-            if (Resto != parseInt(strCPF.substring(9, 10)) ) return false;;
+            if (Resto != parseInt(strCPF.substring(9, 10)) ) return false;
 
             Soma = 0;
             for (let i = 1; i <= 10; i++) Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i);
             Resto = (Soma * 10) % 11;
 
             if ((Resto == 10) || (Resto == 11))  Resto = 0;
-            if (Resto != parseInt(strCPF.substring(10, 11) ) ) return false;;
+            if (Resto != parseInt(strCPF.substring(10, 11) ) ) return false;
 
             return true;
         }

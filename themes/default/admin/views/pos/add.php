@@ -22,7 +22,7 @@
     <script src="<?=$assets?>js/jquery.js"></script>
     <![endif]-->
     <?php if ($Settings->user_rtl) {
-    ?>
+        ?>
         <link href="<?=$assets?>styles/helpers/bootstrap-rtl.min.css" rel="stylesheet"/>
         <link href="<?=$assets?>styles/style-rtl.css" rel="stylesheet"/>
         <script type="text/javascript">
@@ -30,8 +30,8 @@
                 $('.pull-right, .pull-left').addClass('flip');
             });
         </script>
-    <?php
-}
+        <?php
+    }
     ?>
 </head>
 <body>
@@ -87,14 +87,14 @@
                         </a>
                     </li>
                     <?php if ($Owner) {
-        ?>
+                        ?>
                         <li class="dropdown hidden-sm hidden-small">
                             <a class="btn pos-tip" title="<?=lang('settings')?>" data-placement="bottom" href="<?=admin_url('pos/settings')?>">
                                 <i class="fa fa-cogs"></i>
                             </a>
                         </li>
-                    <?php
-    }
+                        <?php
+                    }
                     ?>
                     <li class="dropdown hidden-xs hidden-small">
                         <a class="btn pos-tip" title="<?=lang('calculator')?>" data-placement="bottom" href="#" data-toggle="dropdown">
@@ -143,7 +143,7 @@
                                 <i class="fa fa-hourglass-half"></i>
                             </a>
                         </li>
-                    <?php
+                        <?php
                     }
                     ?>
                     <?php if ($Owner || $Admin) {
@@ -158,7 +158,7 @@
                                 <i class="fa fa-list"></i>
                             </a>
                         </li>
-                    <?php
+                        <?php
                     }
                     ?>
                     <li class="dropdown hidden-xs">
@@ -181,14 +181,14 @@
         <div class="c1">
             <div class="pos">
                 <?php
-                    if ($error) {
-                        echo '<div class="alert alert-danger"><button type="button" class="close fa-2x" data-dismiss="alert">&times;</button>' . $error . '</div>';
-                    }
+                if ($error) {
+                    echo '<div class="alert alert-danger"><button type="button" class="close fa-2x" data-dismiss="alert">&times;</button>' . $error . '</div>';
+                }
                 ?>
                 <?php
-                    if ($message) {
-                        echo '<div class="alert alert-success"><button type="button" class="close fa-2x" data-dismiss="alert">&times;</button>' . $message . '</div>';
-                    }
+                if ($message) {
+                    echo '<div class="alert alert-success"><button type="button" class="close fa-2x" data-dismiss="alert">&times;</button>' . $message . '</div>';
+                }
                 ?>
                 <div id="pos">
                     <?php $attrib = ['data-toggle' => 'validator', 'role' => 'form', 'id' => 'pos-sale-form'];
@@ -197,18 +197,18 @@
                         <div id="printhead">
                             <h4 style="text-transform:uppercase;"><?php echo $Settings->site_name; ?></h4>
                             <?php
-                                echo '<h5 style="text-transform:uppercase;">' . $this->lang->line('order_list') . '</h5>';
-                                echo $this->lang->line('date') . ' ' . $this->sma->hrld(date('Y-m-d H:i:s'));
+                            echo '<h5 style="text-transform:uppercase;">' . $this->lang->line('order_list') . '</h5>';
+                            echo $this->lang->line('date') . ' ' . $this->sma->hrld(date('Y-m-d H:i:s'));
                             ?>
                         </div>
                         <div id="left-top">
                             <div
-                                style="position: absolute; <?=$Settings->user_rtl ? 'right:-9999px;' : 'left:-9999px;';?>"><?php echo form_input('test', '', 'id="test" class="kb-pad"'); ?></div>
+                                    style="position: absolute; <?=$Settings->user_rtl ? 'right:-9999px;' : 'left:-9999px;';?>"><?php echo form_input('test', '', 'id="test" class="kb-pad"'); ?></div>
                             <div class="form-group">
                                 <div class="input-group" style="z-index:1;">
-                                <?php
+                                    <?php
                                     echo form_input('customer', ($_POST['customer'] ?? ''), 'id="poscustomer" data-placeholder="' . $this->lang->line('select') . ' ' . $this->lang->line('customer') . '" required="required" class="form-control pos-input-tip" style="width:100%;"');
-                                ?>
+                                    ?>
                                     <div class="input-group-addon no-print" style="padding: 2px 8px; border-left: 0;">
                                         <a href="#" id="toogle-customer-read-attr" class="external">
                                             <i class="fa fa-pencil" id="addIcon" style="font-size: 1.2em;"></i>
@@ -219,15 +219,15 @@
                                             <i class="fa fa-eye" id="addIcon" style="font-size: 1.2em;"></i>
                                         </a>
                                     </div>
-                                <?php if ($Owner || $Admin || $GP['customers-add']) {
-                                    ?>
-                                    <div class="input-group-addon no-print" style="padding: 2px 8px;">
-                                        <a href="<?=admin_url('customers/add'); ?>" id="add-customer" class="external" data-toggle="modal" data-target="#myModal">
-                                            <i class="fa fa-plus-circle" id="addIcon" style="font-size: 1.5em;"></i>
-                                        </a>
-                                    </div>
-                                <?php
-                                } ?>
+                                    <?php if ($Owner || $Admin || $GP['customers-add']) {
+                                        ?>
+                                        <div class="input-group-addon no-print" style="padding: 2px 8px;">
+                                            <a href="<?=admin_url('customers/add'); ?>" id="add-customer" class="external" data-toggle="modal" data-target="#myModal">
+                                                <i class="fa fa-plus-circle" id="addIcon" style="font-size: 1.5em;"></i>
+                                            </a>
+                                        </div>
+                                        <?php
+                                    } ?>
                                 </div>
                                 <div style="clear:both;"></div>
                             </div>
@@ -236,13 +236,13 @@
                                     ?>
                                     <div class="form-group">
                                         <?php
-                                            $wh[''] = '';
-                                    foreach ($warehouses as $warehouse) {
-                                        $wh[$warehouse->id] = $warehouse->name;
-                                    }
-                                    echo form_dropdown('warehouse', $wh, ($_POST['warehouse'] ?? $Settings->default_warehouse), 'id="poswarehouse" class="form-control pos-input-tip" data-placeholder="' . $this->lang->line('select') . ' ' . $this->lang->line('warehouse') . '" required="required" style="width:100%;" '); ?>
+                                        $wh[''] = '';
+                                        foreach ($warehouses as $warehouse) {
+                                            $wh[$warehouse->id] = $warehouse->name;
+                                        }
+                                        echo form_dropdown('warehouse', $wh, ($_POST['warehouse'] ?? $Settings->default_warehouse), 'id="poswarehouse" class="form-control pos-input-tip" data-placeholder="' . $this->lang->line('select') . ' ' . $this->lang->line('warehouse') . '" required="required" style="width:100%;" '); ?>
                                     </div>
-                                <?php
+                                    <?php
                                 } else {
                                     $warehouse_input = [
                                         'type'  => 'hidden',
@@ -258,18 +258,18 @@
                                     <?php if ($Owner || $Admin || $GP['products-add']) {
                                     ?>
                                     <div class="input-group">
-                                    <?php
-                                } ?>
-                                    <?php echo form_input('add_item', '', 'class="form-control pos-tip" id="add_item" data-placement="top" data-trigger="focus" placeholder="' . $this->lang->line('search_product_by_name_code') . '" title="' . $this->lang->line('au_pr_name_tip') . '"'); ?>
-                                    <?php if ($Owner || $Admin || $GP['products-add']) {
-                                    ?>
+                                        <?php
+                                        } ?>
+                                        <?php echo form_input('add_item', '', 'class="form-control pos-tip" id="add_item" data-placement="top" data-trigger="focus" placeholder="' . $this->lang->line('search_product_by_name_code') . '" title="' . $this->lang->line('au_pr_name_tip') . '"'); ?>
+                                        <?php if ($Owner || $Admin || $GP['products-add']) {
+                                        ?>
                                         <div class="input-group-addon" style="padding: 2px 8px;">
                                             <a href="#" id="addManually">
                                                 <i class="fa fa-plus-circle" id="addIcon" style="font-size: 1.5em;"></i>
                                             </a>
                                         </div>
                                     </div>
-                                    <?php
+                                <?php
                                 } ?>
                                     <div style="clear:both;"></div>
                                 </div>
@@ -322,12 +322,12 @@
                                         </td>
                                         <td style="padding: 5px 10px;"><?=lang('discount');?>
                                             <?php if ($Owner || $Admin || $this->session->userdata('allow_discount')) {
-                                    ?>
-                                            <a href="#" id="ppdiscount">
-                                                <i class="fa fa-edit"></i>
-                                            </a>
-                                            <?php
-                                } ?>
+                                                ?>
+                                                <a href="#" id="ppdiscount">
+                                                    <i class="fa fa-edit"></i>
+                                                </a>
+                                                <?php
+                                            } ?>
                                         </td>
                                         <td class="text-right" style="padding: 5px 10px;font-weight:bold;">
                                             <span id="tds">0.00</span>
@@ -354,11 +354,11 @@
                                         <div class="col-xs-4" style="padding: 0;">
                                             <div class="btn-group-vertical btn-block">
                                                 <button type="button" class="btn btn-warning btn-block btn-flat"
-                                                id="suspend">
+                                                        id="suspend">
                                                     <?=lang('suspend'); ?>
                                                 </button>
                                                 <button type="button" class="btn btn-danger btn-block btn-flat"
-                                                id="reset">
+                                                        id="reset">
                                                     <?= lang('cancel'); ?>
                                                 </button>
                                             </div>
@@ -392,7 +392,7 @@
 
                                 <div id="payment-con">
                                     <?php for ($i = 1; $i <= 5; $i++) {
-                                    ?>
+                                        ?>
                                         <input type="hidden" name="amount[]" id="amount_val_<?=$i?>" value=""/>
                                         <input type="hidden" name="balance_amount[]" id="balance_amount_<?=$i?>" value=""/>
                                         <input type="hidden" name="paid_by[]" id="paid_by_val_<?=$i?>" value="cash"/>
@@ -405,8 +405,8 @@
                                         <input type="hidden" name="cc_type[]" id="cc_type_val_<?=$i?>" value=""/>
                                         <input type="hidden" name="cc_cvv2[]" id="cc_cvv2_val_<?=$i?>" value=""/>
                                         <input type="hidden" name="payment_note[]" id="payment_note_val_<?=$i?>" value=""/>
-                                    <?php
-                                }
+                                        <?php
+                                    }
                                     ?>
                                 </div>
                                 <input name="order_tax" type="hidden" value="<?=$suspend_sale ? $suspend_sale->order_tax_id : ($old_sale ? $old_sale->order_tax_id : $Settings->default_tax_rate2);?>" id="postax2">
@@ -435,14 +435,14 @@
                                                 </button>
                                             </div>
                                             <?php if ($Owner || $Admin || $GP['sales-add_gift_card']) {
-                                        ?>
-                                            <div class="btn-group">
-                                                <button style="z-index:10003;" class="btn btn-primary pos-tip" type="button" id="sellGiftCard" title="<?=lang('sell_gift_card')?>">
-                                                    <i class="fa fa-credit-card" id="addIcon"></i> <?=lang('sell_gift_card')?>
-                                                </button>
-                                            </div>
-                                            <?php
-                                    }
+                                                ?>
+                                                <div class="btn-group">
+                                                    <button style="z-index:10003;" class="btn btn-primary pos-tip" type="button" id="sellGiftCard" title="<?=lang('sell_gift_card')?>">
+                                                        <i class="fa fa-credit-card" id="addIcon"></i> <?=lang('sell_gift_card')?>
+                                                    </button>
+                                                </div>
+                                                <?php
+                                            }
                                             ?>
                                             <div class="btn-group">
                                                 <button style="z-index:10004;" class="btn btn-primary pos-tip" title="<?=lang('next')?>" type="button" id="next">
@@ -472,11 +472,11 @@
 <div id="brands-slider">
     <div id="brands-list">
         <?php
-            // for ($i = 1; $i <= 40; $i++) {
-            foreach ($brands as $brand) {
-                echo '<button id="brand-' . $brand->id . "\" type=\"button\" value='" . $brand->id . "' class=\"btn-prni brand\" ><img src=\"assets/uploads/thumbs/" . ($brand->image ? $brand->image : 'no_image.png') . "\" class='img-rounded img-thumbnail' /><span>" . $brand->name . '</span></button>';
-            }
-            // }
+        // for ($i = 1; $i <= 40; $i++) {
+        foreach ($brands as $brand) {
+            echo '<button id="brand-' . $brand->id . "\" type=\"button\" value='" . $brand->id . "' class=\"btn-prni brand\" ><img src=\"assets/uploads/thumbs/" . ($brand->image ? $brand->image : 'no_image.png') . "\" class='img-rounded img-thumbnail' /><span>" . $brand->name . '</span></button>';
+        }
+        // }
         ?>
     </div>
 </div>
@@ -484,11 +484,11 @@
     <!--<button type="button" class="close open-category"><i class="fa fa-2x">&times;</i></button>-->
     <div id="category-list">
         <?php
-            //for ($i = 1; $i <= 40; $i++) {
-            foreach ($categories as $category) {
-                echo '<button id="category-' . $category->id . "\" type=\"button\" value='" . $category->id . "' class=\"btn-prni category\" ><img src=\"assets/uploads/thumbs/" . ($category->image ? $category->image : 'no_image.png') . "\" class='img-rounded img-thumbnail' /><span>" . $category->name . '</span></button>';
-            }
-            //}
+        //for ($i = 1; $i <= 40; $i++) {
+        foreach ($categories as $category) {
+            echo '<button id="category-' . $category->id . "\" type=\"button\" value='" . $category->id . "' class=\"btn-prni category\" ><img src=\"assets/uploads/thumbs/" . ($category->image ? $category->image : 'no_image.png') . "\" class='img-rounded img-thumbnail' /><span>" . $category->name . '</span></button>';
+        }
+        //}
         ?>
     </div>
 </div>
@@ -496,11 +496,11 @@
     <!--<button type="button" class="close open-category"><i class="fa fa-2x">&times;</i></button>-->
     <div id="subcategory-list">
         <?php
-            if (!empty($subcategories)) {
-                foreach ($subcategories as $category) {
-                    echo '<button id="subcategory-' . $category->id . "\" type=\"button\" value='" . $category->id . "' class=\"btn-prni subcategory\" ><img src=\"assets/uploads/thumbs/" . ($category->image ? $category->image : 'no_image.png') . "\" class='img-rounded img-thumbnail' /><span>" . $category->name . '</span></button>';
-                }
+        if (!empty($subcategories)) {
+            foreach ($subcategories as $category) {
+                echo '<button id="subcategory-' . $category->id . "\" type=\"button\" value='" . $category->id . "' class=\"btn-prni subcategory\" ><img src=\"assets/uploads/thumbs/" . ($category->image ? $category->image : 'no_image.png') . "\" class='img-rounded img-thumbnail' /><span>" . $category->name . '</span></button>';
             }
+        }
         ?>
     </div>
 </div>
@@ -510,46 +510,46 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true"><i
-                            class="fa fa-2x">&times;</i></span><span class="sr-only"><?=lang('close');?></span></button>
+                                class="fa fa-2x">&times;</i></span><span class="sr-only"><?=lang('close');?></span></button>
                 <h4 class="modal-title" id="payModalLabel"><?=lang('finalize_sale');?></h4>
             </div>
             <div class="modal-body" id="payment_content">
                 <div class="row">
                     <div class="col-md-10 col-sm-9">
                         <?php if ($Owner || $Admin || !$this->session->userdata('biller_id')) {
-            ?>
+                            ?>
                             <div class="form-group">
                                 <?=lang('biller', 'biller'); ?>
                                 <?php
-                                    foreach ($billers as $biller) {
-                                        $btest           = ($biller->company && $biller->company != '-' ? $biller->company : $biller->name);
-                                        $bl[$biller->id] = $btest;
-                                        $posbillers[]    = ['logo' => $biller->logo, 'company' => $btest];
-                                        if ($biller->id == $pos_settings->default_biller) {
-                                            $posbiller = ['logo' => $biller->logo, 'company' => $btest];
-                                        }
+                                foreach ($billers as $biller) {
+                                    $btest           = ($biller->company && $biller->company != '-' ? $biller->company : $biller->name);
+                                    $bl[$biller->id] = $btest;
+                                    $posbillers[]    = ['logo' => $biller->logo, 'company' => $btest];
+                                    if ($biller->id == $pos_settings->default_biller) {
+                                        $posbiller = ['logo' => $biller->logo, 'company' => $btest];
                                     }
-            echo form_dropdown('biller', $bl, ($_POST['biller'] ?? $pos_settings->default_biller), 'class="form-control" id="posbiller" required="required"'); ?>
+                                }
+                                echo form_dropdown('biller', $bl, ($_POST['biller'] ?? $pos_settings->default_biller), 'class="form-control" id="posbiller" required="required"'); ?>
                             </div>
-                        <?php
-        } else {
-            $biller_input = [
-                'type'  => 'hidden',
-                'name'  => 'biller',
-                'id'    => 'posbiller',
-                'value' => $this->session->userdata('biller_id'),
-            ];
+                            <?php
+                        } else {
+                            $biller_input = [
+                                'type'  => 'hidden',
+                                'name'  => 'biller',
+                                'id'    => 'posbiller',
+                                'value' => $this->session->userdata('biller_id'),
+                            ];
 
-            echo form_input($biller_input);
+                            echo form_input($biller_input);
 
-            foreach ($billers as $biller) {
-                $btest        = ($biller->company && $biller->company != '-' ? $biller->company : $biller->name);
-                $posbillers[] = ['logo' => $biller->logo, 'company' => $btest];
-                if ($biller->id == $this->session->userdata('biller_id')) {
-                    $posbiller = ['logo' => $biller->logo, 'company' => $btest];
-                }
-            }
-        }
+                            foreach ($billers as $biller) {
+                                $btest        = ($biller->company && $biller->company != '-' ? $biller->company : $biller->name);
+                                $posbillers[] = ['logo' => $biller->logo, 'company' => $btest];
+                                if ($biller->id == $this->session->userdata('biller_id')) {
+                                    $posbiller = ['logo' => $biller->logo, 'company' => $btest];
+                                }
+                            }
+                        }
                         ?>
                         <div class="form-group">
                             <div class="row">
@@ -577,11 +577,11 @@
                                             <div class="form-group">
                                                 <?=lang('paying_by', 'paid_by_1');?>
                                                 <select name="paid_by[]" id="paid_by_1" class="form-control paid_by">
-                                                    <?php foreach($payment_methods as $value => $method) {?>
+                                                    <?php foreach($payment_methods as $value => $payment_method) {?>
                                                         <option value="<?= $value ?>">
-                                                            <?= $method ?>
+                                                            <?= $payment_method ?>
                                                         </option>
-                                                    <?php }?>
+                                                    <?php } ?>
                                                 </select>
                                             </div>
                                         </div>
@@ -623,10 +623,10 @@
                                                                     placeholder="<?=lang('card_type')?>">
                                                                 <option value="Visa"><?=lang('Visa');?></option>
                                                                 <option
-                                                                    value="MasterCard"><?=lang('MasterCard');?></option>
+                                                                        value="MasterCard"><?=lang('MasterCard');?></option>
                                                                 <option value="Amex"><?=lang('Amex');?></option>
                                                                 <option
-                                                                    value="Discover"><?=lang('Discover');?></option>
+                                                                        value="Discover"><?=lang('Discover');?></option>
                                                             </select>
                                                             <!-- <input type="text" id="pcc_type_1" class="form-control" placeholder="<?=lang('card_type')?>" />-->
                                                         </div>
@@ -674,7 +674,7 @@
                         </div>
                         <div id="multi-payment"></div>
                         <button type="button" class="btn btn-primary col-md-12 addButton"><i
-                                class="fa fa-plus"></i> <?=lang('add_more_payments')?></button>
+                                    class="fa fa-plus"></i> <?=lang('add_more_payments')?></button>
                         <div style="clear:both; height:15px;"></div>
                         <div class="font16">
                             <table class="table table-bordered table-condensed table-striped" style="margin-bottom: 0;">
@@ -703,9 +703,9 @@
                             <button type="button" class="btn btn-lg btn-info quick-cash" id="quick-payable">0.00
                             </button>
                             <?php
-                                foreach (lang('quick_cash_notes') as $cash_note_amount) {
-                                    echo '<button type="button" class="btn btn-lg btn-warning quick-cash">' . $cash_note_amount . '</button>';
-                                }
+                            foreach (lang('quick_cash_notes') as $cash_note_amount) {
+                                echo '<button type="button" class="btn btn-lg btn-warning quick-cash">' . $cash_note_amount . '</button>';
+                            }
                             ?>
                             <!-- <button type="button" class="btn btn-lg btn-danger"
                                     id="clear-cash-notes"><?=lang('clear');?></button> -->
@@ -756,7 +756,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true"><i
-                            class="fa fa-2x">&times;</i></span><span class="sr-only"><?=lang('close');?></span></button>
+                                class="fa fa-2x">&times;</i></span><span class="sr-only"><?=lang('close');?></span></button>
                 <h4 class="modal-title" id="prModalLabel"></h4>
             </div>
             <div class="modal-body" id="pr_popover_content">
@@ -767,14 +767,14 @@
                             <label class="col-sm-4 control-label"><?=lang('product_tax')?></label>
                             <div class="col-sm-8">
                                 <?php
-                                    $tr[''] = '';
-                        foreach ($tax_rates as $tax) {
-                            $tr[$tax->id] = $tax->name;
-                        }
-                        echo form_dropdown('ptax', $tr, '', 'id="ptax" class="form-control pos-input-tip" style="width:100%;"'); ?>
+                                $tr[''] = '';
+                                foreach ($tax_rates as $tax) {
+                                    $tr[$tax->id] = $tax->name;
+                                }
+                                echo form_dropdown('ptax', $tr, '', 'id="ptax" class="form-control pos-input-tip" style="width:100%;"'); ?>
                             </div>
                         </div>
-                    <?php
+                        <?php
                     } ?>
                     <?php if ($Settings->product_serial) {
                         ?>
@@ -784,7 +784,7 @@
                                 <input type="text" class="form-control kb-text" id="pserial">
                             </div>
                         </div>
-                    <?php
+                        <?php
                     } ?>
                     <div class="form-group">
                         <label for="pquantity" class="col-sm-4 control-label"><?=lang('quantity')?></label>
@@ -812,7 +812,7 @@
                                 <input type="text" class="form-control kb-pad" id="pdiscount">
                             </div>
                         </div>
-                    <?php
+                        <?php
                     } ?>
                     <div class="form-group">
                         <label for="pprice" class="col-sm-4 control-label"><?=lang('unit_price')?></label>
@@ -845,7 +845,7 @@
                                 <input type="text" class="form-control" id="padiscount" placeholder="<?= lang('nearest_subtotal'); ?>">
                             </div>
                         </div>
-                    <?php
+                        <?php
                     } ?>
                     <input type="hidden" id="punit_price" value=""/>
                     <input type="hidden" id="old_tax" value=""/>
@@ -866,7 +866,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i
-                        class="fa fa-2x">&times;</i></button>
+                            class="fa fa-2x">&times;</i></button>
                 <h4 class="modal-title" id="myModalLabel"><?=lang('sell_gift_card');?></h4>
             </div>
             <div class="modal-body">
@@ -917,7 +917,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true"><i
-                            class="fa fa-2x">&times;</i></span><span class="sr-only"><?=lang('close');?></span></button>
+                                class="fa fa-2x">&times;</i></span><span class="sr-only"><?=lang('close');?></span></button>
                 <h4 class="modal-title" id="mModalLabel"><?=lang('add_product_manually')?></h4>
             </div>
             <div class="modal-body" id="pr_popover_content">
@@ -943,14 +943,14 @@
 
                             <div class="col-sm-8">
                                 <?php
-                                    $tr[''] = '';
-                        foreach ($tax_rates as $tax) {
-                            $tr[$tax->id] = $tax->name;
-                        }
-                        echo form_dropdown('mtax', $tr, '', 'id="mtax" class="form-control pos-input-tip" style="width:100%;"'); ?>
+                                $tr[''] = '';
+                                foreach ($tax_rates as $tax) {
+                                    $tr[$tax->id] = $tax->name;
+                                }
+                                echo form_dropdown('mtax', $tr, '', 'id="mtax" class="form-control pos-input-tip" style="width:100%;"'); ?>
                             </div>
                         </div>
-                    <?php
+                        <?php
                     }
                     ?>
                     <div class="form-group">
@@ -970,7 +970,7 @@
                                 <input type="text" class="form-control kb-pad" id="mdiscount">
                             </div>
                         </div>
-                    <?php
+                        <?php
                     }
                     ?>
                     <div class="form-group">
@@ -1129,19 +1129,19 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i
-                        class="fa fa-2x">&times;</i></button>
+                            class="fa fa-2x">&times;</i></button>
                 <h4 class="modal-title" id="txModalLabel"><?=lang('edit_order_tax');?></h4>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <?=lang('order_tax', 'order_tax_input');?>
-<?php
-    $tr[''] = '';
-    foreach ($tax_rates as $tax) {
-        $tr[$tax->id] = $tax->name;
-    }
-    echo form_dropdown('order_tax_input', $tr, '', 'id="order_tax_input" class="form-control pos-input-tip" style="width:100%;"');
-?>
+                    <?php
+                    $tr[''] = '';
+                    foreach ($tax_rates as $tax) {
+                        $tr[$tax->id] = $tax->name;
+                    }
+                    echo form_dropdown('order_tax_input', $tr, '', 'id="order_tax_input" class="form-control pos-input-tip" style="width:100%;"');
+                    ?>
                 </div>
 
             </div>
@@ -1157,7 +1157,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i
-                        class="fa fa-2x">&times;</i></button>
+                            class="fa fa-2x">&times;</i></button>
                 <h4 class="modal-title" id="susModalLabel"><?=lang('suspend_sale');?></h4>
             </div>
             <div class="modal-body">
@@ -1193,22 +1193,22 @@
 </div>
 <?php unset($Settings->setting_id, $Settings->smtp_user, $Settings->smtp_pass, $Settings->smtp_port, $Settings->update, $Settings->reg_ver, $Settings->allow_reg, $Settings->default_email, $Settings->mmode, $Settings->timezone, $Settings->restrict_calendar, $Settings->restrict_user, $Settings->auto_reg, $Settings->reg_notification, $Settings->protocol, $Settings->mailpath, $Settings->smtp_crypto, $Settings->corn, $Settings->customer_group, $Settings->envato_username, $Settings->purchase_code);?>
 <script type="text/javascript">
-var site = <?=json_encode(['url' => base_url(), 'base_url' => admin_url('/'), 'assets' => $assets, 'settings' => $Settings, 'dateFormats' => $dateFormats])?>, pos_settings = <?=json_encode($pos_settings);?>;
-var lang = {
-    unexpected_value: '<?=lang('unexpected_value');?>',
-    select_above: '<?=lang('select_above');?>',
-    r_u_sure: '<?=lang('r_u_sure');?>',
-    bill: '<?=lang('bill');?>',
-    order: '<?=lang('order');?>',
-    total: '<?=lang('total');?>',
-    items: '<?=lang('items');?>',
-    discount: '<?=lang('discount');?>',
-    order_tax: '<?=lang('order_tax');?>',
-    grand_total: '<?=lang('grand_total');?>',
-    total_payable: '<?=lang('total_payable');?>',
-    rounding: '<?=lang('rounding');?>',
-    merchant_copy: '<?=lang('merchant_copy');?>'
-};
+    var site = <?=json_encode(['url' => base_url(), 'base_url' => admin_url('/'), 'assets' => $assets, 'settings' => $Settings, 'dateFormats' => $dateFormats])?>, pos_settings = <?=json_encode($pos_settings);?>;
+    var lang = {
+        unexpected_value: '<?=lang('unexpected_value');?>',
+        select_above: '<?=lang('select_above');?>',
+        r_u_sure: '<?=lang('r_u_sure');?>',
+        bill: '<?=lang('bill');?>',
+        order: '<?=lang('order');?>',
+        total: '<?=lang('total');?>',
+        items: '<?=lang('items');?>',
+        discount: '<?=lang('discount');?>',
+        order_tax: '<?=lang('order_tax');?>',
+        grand_total: '<?=lang('grand_total');?>',
+        total_payable: '<?=lang('total_payable');?>',
+        rounding: '<?=lang('rounding');?>',
+        merchant_copy: '<?=lang('merchant_copy');?>'
+    };
 </script>
 
 <script type="text/javascript">
@@ -1218,10 +1218,10 @@ var lang = {
         product_tax = 0, invoice_tax = 0, product_discount = 0, order_discount = 0, total_discount = 0, total = 0, total_paid = 0, grand_total = 0,
         KB = <?=$pos_settings->keyboard?>, tax_rates =<?php echo json_encode($tax_rates); ?>;
     var protect_delete = <?php if (!$Owner && !$Admin) {
-    echo $pos_settings->pin_code ? '1' : '0';
-} else {
-    echo '0';
-} ?>, billers = <?= json_encode($posbillers); ?>, biller = <?= json_encode($posbiller); ?>;
+        echo $pos_settings->pin_code ? '1' : '0';
+    } else {
+        echo '0';
+    } ?>, billers = <?= json_encode($posbillers); ?>, biller = <?= json_encode($posbiller); ?>;
     var username = '<?=$this->session->userdata('username');?>', order_data = '', bill_data = '';
 
     function widthFunctions(e) {
@@ -1243,25 +1243,25 @@ var lang = {
         });
         $('textarea').keydown(function (e) {
             if (e.which == 13) {
-               var s = $(this).val();
-               $(this).val(s+'\n').focus();
-               e.preventDefault();
-               return false;
+                var s = $(this).val();
+                $(this).val(s+'\n').focus();
+                e.preventDefault();
+                return false;
             }
         });
         <?php if ($sid) {
-    ?>
+        ?>
         localStorage.setItem('positems', JSON.stringify(<?=$items; ?>));
         <?php
-} ?>
+        } ?>
 
         <?php if ($oid) {
         ?>
         localStorage.setItem('positems', JSON.stringify(<?=$items; ?>));
         <?php
-    } ?>
+        } ?>
 
-<?php if ($this->session->userdata('remove_posls')) {
+        <?php if ($this->session->userdata('remove_posls')) {
         ?>
         if (localStorage.getItem('positems')) {
             localStorage.removeItem('positems');
@@ -1297,11 +1297,11 @@ var lang = {
             localStorage.removeItem('staffnote');
         }
         <?php $this->sma->unset_data('remove_posls');
-    }
+        }
         ?>
         widthFunctions();
         <?php if ($suspend_sale) {
-            ?>
+        ?>
         localStorage.setItem('postax2', '<?=$suspend_sale->order_tax_id; ?>');
         localStorage.setItem('posdiscount', '<?=$suspend_sale->order_discount_id; ?>');
         localStorage.setItem('poswarehouse', '<?=$suspend_sale->warehouse_id; ?>');
@@ -1312,7 +1312,7 @@ var lang = {
         }
         ?>
         <?php if ($old_sale) {
-            ?>
+        ?>
         localStorage.setItem('postax2', '<?=$old_sale->order_tax_id; ?>');
         localStorage.setItem('posdiscount', '<?=$old_sale->order_discount_id; ?>');
         localStorage.setItem('poswarehouse', '<?=$old_sale->warehouse_id; ?>');
@@ -1322,8 +1322,8 @@ var lang = {
         <?php
         }
         ?>
-<?php if ($this->input->get('customer')) {
-            ?>
+        <?php if ($this->input->get('customer')) {
+        ?>
         if (!localStorage.getItem('positems')) {
             localStorage.setItem('poscustomer', <?=$this->input->get('customer'); ?>);
         } else if (!localStorage.getItem('poscustomer')) {
@@ -1331,7 +1331,7 @@ var lang = {
         }
         <?php
         } else {
-            ?>
+        ?>
         if (!localStorage.getItem('poscustomer')) {
             localStorage.setItem('poscustomer', <?=$customer->id; ?>);
         }
@@ -1438,7 +1438,7 @@ var lang = {
         });
 
         <?php for ($i = 1; $i <= 5; $i++) {
-            ?>
+        ?>
         $('#paymentModal').on('change', '#amount_<?=$i?>', function (e) {
             $('#amount_val_<?=$i?>').val($(this).val());
         });
@@ -1486,7 +1486,7 @@ var lang = {
             suspend.html('<input type="hidden" name="delete_id" value="<?php echo $sid; ?>" />');
             suspend.appendTo("#hidesuspend");
             <?php
-        }
+            }
             ?>
             var twt = formatDecimal((total + invoice_tax) - order_discount + shipping);
             if (count == 1) {
@@ -1495,14 +1495,14 @@ var lang = {
             }
             gtotal = formatDecimal(twt);
             <?php if ($pos_settings->rounding) {
-                ?>
+            ?>
             round_total = roundNumber(gtotal, <?=$pos_settings->rounding?>);
             var rounding = formatDecimal(0 - (gtotal - round_total));
             $('#twt').text(formatMoney(round_total) + ' (' + formatMoney(rounding) + ')');
             $('#quick-payable').text(round_total);
             <?php
             } else {
-                ?>
+            ?>
             $('#twt').text(formatMoney(gtotal));
             $('#quick-payable').text(gtotal);
             <?php
@@ -1616,14 +1616,14 @@ var lang = {
             });
             $('#total_paying').text(formatMoney(total_paying));
             <?php if ($pos_settings->rounding) {
-                ?>
+            ?>
             $('#balance').text(formatMoney(total_paying - round_total));
             $('#balance_' + pi).val(formatDecimal(total_paying - round_total));
             total_paid = total_paying;
             grand_total = round_total;
             <?php
             } else {
-                ?>
+            ?>
             $('#balance').text(formatMoney(total_paying - gtotal));
             $('#balance_' + pi).val(formatDecimal(total_paying - gtotal));
             total_paid = total_paying;
@@ -1709,8 +1709,8 @@ var lang = {
         });
 
         <?php if ($pos_settings->tooltips) {
-                echo '$(".pos-tip").tooltip();';
-            }
+        echo '$(".pos-tip").tooltip();';
+    }
         ?>
         // $('#posTable').stickyTableHeaders({fixedOffset: $('#product-list')});
         $('#posTable').stickyTableHeaders({scrollableArea: $('#product-list')});
@@ -1910,14 +1910,14 @@ var lang = {
             var p_val = $(this).val(),
                 id = $(this).attr('id');
             pa_no = id.substr(id.length - 1);
-                var total_added = 0;
-                for (let index = 1; index < 6; index++) {
-                    if (pa_no != index) {
-                        total_added += parseFloat($('#amount_'+index).val() ? $('#amount_'+index).val() : 0);
-                    }
+            var total_added = 0;
+            for (let index = 1; index < 6; index++) {
+                if (pa_no != index) {
+                    total_added += parseFloat($('#amount_'+index).val() ? $('#amount_'+index).val() : 0);
                 }
-                var bal = parseFloat(parseFloat(grand_total) - parseFloat(total_added));
-                $('#amount_' + pa_no).val(bal);
+            }
+            var bal = parseFloat(parseFloat(grand_total) - parseFloat(total_added));
+            $('#amount_' + pa_no).val(bal);
             $('#rpaidby').val(p_val);
             if (p_val == 'cash' || p_val == 'other') {
                 $('.pcheque_' + pa_no).hide();
@@ -1984,14 +1984,14 @@ var lang = {
             } else {
                 suspend = $('<span></span>');
                 <?php if ($sid) {
-            ?>
+                ?>
                 suspend.html('<input type="hidden" name="delete_id" value="<?php echo $sid; ?>" /><input type="hidden" name="suspend" value="yes" /><input type="hidden" name="suspend_note" value="' + ref + '" />');
                 <?php
-        } else {
-            ?>
+                } else {
+                ?>
                 suspend.html('<input type="hidden" name="suspend" value="yes" /><input type="hidden" name="suspend_note" value="' + ref + '" />');
                 <?php
-        }
+                }
                 ?>
                 suspend.appendTo("#hidesuspend");
                 $('#total_items').val(count - 1);
@@ -2008,14 +2008,14 @@ var lang = {
                 return false;
             }
             <?php if ($pos_settings->remote_printing != 1) {
-                    ?>
-                printOrder();
+            ?>
+            printOrder();
             <?php
-                } else {
-                    ?>
-                Popup($('#order_tbl').html());
+            } else {
+            ?>
+            Popup($('#order_tbl').html());
             <?php
-                } ?>
+            } ?>
         });
         $('#print_bill').click(function () {
             if (count == 1) {
@@ -2023,14 +2023,14 @@ var lang = {
                 return false;
             }
             <?php if ($pos_settings->remote_printing != 1) {
-                    ?>
-                printBill();
+            ?>
+            printBill();
             <?php
-                } else {
-                    ?>
-                Popup($('#bill_tbl').html());
+            } else {
+            ?>
+            Popup($('#bill_tbl').html());
             <?php
-                } ?>
+            } ?>
         });
     });
 
@@ -2040,7 +2040,7 @@ var lang = {
             $(".alert").hide('blind', {}, 500)
         }, 15000);
         <?php if ($pos_settings->display_time) {
-                    ?>
+        ?>
         var now = new moment();
         $('#display_time').text(now.format((site.dateFormats.js_sdate).toUpperCase() + " HH:mm"));
         setInterval(function () {
@@ -2048,11 +2048,11 @@ var lang = {
             $('#display_time').text(now.format((site.dateFormats.js_sdate).toUpperCase() + " HH:mm"));
         }, 1000);
         <?php
-                }
+        }
         ?>
     });
     <?php if ($pos_settings->remote_printing == 1) {
-            ?>
+    ?>
     function Popup(data) {
         var mywindow = window.open('', 'sma_pos_print', 'height=500,width=300');
         mywindow.document.write('<html><head><title>Print</title>');
@@ -2065,15 +2065,15 @@ var lang = {
         return true;
     }
     <?php
-        }
+    }
     ?>
 </script>
 <?php
-    $s2_lang_file = read_file('./assets/config_dumps/s2_lang.js');
-    foreach (lang('select2_lang') as $s2_key => $s2_line) {
-        $s2_data[$s2_key] = str_replace(['{', '}'], ['"+', '+"'], $s2_line);
-    }
-    $s2_file_date = $this->parser->parse_string($s2_lang_file, $s2_data, true);
+$s2_lang_file = read_file('./assets/config_dumps/s2_lang.js');
+foreach (lang('select2_lang') as $s2_key => $s2_line) {
+    $s2_data[$s2_key] = str_replace(['{', '}'], ['"+', '+"'], $s2_line);
+}
+$s2_file_date = $this->parser->parse_string($s2_lang_file, $s2_data, true);
 ?>
 <script type="text/javascript" src="<?=$assets?>js/bootstrap.min.js"></script>
 <script type="text/javascript" src="<?=$assets?>js/jquery-ui.min.js"></script>
@@ -2094,8 +2094,8 @@ if (!$pos_settings->remote_printing) {
         function printOrder() {
             $.each(order_printers, function() {
                 var socket_data = { 'printer': this,
-                'logo': (biller && biller.logo ? biller.logo : ''),
-                'text': order_data };
+                    'logo': (biller && biller.logo ? biller.logo : ''),
+                    'text': order_data };
                 $.get('<?= admin_url('pos/p/order'); ?>', {data: JSON.stringify(socket_data)});
             });
             return false;
@@ -2111,9 +2111,9 @@ if (!$pos_settings->remote_printing) {
             return false;
         }
     </script>
-    <?php
+<?php
 } elseif ($pos_settings->remote_printing == 2) {
-        ?>
+?>
     <script src="<?= $assets ?>js/socket.io.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         socket = io.connect('http://localhost:6440', {'reconnection': false});
@@ -2143,9 +2143,9 @@ if (!$pos_settings->remote_printing) {
             }
         }
     </script>
-    <?php
-    } elseif ($pos_settings->remote_printing == 3) {
-        ?>
+<?php
+} elseif ($pos_settings->remote_printing == 3) {
+?>
     <script type="text/javascript">
         try {
             socket = new WebSocket('ws://127.0.0.1:6441');
@@ -2168,20 +2168,20 @@ if (!$pos_settings->remote_printing) {
                 if (order_printers == '') {
 
                     var socket_data = { 'printer': false, 'order': true,
-                    'logo': (biller && biller.logo ? site.url+'assets/uploads/logos/'+biller.logo : ''),
-                    'text': order_data };
+                        'logo': (biller && biller.logo ? site.url+'assets/uploads/logos/'+biller.logo : ''),
+                        'text': order_data };
                     socket.send(JSON.stringify({type: 'print-receipt', data: socket_data}));
 
                 } else {
 
-                $.each(order_printers, function() {
-                    var socket_data = { 'printer': this,
-                    'logo': (biller && biller.logo ? site.url+'assets/uploads/logos/'+biller.logo : ''),
-                    'text': order_data };
-                    socket.send(JSON.stringify({type: 'print-receipt', data: socket_data}));
-                });
+                    $.each(order_printers, function() {
+                        var socket_data = { 'printer': this,
+                            'logo': (biller && biller.logo ? site.url+'assets/uploads/logos/'+biller.logo : ''),
+                            'text': order_data };
+                        socket.send(JSON.stringify({type: 'print-receipt', data: socket_data}));
+                    });
 
-            }
+                }
                 return false;
             } else {
                 bootbox.alert('<?= lang('pos_print_error'); ?>');
@@ -2205,12 +2205,12 @@ if (!$pos_settings->remote_printing) {
         }
     </script>
     <?php
-    }
+}
 ?>
 <script type="text/javascript">
-$('.sortable_table tbody').sortable({
-    containerSelector: 'tr'
-});
+    $('.sortable_table tbody').sortable({
+        containerSelector: 'tr'
+    });
 </script>
 <script type="text/javascript" charset="UTF-8"><?=$s2_file_date?></script>
 <div id="ajaxCall"><i class="fa fa-spinner fa-pulse"></i></div>

@@ -210,6 +210,8 @@ class Fiscal extends MY_Controller
 
     public function send_requests($endpoint = '', $data = [])
     {
+        $this->saveLastNumbers();
+
         if(isset($this->post->api_url)) {
             if(strpos($this->post->api_url, 'get_download_configs') !== false) {
                 $data = $this->returnApiProps($this->post->api_url, (array) $this->post);
@@ -575,15 +577,15 @@ class Fiscal extends MY_Controller
                         ]);
 
                         echo '
-                        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-                        <script>
-                            window.onload = function() {
-                                swal("Erro ao gerar NF!", "[ '. $m->protNFe->infProt->cStat .' ] :  '. $m->protNFe->infProt->xMotivo . ' \n" , "error").then(()=>{
-                                    window.close();
-                                });
-                            };
-                        </script>
-                    ';
+                            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                            <script>
+                                window.onload = function() {
+                                    swal("Erro ao gerar NF!", "[ '. $m->protNFe->infProt->cStat .' ] :  '. $m->protNFe->infProt->xMotivo . ' \n" , "error").then(()=>{
+                                        window.close();
+                                    });
+                                };
+                            </script>
+                        ';
 
                     } else if($res == 'Apro'){
                         echo '
@@ -614,8 +616,7 @@ class Fiscal extends MY_Controller
                         <script>
                             window.onload = function() {
                               swal("Sucesso", "NF-e gerada com sucesso RECIBO: '.$recibo.'", "success").then(() => {
-                                  window.open(window.location.origin + "/generate/danfe/?val[]='.$sale->id.'");
-                                  window.close();
+                                  window.location.href = window.location.origin + "/generate/danfe/?val[]='.$sale->id.'";
                               });
                             };                            
                         </script>
@@ -878,8 +879,7 @@ class Fiscal extends MY_Controller
                         <script>
                             window.onload = function() {
                                 swal("Sucesso", "Correção enviada com sucesso", "success").then(()=>{
-                                    window.open(window.location.origin + "/print/cce/?sequencia_cce='. ((int)$sale->sequencia_cce + 1) .'&chave='.$sale->chave.'");
-                                    window.close();
+                                    window.location.href = window.location.origin + "/print/cce/?sequencia_cce='. ((int)$sale->sequencia_cce + 1) .'&chave='.$sale->chave.'";
                                 });
                             };
                         </script>
@@ -1002,8 +1002,7 @@ class Fiscal extends MY_Controller
                 if(!$res->error) {
                     echo '
                         <script>
-                            window.open("'.$this->api_url.'" + "/download_xml/?'.http_build_query(['chave' => $sale->chave]).'");
-                            window.close();
+                            window.location.href = "'.$this->api_url.'" + "/download_xml/?'.http_build_query(['chave' => $sale->chave]).'";
                         </script>
                     ';
                 } else {
@@ -1034,11 +1033,10 @@ class Fiscal extends MY_Controller
                 if(!$res->error) {
                     echo '
                         <script>
-                            window.open("'.$this->api_url.'" + "/download_xml_zip/?'.http_build_query([
+                            window.location.href = "'.$this->api_url.'" + "/download_xml_zip/?'.http_build_query([
                                 'xmls' => $xml_to_download,
                                 'api_token' => $this->api_token
-                            ]).'");
-                            window.close();
+                            ]).'";
                         </script>
                     ';
                 } else {
@@ -1237,8 +1235,7 @@ class Fiscal extends MY_Controller
 
             echo '
                 <script>
-                    window.open("'.$this->api_url.'" + "/send_nfe_xml/?'.http_build_query(['sales_to_pdf' => $salesToPdf]).'");
-                    window.close();
+                    window.location.href = "'.$this->api_url.'" + "/send_nfe_xml/?'.http_build_query(['sales_to_pdf' => $salesToPdf]).'";
                 </script>
             ';
 
@@ -1253,6 +1250,222 @@ class Fiscal extends MY_Controller
                     };
                 </script>
             ';
+        }
+    }
+
+    public function printNfce()
+    {
+        if(isset($this->get->chave)) {
+            $data = [
+                'api_token' => $this->api_token,
+                'chave' => $this->get->chave
+            ];
+
+            $res = file_get_contents($this->api_url . '/print_nfce/?' . http_build_query($data));
+
+            if(!$res->error) {
+                header('Content-type: application/pdf');
+                echo file_get_contents($this->api_url . '/print_nfce/?' . http_build_query($data));
+            } else {
+                echo '
+                    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                    <script>
+                        window.onload = function() {
+                            swal("Erro ao imprimir NFCe", "'.$res->message.'", "error").then(()=>{
+                                window.close();
+                            });
+                        };
+                    </script>
+                ';
+            }
+        } else {
+            echo '
+                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <script>
+                    window.onload = function() {
+                        swal("Erro ao imprimir NFCe", "Chave não informada", "error").then(()=>{
+                            window.close();
+                        });
+                    };
+                </script>
+            ';
+        }
+    }
+
+    public function getNFce()
+    {
+        $lastId = $this->sales_model->getLastSaleId();
+        $lastNce = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfce;
+
+        $data = [
+            'lastId' => $lastId < $lastNce ? $lastNce : $lastId,
+            'cpf' => $this->input->post('cpf') ?? null,
+            'nome' => '',
+            'cliente' => [
+                'cidade' => [
+                    'uf' => ''
+                ]
+            ],
+            'produtos' => $this->nfe_model->getAll(),
+            'desconto' => $this->sales_model->getSale($lastId)->order_discount,
+            'valor_total' => $this->sales_model->getSale($lastId)->grand_total,
+            'troco' => $this->sales_model->getSale($lastId)->paid - $this->sales_model->getSale($lastId)->grand_total,
+            'tipo_pagamento' => $this->nfe_model->getAll()[0]->payment_method,
+            'estado' => $this->sales_model->getSale($lastId)->estado,
+            'natureza' => [
+                "natureza" => $this->returnApiProps('/get_issuer')->nat_op_padrao,
+                "CFOP_entrada_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_entrada_estadual,
+                "CFOP_entrada_inter_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_entrada_inter_estadual,
+                "CFOP_saida_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_saida_estadual,
+                "CFOP_saida_inter_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_saida_inter_estadual,
+            ]
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$this->api_url . '/generate_nfce');
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $res = json_decode(curl_exec($ch));
+
+        $recibo = $res->json;
+        $retorno = substr($recibo, 0, 4);
+        $mensagem = substr($recibo, 5, strlen($recibo));
+
+        if(!$res->data->error) {
+            if($retorno == 'Erro') {
+                $m = (object)json_decode($mensagem);
+
+                $this->sales_model->upSale($lastId, [
+                    'estado' => $res->data->estado
+                ]);
+
+                echo '
+                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <script>
+                    window.onload = function() {
+                        swal("Erro ao gerar NF!", "[ '. $m->protNFe->infProt->cStat .' ] :  '. $m->protNFe->infProt->xMotivo . ' \n" , "error").then(()=>{
+                            window.close();
+                        });
+                    };
+                </script>
+            ';
+            } else if($retorno == 'erro') {
+                echo '
+                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <script>
+                    window.onload = function() {
+                        swal("Erro ao gerar NF!", "WebService sefaz em manutenção, falha de comunicação SOAP" , "error").then(()=>{
+                            window.close();
+                        });
+                    };
+                </script>
+            ';
+            } else if($res == 'Apro') {
+
+                echo '
+                    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                    <script>
+                        window.onload = function() {
+                            swal("Cuidado", "Esta NF já esta aprovada, não é possível enviar novamente!", "warning").then(()=>{
+                                window.close();
+                            });
+                        };
+                    </script>
+                ';
+            } else {
+
+                $this->sales_model->upSale($lastId, [
+                    'estado' => $res->data->estado,
+                    'chave' => $res->data->chave,
+                    'nfcNumero' => $res->nfcNum
+                ]);
+
+                $this->nfe_model->updateLastNumber([
+                    'ultimo_num_nfce' => (int)$res->nfcNum+1
+                ]);
+
+                $this->nfe_model->truncate('products_nfe');
+
+                echo '
+                    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                    <script>
+                        window.onload = function() {
+                            swal("Sucesso", "NFCe gerada com sucesso RECIBO: '.$recibo.'", "success").then(()=>{
+                                window.location.href = window.location.origin + "/print/nfce/?chave='.$res->data->chave.'";
+                            });
+                        };
+                    </script>
+                ';
+            }
+        } else {
+
+            echo '
+                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <script>
+                    window.onload = function() {
+                        swal("Algo errado", "Erro ao enviar NFC-e", "error").then(()=>{
+                            window.close();
+                        });
+                    };
+                </script>
+            ';
+        }
+    }
+
+    public function saveLastNumbers()
+    {
+        $this->nfe_model->updateLastNumber([
+            'num_serie_nfe' => $this->input->post('numero_serie_nfe') ?? null,
+            'num_serie_nfce' => $this->input->post('numero_serie_nfce') ?? null,
+            'ultimo_num_nfe' => $this->input->post('ultimo_numero_nfe') ?? null,
+            'ultimo_num_nfce' => $this->input->post('ultimo_numero_nfce') ?? null,
+            'ultimo_num_cte' => $this->input->post('ultimo_numero_cte') ?? null,
+            'ultimo_num_mdfe' => $this->input->post('ultimo_numero_mdfe') ?? null
+        ]);
+    }
+
+    public function generateCupom()
+    {
+        $sale = $this->sales_model->getSale($this->sales_model->getLastSaleId());
+        $products_id = explode(",", $sale->id_produtos);
+        $produts = [];
+
+        foreach($products_id as $id) {
+            array_push($produts, [true]);
+        }
+
+        $data = [
+            'id' => $sale->id,
+            'itens' => $produts,
+            'pedido_delivery_id' => 0,
+            'valor_total' => $sale->grand_total,
+            'dinheiro_recebido' => $sale->paid,
+            'troco' => $sale->paid - $sale->grand_total,
+            'desconto' => $sale->total_discount,
+            'acrescimo' => 0,
+            'created_at' => $sale->date,
+            'observacao' => $sale->suspend_note,
+            'api_token' => $this->api_token
+        ];
+
+        $res = file_get_contents($this->api_url . '/generate_cupom/?' . http_build_query($data));
+
+        if($res) {
+            header("Content-Type: application/pdf");
+            echo file_get_contents($this->api_url . '/generate_cupom/?' . http_build_query($data));
+        } else {
+            die('
+                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <script>
+                    window.onload = function() {
+                        swal("Algo errado", "Erro ao imprimir cupom não fiscal", "error").then(()=>{
+                            window.close();
+                        });
+                    };
+                </script>
+            ');
         }
     }
 }
