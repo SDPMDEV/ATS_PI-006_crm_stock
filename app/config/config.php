@@ -20,7 +20,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 */
 $config['base_url'] = 'http://localhost/';
 
-$config['api_url'] = 'http://127.0.0.1:8000/api';
+$config['api_url'] = $config['base_url'] . 'api_fiscal/api';
 
 $config['api_token'] = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
 

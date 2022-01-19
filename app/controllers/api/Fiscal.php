@@ -527,7 +527,7 @@ class Fiscal extends MY_Controller
                     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                     <script>
                         window.onload = function() {
-                            swal("Erro ao gerar Danfe!", "Selecione uma venda para gerar a NF \n (selecione uma única venda)", "error").then(()=>{
+                            swal("Erro ao gerar Danfe!", "Selecione uma venda para gerar o Danfe \n (selecione uma única venda)", "error").then(()=>{
                                 window.close();
                             });
                         };
@@ -539,7 +539,7 @@ class Fiscal extends MY_Controller
                 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                 <script>
                     window.onload = function() {
-                        swal("Erro ao gerar Danfe!", "Selecione uma venda para gerar a NF \n (selecione uma única venda)", "error").then(()=>{
+                        swal("Erro ao gerar Danfe!", "Selecione uma venda para gerar o Danfe \n (selecione uma única venda)", "error").then(()=>{
                             window.close();
                         });
                     };
@@ -638,7 +638,6 @@ class Fiscal extends MY_Controller
                         ],
                         'estado' => $sale->estado
                     ];
-
 
                     $ch = curl_init();
                     curl_setopt($ch, CURLOPT_URL,$this->api_url . '/generate_nf');
@@ -794,7 +793,7 @@ class Fiscal extends MY_Controller
                     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                     <script>
                         window.onload = function() {
-                            swal("Erro ao gerar NF!", "Selecione uma venda para gerar a NF \n (selecione uma única venda)", "error").then(()=>{
+                            swal("Erro ao consultar NFe!", "Selecione uma venda para consultar a NFe \n (selecione uma única venda)", "error").then(()=>{
                                 window.close();
                             });
                         };
@@ -806,7 +805,7 @@ class Fiscal extends MY_Controller
                 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                 <script>
                     window.onload = function() {
-                        swal("Erro ao gerar NF!", "Selecione uma venda para gerar a NF \n (selecione uma única venda)", "error").then(()=>{
+                        swal("Erro ao consultar NFe!", "Selecione uma venda para consultar a NFe \n (selecione uma única venda)", "error").then(()=>{
                             window.close();
                         });
                     };
@@ -1034,6 +1033,17 @@ class Fiscal extends MY_Controller
                         </script>
                     ';
                 }
+            } else {
+                echo '
+                    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                    <script>
+                        window.onload = function() {
+                            swal("Erro ao imprimir Cc-e!", "Selecione uma única venda para imprimir o Cce", "error").then(()=>{
+                                window.close();
+                            });
+                        };
+                    </script>
+                ';
             }
         } else if(isset($this->get->sequencia_cce)) {
 
@@ -1065,7 +1075,7 @@ class Fiscal extends MY_Controller
                 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                 <script>
                     window.onload = function() {
-                        swal("Erro ao baixar NFe!", "Selecione uma venda para baixar NFe \n (selecione uma única venda)", "error").then(()=>{
+                        swal("Erro ao imprimir CCe!", "Selecione uma venda para imprimir o CCe \n (selecione uma única venda)", "error").then(()=>{
                             window.close();
                         });
                     };
@@ -1196,7 +1206,7 @@ class Fiscal extends MY_Controller
                         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                         <script>
                             window.onload = function() {
-                                swal("Erro ao baixar NFe!", "'.$res->message.'", "error").then(()=>{
+                                swal("Erro ao imprimir cancela!", "'.$res->message.'", "error").then(()=>{
                                     window.close();
                                 });
                             };
@@ -1208,7 +1218,7 @@ class Fiscal extends MY_Controller
                     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                     <script>
                         window.onload = function() {
-                            swal("Erro ao baixar NFe!", "Selecione uma venda para imprimir a cancela\n (selecione uma única venda)", "error").then(()=>{
+                            swal("Erro ao imprimir cancela!", "Selecione uma venda para imprimir a cancela\n (selecione uma única venda)", "error").then(()=>{
                                 window.close();
                             });
                         };
@@ -1331,18 +1341,34 @@ class Fiscal extends MY_Controller
                 ]);
             }
 
-            echo '
-                <script>
-                    window.location.href = "'.$this->api_url.'" + "/send_nfe_xml/?'.http_build_query(['sales_to_pdf' => $salesToPdf]).'";
-                </script>
-            ';
+            $res = json_decode(file_get_contents($this->api_url . "/send_nfe_xml/?" . http_build_query(['sales_to_pdf' => $salesToPdf])));
+
+            if($res->error) {
+                echo '
+                    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                    <script>
+                        window.onload = function() {
+                            swal("Erro ao baixar xml", "'.$res->message.'", "error").then(()=>{
+                                window.close();
+                            });
+                        };
+                    </script>
+                ';
+
+            } else {
+                echo '
+                    <script>
+                        window.location.href = "'.$this->api_url.'" + "/send_nfe_xml/?'.http_build_query(['sales_to_pdf' => $salesToPdf]).'";
+                    </script>
+                ';
+            }
 
         } else {
             echo '
                 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                 <script>
                     window.onload = function() {
-                        swal("Erro ao enviar xml", "Selecione uma venda para envivar o xml", "error").then(()=>{
+                        swal("Erro ao baixar xml", "Selecione uma venda para envivar o xml", "error").then(()=>{
                             window.close();
                         });
                     };
