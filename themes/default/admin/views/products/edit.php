@@ -446,8 +446,8 @@ if (!empty($variants)) {
                         <div id="ex-suppliers"></div>
                     </div>
 
-                    <div class="form-group standart">
-                        <input name="modulo_fiscal" type="checkbox" class="checkbox" id="modulo_fiscal"/>
+                    <div>
+                        <input name="modulo_fiscal" type="checkbox" class="checkbox" id="modulo_fiscal" <?= ($productConfigs->NCM) ? 'checked' : ''?>/>
                         <label for="modulo_fiscal" class="padding05">Produto referente ao módulo fiscal</label>
 
                         <div id="fiscal_inputs" style="display: none; margin: 10px">
@@ -463,6 +463,12 @@ if (!empty($variants)) {
                                 <div class="form-group">
                                     <label for="unidade_compra"><b>Unidade de Compra</b></label>
                                     <select name="unidade_compra" id="unidade_compra" class="form-control">
+                                        <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                            <?php if($un == $productConfigs->unidade_compra) {?>
+                                                <option value="<?= $un ?>"><?= $un ?></option>
+                                            <?php }?>
+                                        <?php } ?>
+
                                         <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
                                             <option value="<?= $un ?>"><?= $un ?></option>
                                         <?php } ?>
@@ -480,7 +486,7 @@ if (!empty($variants)) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="quantidade"><b>Quantidade</b></label>
-                                    <input value="<?= $productConfigs->quantity ?>" type="number" name="quantidade" id="quantidade" class="form-control"/>
+                                    <input value="<?= $productConfigs->quantity ?>" name="quantidade" id="quantidade" class="form-control"/>
                                 </div>
                             </div>
 
@@ -503,6 +509,12 @@ if (!empty($variants)) {
                                     <label for="unidade_venda"><b>Unidade de Venda</b></label>
 
                                     <select class="form-control" name="unidade_venda" id="unidade_venda">
+                                        <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                            <?php if($un == $productConfigs->unidade_venda) {?>
+                                                <option value="<?= $un ?>"><?= $un ?></option>
+                                            <?php }?>
+                                        <?php } ?>
+
                                         <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
                                             <option value="<?= $un ?>"><?= $un ?></option>
                                         <?php } ?>
@@ -1277,6 +1289,12 @@ if (!empty($variants)) {
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7-beta.29/jquery.inputmask.min.js" integrity="sha512-Ax4+qW2rAVWrk3SU1ef/L8O0jF6vKSfaMIR3du6efzf5v/pibzDcLFx29YCeR7WphoPO4zranQFsFUf+9Rb+dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(()=>{
+        if($("#modulo_fiscal").is(":checked"))
+            $("#fiscal_inputs").show();
+    })
+</script>
 <script>
     const app = new Vue({
         el: "#app",

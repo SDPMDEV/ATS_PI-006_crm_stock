@@ -1255,9 +1255,6 @@ class Products extends MY_Controller
             $this->data['product']             = $product;
             $this->data['fiscalConfigs']       = $this->returnApiProps("/get_fiscal_settings");
             $this->data['productConfigs']      = $this->products_model->getProductConfigs($id);
-            $this->data['productConfigs']->NCM = ( strpos($this->data['productConfigs']->NCM, '.') ) === false ? $this->mask("####.##.##", $this->data['productConfigs']->NCM) : $this->data['productConfigs']->NCM;
-            $this->data['productConfigs']->CEST = ( strpos($this->data['productConfigs']->CEST, '.') === false ) ? $this->mask("##.###.##", $this->data['productConfigs']->CEST) : $this->data['productConfigs']->CEST;
-            $this->data['productConfigs']->cListServ = ( strpos($this->data['productConfigs']->cListServ, '.') === false ) ? $this->mask("##.##", $this->data['productConfigs']->cListServ) : $this->data['productConfigs']->cListServ;
             $this->data['variants']            = $this->products_model->getAllVariants();
             $this->data['subunits']            = $this->site->getUnitsByBUID($product->unit);
             $this->data['product_variants']    = $this->products_model->getProductOptions($id);
