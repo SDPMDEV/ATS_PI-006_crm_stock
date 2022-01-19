@@ -22,7 +22,7 @@ $config['base_url'] = 'http://localhost/';
 
 $config['api_url'] = $config['base_url'] . 'api_fiscal/api';
 
-$config['api_token'] = '$2y$10$k9zHL8kl3ONamH6tSIcF0Oe/WnlPPpBZ5915r3z8IUYdFuR0PDrsC';
+$config['api_token'] = '$2y$10$WN7luEUCQnWrCWsSIlFC0.MngFZ7kvXT2LQRxMcSTai.ELTm2Fbta';
 
 /*
 |--------------------------------------------------------------------------
