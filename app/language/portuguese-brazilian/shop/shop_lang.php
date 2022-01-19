@@ -284,6 +284,7 @@ $lang['item_out_of_stock']                 = 'Lamentamos, mas o produto está es
 $lang['item_stock_is_less_then_order_qty'] = 'Lamentamos, mas o estoque do produto é menor do que a quantidade solicitada.';
 $lang['payment_method']                    = 'Forma de pagamento';
 $lang['paypal']                            = 'PayPal';
+$lang['mp']                                = 'Mercado Pago';
 $lang['skrill']                            = 'Skrill';
 $lang['cod']                               = 'Pagamento na Loja';
 $lang['bank_in']                           = 'Transferência Bancária';

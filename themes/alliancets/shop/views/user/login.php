@@ -106,6 +106,14 @@
                                             </div>
                                         </div>
                                     </div>
+                                     <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <b>CPF</b>
+                                            <div class="controls">
+                                                <?= form_input('cpf', '', 'class="form-control" id="cpf"'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="clearfix"></div>
                                 </div>
                                 <?= form_submit('register', lang('register'), 'class="btn btn-primary"'); ?>

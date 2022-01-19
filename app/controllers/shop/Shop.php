@@ -354,6 +354,10 @@ class Shop extends MY_Shop_Controller
                     $this->session->set_flashdata('info', lang('order_added_make_payment'));
                     if ($this->input->post('payment_method') == 'paypal') {
                         redirect('pay/paypal/' . $sale_id);
+                    } elseif ($this->input->post('payment_method') == 'mp') {
+                        redirect('pay/mp/' . $sale_id);
+                    }elseif ($this->input->post('payment_method') == 'sicoob') {
+                        redirect('pay/sicoob/' . $sale_id);
                     } elseif ($this->input->post('payment_method') == 'skrill') {
                         redirect('pay/skrill/' . $sale_id);
                     } else {

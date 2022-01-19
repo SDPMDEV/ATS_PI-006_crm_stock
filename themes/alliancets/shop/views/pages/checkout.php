@@ -89,6 +89,28 @@
                                                         </span>
                                                     </label>
                                                     <?php
+                                                } ?> 
+
+                                                <?php if ($paypal->active) {
+                                                    ?>
+                                                    <label style="display: inline-block; width: auto;">
+                                                        <input type="radio" name="payment_method" value="mp" id="mp" required="required">
+                                                        <span>
+                                                            <i class="fa fa-paypal margin-right-md"></i> <?= lang('mp') ?>
+                                                        </span>
+                                                    </label>
+                                                    <?php
+                                                } ?>
+
+                                                <?php if ($paypal->active) {
+                                                    ?>
+                                                    <label style="display: inline-block; width: auto;">
+                                                        <input type="radio" name="payment_method" value="sicoob" id="sicoob" required="required">
+                                                        <span>
+                                                            <i class="fa fa-paypal margin-right-md"></i> <?= lang('sicoob') ?>
+                                                        </span>
+                                                    </label>
+                                                    <?php
                                                 } ?>
                                                     <?php if ($skrill->active) {
                                                     ?>

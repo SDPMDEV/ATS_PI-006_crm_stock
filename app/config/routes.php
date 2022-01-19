@@ -9,6 +9,9 @@ $route['translate_uri_dashes'] = true;
 // Shop routes
 $route['shop']                   = 'main';
 $route['shop/search']            = 'shop/shop/search';
+
+$route['cron']          = 'admin/cron';
+
 $route['shop/products']          = 'shop/shop/products';
 $route['product/(:any)']         = 'shop/shop/product/$1';
 $route['category/(:any)']        = 'shop/shop/products/$1';
@@ -19,6 +22,11 @@ $route['category/(:any)/(:any)'] = 'shop/shop/products/$1/$2';
 $route['page/(:any)'] = 'shop/shop/page/$1';
 
 // Cart routes
+$route['payment/mp']              = 'pay/tokenmp';
+
+$route['api/v1/mp/postback'] = 'pay/postback';
+
+
 $route['cart']               = 'shop/cart_ajax';
 $route['cart/(:any)']        = 'shop/cart_ajax/$1';
 $route['cart/(:any)/(:any)'] = 'shop/cart_ajax/$1/$2';

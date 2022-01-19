@@ -33,6 +33,11 @@ class Pay_model extends CI_Model
         return $this->db->get_where('paypal', ['id' => 1])->row();
     }
 
+    public function getSicoobSettings()
+    {
+        return $this->db->get_where('sicoob', ['id' => 1])->row();
+    }
+
     public function getSaleByID($id)
     {
         return $this->db->get_where('sales', ['id' => $id])->row();

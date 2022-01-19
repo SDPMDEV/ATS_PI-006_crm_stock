@@ -1,5 +1,6 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------
@@ -57,29 +58,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 | The $query_builder variables lets you determine whether or not to load
 | the query builder class.
- */
+*/
 
-$active_group = 'default';
-$query_builder = TRUE;
+$active_group  = 'default';
+$query_builder = true;
 
-$db['default'] = array(
-	'dsn' => '',
-	'hostname' => 'localhost',
-	'username' => 'dbuser',
-	'password' => 'dbpass',
-	'database' => 'dbname',
-	'dbdriver' => 'mysqli',
-	'dbprefix' => 'sma_',
-	'pconnect' => FALSE,
-	'db_debug' => FALSE,
-	'cache_on' => FALSE,
-	'cachedir' => '',
-	'char_set' => 'utf8',
-	'dbcollat' => 'utf8_general_ci',
-	'swap_pre' => '',
-	'encrypt' => FALSE,
-	'compress' => FALSE,
-	'stricton' => FALSE,
-	'failover' => array(),
-	'save_queries' => FALSE,
-);
+$db['default'] = [
+    'dsn'          => '',
+    'hostname'     => 'localhost',
+    'username'     => 'root',
+    'password'     => '321',
+    'database'     => 'sma',
+    'dbdriver'     => 'mysqli',
+    'dbprefix'     => 'sma_',
+    'pconnect'     => false,
+    'db_debug'     => true,
+    'cache_on'     => false,
+    'cachedir'     => '',
+    'char_set'     => 'utf8',
+    'dbcollat'     => 'utf8_general_ci',
+    'swap_pre'     => '',
+    'encrypt'      => false,
+    'compress'     => false,
+    'stricton'     => false,
+    'failover'     => [],
+    'save_queries' => false,
+];

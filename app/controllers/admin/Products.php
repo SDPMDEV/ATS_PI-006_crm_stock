@@ -97,6 +97,8 @@ class Products extends MY_Controller
                 'hide'              => $this->input->post('hide') ? $this->input->post('hide') : 0,
                 'second_name'       => $this->input->post('second_name'),
             ];
+            var_dump($data);
+            return;
             $warehouse_qty      = null;
             $product_attributes = null;
             $this->load->library('upload');
