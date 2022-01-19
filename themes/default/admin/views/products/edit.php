@@ -541,13 +541,23 @@ if (!empty($variants)) {
                                 <div class="form-group">
                                     <label for="cor"><b>Cor</b></label>
                                     <select name="cor" id="cor" class="form-control">
-                                        <option value="--">--</option>
-                                        <option value="Preto">Preto</option>
-                                        <option value="Branco">Branco</option>
-                                        <option value="Dourado">Dourado</option>
-                                        <option value="Vermelho">Vermelho</option>
-                                        <option value="Azul">Azul</option>
-                                        <option value="Rosa">Rosa</option>
+                                        <?php if($productConfigs->cor) {?>
+                                            <option value="<?= $productConfigs->cor ?>"><?= $productConfigs->cor ?></option>
+                                            <option value="Preto">Preto</option>
+                                            <option value="Branco">Branco</option>
+                                            <option value="Dourado">Dourado</option>
+                                            <option value="Vermelho">Vermelho</option>
+                                            <option value="Azul">Azul</option>
+                                            <option value="Rosa">Rosa</option>
+                                        <?php } else { ?>
+                                            <option value="--">--</option>
+                                            <option value="Preto">Preto</option>
+                                            <option value="Branco">Branco</option>
+                                            <option value="Dourado">Dourado</option>
+                                            <option value="Vermelho">Vermelho</option>
+                                            <option value="Azul">Azul</option>
+                                            <option value="Rosa">Rosa</option>
+                                        <?php }?>
                                     </select>
                                 </div>
                             </div>
@@ -556,6 +566,12 @@ if (!empty($variants)) {
                                 <div class="form-group">
                                     <label for="cst_CSOSN"><b>CST/CSOSN</b></label>
                                     <select class="form-control" name="cst_CSOSN" id="cst_CSOSN">
+                                        <?php foreach($fiscalConfigs->listaCSTCSOSN as $value_cstsosn => $cstsosn) { ?>
+                                            <?php if($value_cstsosn == $productConfigs->CST_CSOSN) { ?>
+                                                <option value="<?= $value_cstsosn ?>"> <?= $value_cstsosn ?> - <?= $cstsosn ?></option>
+                                            <?php }?>
+                                        <?php } ?>
+
                                         <?php foreach($fiscalConfigs->listaCSTCSOSN as $value_cstsosn => $cstsosn) { ?>
                                             <option value="<?= $value_cstsosn ?>"> <?= $value_cstsosn ?> - <?= $cstsosn ?></option>
                                         <?php } ?>
@@ -567,6 +583,14 @@ if (!empty($variants)) {
                                 <div class="form-group">
                                     <label for="cst_PIS"><b>CST/PIS</b></label>
                                     <select class="form-control" name="cst_PIS" id="cst_PIS">
+                                        <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
+                                            <?php if($value_piscofins == $productConfigs->CST_PIS) {?>
+                                                <option value="<?= $value_piscofins ?>">
+                                                    <?= $value_piscofins ?> - <?= $piscofins ?>
+                                                </option>
+                                            <?php }?>
+                                        <?php }?>
+
                                         <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
                                             <option value="<?= $value_piscofins ?>">
                                                 <?= $value_piscofins ?> - <?= $piscofins ?>
@@ -581,6 +605,14 @@ if (!empty($variants)) {
                                     <label for="cst_COFINS"><b>CST/COFINS</b></label>
                                     <select class="form-control" name="cst_COFINS" id="cst_COFINS">
                                         <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
+                                            <?php if($value_piscofins == $productConfigs->CST_COFINS) { ?>
+                                                <option value="<?= $value_piscofins ?>">
+                                                    <?= $value_piscofins ?> - <?= $piscofins ?>
+                                                </option>
+                                            <?php }?>
+                                        <?php }?>
+
+                                        <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
                                             <option value="<?= $value_piscofins ?>">
                                                 <?= $value_piscofins ?> - <?= $piscofins ?>
                                             </option>
@@ -593,6 +625,14 @@ if (!empty($variants)) {
                                 <div class="form-group">
                                     <label for="cst_IPI"><b>CST IPI</b></label>
                                     <select class="form-control" name="cst_IPI" id="cst_IPI">
+                                        <?php foreach($fiscalConfigs->listaCSTIPI as $value_cstipi => $cstipi) {?>
+                                            <?php if($cstipi == $productConfigs->CST_IPI) {?>
+                                                <option value="<?= $value_cstipi ?>">
+                                                    <?= $value_cstipi ?> - <?= $cstipi ?>
+                                                </option>
+                                            <?php }?>
+                                        <?php } ?>
+
                                         <?php foreach($fiscalConfigs->listaCSTIPI as $value_cstipi => $cstipi) {?>
                                             <option value="<?= $value_cstipi ?>">
                                                 <?= $value_cstipi ?> - <?= $cstipi ?>
@@ -683,7 +723,14 @@ if (!empty($variants)) {
                                 <div class="form-group">
                                     <label for="ident_anp"><b>Identificação ANP</b></label>
                                     <select name="ident_anp" id="ident_anp" class="form-control">
-                                        <option value="--">--</option>
+                                        <?php foreach($fiscalConfigs->anps as $value_anps => $anps) { ?>
+                                            <?php if($value_anps == $productConfigs->codigo_anp) {?>
+                                                <option value="<?= $value_anps ?>">
+                                                    <?= $anps ?>
+                                                </option>
+                                            <?php } ?>
+                                        <?php } ?>
+
                                         <?php foreach($fiscalConfigs->anps as $value_anps => $anps) { ?>
                                             <option value="<?= $value_anps ?>">
                                                 <?= $anps ?>
