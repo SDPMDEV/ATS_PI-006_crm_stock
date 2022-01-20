@@ -427,6 +427,16 @@
     </div>
 </div>
 
+<?php if ($Owner || ($GP && $GP['bulk_actions'])) {
+    ?>
+    <div style="display: none;">
+        <input type="hidden" name="form_action" value="" id="form_action"/>
+        <?=form_submit('performAction', 'performAction', 'id="action-form-submit"')?>
+    </div>
+    <?=form_close()?>
+    <?php
+}
+?>
 <!-- Modal -->
 <div class="modal fade" id="cancelar-modal" tabindex="-1" role="dialog" aria-labelledby="cancelar-modal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -518,16 +528,6 @@
     </div>
 </div>
 
-<?php if ($Owner || ($GP && $GP['bulk_actions'])) {
-    ?>
-    <div style="display: none;">
-        <input type="hidden" name="form_action" value="" id="form_action"/>
-        <?=form_submit('performAction', 'performAction', 'id="action-form-submit"')?>
-    </div>
-    <?=form_close()?>
-    <?php
-}
-?>
 <script src="/assets/packages/toastr.min.js"></script>
 <script>
     $(document).ready(()=>{
