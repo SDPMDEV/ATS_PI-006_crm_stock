@@ -528,7 +528,7 @@
     <?php
 }
 ?>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="/assets/packages/toastr.min.js"></script>
 <script>
     $(document).ready(()=>{
         function unserialize(serializedData) {

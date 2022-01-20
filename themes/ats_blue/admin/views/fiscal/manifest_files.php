@@ -1,5 +1,5 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+<link rel="stylesheet" href="/assets/packages/toastr.css"/>
 <style>
     .modal.in {
         background-color: rgba(0,0,0,0.5);
@@ -86,7 +86,7 @@
                     <a v-if="doc.tipo === 1 || doc.tipo === 2" style="width: 100%;" class="btn btn-success" v-on:click="getDownloadConfigs(doc.chave)">Completa</a>
                     <a v-if="doc.tipo === 1 || doc.tipo === 2" style="width: 100%;" class="btn btn-primary" v-bind:href="remote_url.replaceAll('/api', '')+'/dfe/imprimirDanfe/'+doc.chave" target="_blank">Imprimir</a>
                     <a v-if="doc.tipo === 3" style="width: 100%;" class="btn btn-danger">Desconhecida</a>
-                    <a v-if="doc.tipo === 4" class="btn btn-warning">Não realizada</a>
+                    <a v-if="doc.tipo === 4" style="width: 100%" class="btn btn-warning">Não realizada</a>
                     <a v-if="doc.tipo === 0" style="width: 100%;" class="btn btn-info" onclick="" data-toggle="modal" data-target="#modal-manifest" v-on:click="prepareManifest(doc.chave)">Manifestar</a>
                 </td>
             </tr>
@@ -524,9 +524,9 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7-beta.29/jquery.inputmask.min.js" integrity="sha512-Ax4+qW2rAVWrk3SU1ef/L8O0jF6vKSfaMIR3du6efzf5v/pibzDcLFx29YCeR7WphoPO4zranQFsFUf+9Rb+dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="/assets/packages/vue.min.js"></script>
+<script src="/assets/packages/toastr.min.js"></script>
+<script src="/assets/packages/jquery.inputmask.min.js"></script>
 <script>
     const app = new Vue({
         el: "#app",
