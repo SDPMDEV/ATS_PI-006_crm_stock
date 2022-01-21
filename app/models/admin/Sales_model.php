@@ -957,7 +957,7 @@ class Sales_model extends CI_Model
     public function getLastSaleId()
     {
         $this->db->from('sales');
-        $this->db->order_by("id", "asc");
+        $this->db->order_by("id", "desc");
         $query = $this->db->get();
 
         if ($query->num_rows() > 0) {

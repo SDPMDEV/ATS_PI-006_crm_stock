@@ -404,7 +404,7 @@
 
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <a class="btn btn-warning btn-block" id="enviar_xml">Baixar zip com XML e Danfe para Email</a>
+                                    <a class="btn btn-warning btn-block" id="enviar_xml">Baixar zip</a>
                                 </div>
                             </div>
 

@@ -671,18 +671,27 @@ class Fiscal extends MY_Controller
 
                     } else if($res == 'Apro'){
                         echo '
-                        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-                        <script>
-                            window.onload = function() {
-                                swal("Cuidado!", "Esta NF já esta aprovada, não é possível enviar novamente!" , "warning").then(()=>{
-                                    window.close();
-                                });
-                            };
-                        </script>
-                    ';
-
+                            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                            <script>
+                                window.onload = function() {
+                                    swal("Cuidado!", "Esta NF já esta aprovada, não é possível enviar novamente!" , "warning").then(()=>{
+                                        window.close();
+                                    });
+                                };
+                            </script>
+                        ';
+                    } else if($res->error) {
+                        echo '
+                            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                            <script>
+                                window.onload = function() {
+                                    swal("Erro!", "Erro interno do servidor!" , "error").then(()=>{
+                                        window.close();
+                                    });
+                                };
+                            </script>
+                        ';
                     } else {
-
                         $upSale = $this->sales_model->upSale($sale->id, [
                             'chave' => $res->data->chave,
                             'estado' => $res->data->estado,
@@ -694,15 +703,15 @@ class Fiscal extends MY_Controller
                         ]);
 
                         echo '
-                        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-                        <script>
-                            window.onload = function() {
-                              swal("Sucesso", "NF-e gerada com sucesso RECIBO: '.$recibo.'", "success").then(() => {
-                                  window.location.href = window.location.origin + "/generate/danfe/?val[]='.$sale->id.'";
-                              });
-                            };                            
-                        </script>
-                    ';
+                            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                            <script>
+                                window.onload = function() {
+                                  swal("Sucesso", "NF-e gerada com sucesso RECIBO: '.$recibo.'", "success").then(() => {
+                                      window.location.href = window.location.origin + "/generate/danfe/?val[]='.$sale->id.'";
+                                  });
+                                };                            
+                            </script>
+                        ';
                     }
                 } else {
                     echo '
@@ -1388,6 +1397,8 @@ class Fiscal extends MY_Controller
             $res = file_get_contents($this->api_url . '/print_nfce/?' . http_build_query($data));
 
             if(!$res->error) {
+                $this->nfe_model->truncate('products_nfe');
+
                 header('Content-type: application/pdf');
                 echo file_get_contents($this->api_url . '/print_nfce/?' . http_build_query($data));
             } else {
@@ -1418,11 +1429,11 @@ class Fiscal extends MY_Controller
 
     public function getNFce()
     {
-        $lastId = $this->sales_model->getLastSaleId();
+        $lastId = $this->get->sale_id ?? $this->sales_model->getLastSaleId();
         $lastNce = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfce;
 
         $data = [
-            'lastId' => $lastId < $lastNce ? $lastNce : $lastId,
+            'lastId' => $lastNce ?? 1,
             'cpf' => $this->input->post('cpf') ?? null,
             'nome' => '',
             'cliente' => [
@@ -1433,7 +1444,7 @@ class Fiscal extends MY_Controller
             'produtos' => $this->nfe_model->getAll(),
             'desconto' => $this->sales_model->getSale($lastId)->order_discount,
             'valor_total' => $this->sales_model->getSale($lastId)->grand_total,
-            'troco' => $this->sales_model->getSale($lastId)->paid - $this->sales_model->getSale($lastId)->grand_total,
+            'troco' => (float)$this->sales_model->getSale($lastId)->paid - (float)$this->sales_model->getSale($lastId)->grand_total,
             'tipo_pagamento' => $this->nfe_model->getAll()[0]->payment_method,
             'estado' => $this->sales_model->getSale($lastId)->estado,
             'natureza' => [
@@ -1466,15 +1477,15 @@ class Fiscal extends MY_Controller
                 ]);
 
                 echo '
-                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-                <script>
-                    window.onload = function() {
-                        swal("Erro ao gerar NF!", "[ '. $m->protNFe->infProt->cStat .' ] :  '. $m->protNFe->infProt->xMotivo . ' \n" , "error").then(()=>{
-                            window.close();
-                        });
-                    };
-                </script>
-            ';
+                    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                    <script>
+                        window.onload = function() {
+                            swal("Erro ao gerar NF!", "[ '. $m->protNFe->infProt->cStat .' ] :  '. $m->protNFe->infProt->xMotivo . ' \n" , "error").then(()=>{
+                                window.close();
+                            });
+                        };
+                    </script>
+                ';
             } else if($retorno == 'erro') {
                 echo '
                 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -1507,10 +1518,8 @@ class Fiscal extends MY_Controller
                 ]);
 
                 $this->nfe_model->updateLastNumber([
-                    'ultimo_num_nfce' => (int)$res->nfcNum+1
+                    'ultimo_num_nfce' => (int)$data['lastId']+1
                 ]);
-
-                $this->nfe_model->truncate('products_nfe');
 
                 echo '
                     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -1552,7 +1561,12 @@ class Fiscal extends MY_Controller
 
     public function generateCupom()
     {
-        $sale = $this->sales_model->getSale($this->sales_model->getLastSaleId());
+        if(isset($this->get->sale_id)) {
+            $sale = $this->sales_model->getSale($this->get->sale_id);
+        } else {
+            $sale = $this->sales_model->getSale($this->sales_model->getLastSaleId());
+        }
+
         $products_id = explode(",", $sale->id_produtos);
         $produts = [];
 
