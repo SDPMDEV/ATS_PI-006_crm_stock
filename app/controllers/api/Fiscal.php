@@ -1561,11 +1561,8 @@ class Fiscal extends MY_Controller
 
     public function generateCupom()
     {
-        if(isset($this->get->sale_id)) {
-            $sale = $this->sales_model->getSale($this->get->sale_id);
-        } else {
-            $sale = $this->sales_model->getSale($this->sales_model->getLastSaleId());
-        }
+        $sale = $this->get->sale_id ? $this->sales_model->getSale($this->get->sale_id) :
+                $this->sales_model->getSale($this->sales_model->getLastSaleId());
 
         $products_id = explode(",", $sale->id_produtos);
         $produts = [];

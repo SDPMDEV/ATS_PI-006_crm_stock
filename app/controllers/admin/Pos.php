@@ -1696,8 +1696,6 @@ class Pos extends MY_Controller
         if(!empty($data)) {
             unset($data["api_url"]);
             unset($data["ajax"]);
-            echo "api_token=$this->api_token&".http_build_query($data);
-            die;
             curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token&".http_build_query($data));
         } else {
             curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token");
