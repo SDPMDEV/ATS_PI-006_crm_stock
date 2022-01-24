@@ -14,7 +14,8 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                    <label class="control-label" for="customer_group"><?php echo $this->lang->line('customer_group'); ?></label>
+                        <label class="control-label"
+                               for="customer_group"><?php echo $this->lang->line('customer_group'); ?></label>
                         <?php
                         foreach ($customer_groups as $customer_group) {
                             $cgs[$customer_group->id] = $customer_group->name;
@@ -25,7 +26,8 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="control-label" for="price_group"><?php echo $this->lang->line('price_group'); ?></label>
+                        <label class="control-label"
+                               for="price_group"><?php echo $this->lang->line('price_group'); ?></label>
                         <?php
                         $pgs[''] = lang('select') . ' ' . lang('price_group');
                         foreach ($price_groups as $price_group) {
@@ -48,10 +50,6 @@
                         <?php echo form_input('name', '', 'class="form-control tip" id="name" data-bv-notempty="true"'); ?>
                     </div>
                     <div class="form-group">
-                        <?= lang('vat_no', 'vat_no'); ?>
-                        <?php echo form_input('vat_no', '', 'class="form-control" id="vat_no"'); ?>
-                    </div>
-                    <div class="form-group">
                         <?= lang('gst_no', 'gst_no'); ?>
                         <?php echo form_input('gst_no', '', 'class="form-control" id="gst_no"'); ?>
                     </div>
@@ -68,38 +66,50 @@
                         <input type="tel" name="phone" class="form-control" required="required" id="phone"/>
                     </div>
                     <div class="form-group">
-                        <?= lang('address', 'address'); ?>
-                        <?php echo form_input('address', '', 'class="form-control" id="address" required="required"'); ?>
-                    </div>
-                    <div class="form-group">
                         <?= lang('city', 'city'); ?>
                         <?php echo form_input('city', '', 'class="form-control" id="city" required="required"'); ?>
                     </div>
                     <div class="form-group">
-                        <?= lang('state', 'state'); ?>
-                        <?php
-                        if ($Settings->indian_gst) {
-                            $states = $this->gst->getIndianStates(true);
-                            echo form_dropdown('state', $states, '', 'class="form-control select" id="state" required="required"');
-                        } else {
-                            echo form_input('state', '', 'class="form-control" id="state"');
-                        }
-                        ?>
+                        <label for="state"><b>Estado</b></label>
+                        <select name="state" id="state" class="form-control">
+                            <?php foreach ($configs->estados as $cMun => $estado) { ?>
+                                <option value="<?= $cMun . ' - ' . $estado ?>">
+                                    <?= $estado ?>
+                                </option>
+                            <?php } ?>
+                        </select>
                     </div>
 
+                    <div class="form-group">
+                        <label for="contribuinte">Contribuinte</label>
+                        <select name="contribuinte" id="contribuinte" class="form-control">
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cep">CEP</label>
+                        <input type="text" name="cep" id="cep" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cpf_cnpj">CPF/CNPJ</label>
+                        <input type="text" name="cpf_cnpj" id="cpf_cnpj" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="consumidor_final">Consumidor Final</label>
+                        <select name="consumidor_final" id="consumidor_final" class="form-control">
+                            <option value="1">Sim</option>
+                            <option value="0">Não</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <?= lang('postal_code', 'postal_code'); ?>
-                        <?php echo form_input('postal_code', '', 'class="form-control" id="postal_code"'); ?>
-                    </div>
-                    <div class="form-group">
                         <?= lang('country', 'country'); ?>
                         <?php echo form_input('country', '', 'class="form-control" id="country"'); ?>
-                    </div>
-                    <div class="form-group">
-                        <?= lang('ccf1', 'cf1'); ?>
-                        <?php echo form_input('cf1', '', 'class="form-control" id="cf1"'); ?>
                     </div>
                     <div class="form-group">
                         <?= lang('ccf2', 'cf2'); ?>
@@ -123,6 +133,32 @@
                     <div class="form-group">
                         <?= lang('ccf6', 'cf6'); ?>
                         <?php echo form_input('cf6', '', 'class="form-control" id="cf6"'); ?>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ie_rg">IE/RG</label>
+                        <input type="text" name="ie_rg" id="ie_rg" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rua">Rua</label>
+                        <input type="text" name="rua" id="rua" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numero">Número</label>
+                        <input type="text" name="numero" id="numero" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bairro">Bairro</label>
+                        <input type="text" name="bairro" id="bairro" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="UF">DDD</label>
+                        <input readonly type="text" name="UF" id="UF" class="form-control"
+                               placeholder="Preenchimento automático">
                     </div>
                 </div>
             </div>
@@ -157,6 +193,10 @@
                     $('form[data-toggle="validator"]').bootstrapValidator('revalidateField', iname);
                 });
             }
+        });
+
+        $("#state").change(() => {
+            $('#UF').val($('#state').find(":selected").val().substring(0, 2))
         });
     });
 </script>
