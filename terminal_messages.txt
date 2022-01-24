@@ -1,0 +1,11 @@
+
+
+DEPÊNDENCIAS INSTALADAS COM SUCESSO. 
+
+Passos restantes:
+
+1 - Configurar o Arquivo .env da API 
+2 - rodar o comando `COMPOSER INSTALL` e logo em seguida o comando `PHP ARTISAN KEY:GENERATE` (dentro da api) 
+3 - rodar o comando PHP ARTISAN MIGRATE (dentro da API) 
+4 - Verificar o TOKEN que foi salvo no banco de dados na tabela api_table e inseri-lo no arquivo de configuração do sistema de stock
+
