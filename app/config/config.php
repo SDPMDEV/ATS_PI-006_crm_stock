@@ -20,10 +20,9 @@ defined('BASEPATH') or exit('No direct script access allowed');
 */
 $config['base_url'] = 'http://localhost/';
 
-$config['api_url'] = $config['base_url'] . 'api_fiscal/api';
+$config['api_url'] = $config['base_url'] . '/api_fiscal/api';
 
 $config['api_token'] = '$2y$10$WN7luEUCQnWrCWsSIlFC0.MngFZ7kvXT2LQRxMcSTai.ELTm2Fbta';
-
 /*
 |--------------------------------------------------------------------------
 | Index File
@@ -309,7 +308,7 @@ $config['cache_query_string'] = false;
 | http://codeigniter.com/user_guide/libraries/encryption.html
 |
 */
-$config['encryption_key'] = 'Mbn9EoIfceruLgYJmkZGCvD8X6aUiVOWQySxp';
+$config['encryption_key'] = '17g6D8fQWeM5KElnP04UYStIoVHpNjTsv2ZrJ';
 
 /*
 |--------------------------------------------------------------------------
