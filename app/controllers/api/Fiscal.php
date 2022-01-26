@@ -692,13 +692,13 @@ class Fiscal extends MY_Controller
                             </script>
                         ';
                     } else {
-                        $upSale = $this->sales_model->upSale($sale->id, [
+                        $this->sales_model->upSale($sale->id, [
                             'chave' => $res->data->chave,
                             'estado' => $res->data->estado,
                             'nfNumero' => $res->data->nfNumero
                         ]);
 
-                        $updateLastNumber = $this->nfe_model->updateLastNumber([
+                        $this->nfe_model->updateLastNumber([
                             'ultimo_num_nfe' => $res->data->nfNumero
                         ]);
 
@@ -880,6 +880,16 @@ class Fiscal extends MY_Controller
                         'estado' => 'CANCELADA'
                     ]);
 
+                    if($this->nfe_model->getAllLastNumbers()->ultimo_num_cancela != null) {
+                        $this->nfe_model->updateLastNumber([
+                            'ultimo_num_cancela' => $this->nfe_model->getAllLastNumbers()->ultimo_num_cancela + 1
+                        ]);
+                    } else {
+                        $this->nfe_model->updateLastNumber([
+                            'ultimo_num_cancela' => 1
+                        ]);
+                    }
+
                     echo '
                         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                         <script>
@@ -927,7 +937,7 @@ class Fiscal extends MY_Controller
 
                 $data = [
                     'chave' => $sale->chave ?? '',
-                    'sequencia_cce' => $sale->sequencia_cce ?? 0,
+                    'sequencia_cce' => $sale->sequencia_cce ?? 1,
                     'correcao' => $this->get->correcao,
                 ];
 
@@ -960,9 +970,8 @@ class Fiscal extends MY_Controller
                 $res = $this->returnApiProps('/fix_nfe', $data);
 
                 if(!$res->error) {
-
                     $this->sales_model->upSale($sale->id, [
-                        'sequencia_cce' => (int)$sale->sequencia_cce + 1
+                        'sequencia_cce' => ($sale->sequencia_cce != null ) ? $sale->sequencia_cce + 1 : 1
                     ]);
 
                     die('
@@ -1555,7 +1564,8 @@ class Fiscal extends MY_Controller
             'ultimo_num_nfe' => $this->input->post('ultimo_numero_nfe') ?? $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe,
             'ultimo_num_nfce' => $this->input->post('ultimo_numero_nfce') ?? $this->nfe_model->getAllLastNumbers()->ultimo_num_nfce,
             'ultimo_num_cte' => $this->input->post('ultimo_numero_cte') ?? $this->nfe_model->getAllLastNumbers()->ultimo_num_cte,
-            'ultimo_num_mdfe' => $this->input->post('ultimo_numero_mdfe') ?? $this->nfe_model->getAllLastNumbers()->ultimo_num_mdfe
+            'ultimo_num_mdfe' => $this->input->post('ultimo_numero_mdfe') ?? $this->nfe_model->getAllLastNumbers()->ultimo_num_mdfe,
+            'ultimo_num_cancela' => $this->input->post('ultimo_num_cancela') ?? $this->nfe_model->getAllLastNumbers()->ultimo_num_cancela
         ]);
     }
 

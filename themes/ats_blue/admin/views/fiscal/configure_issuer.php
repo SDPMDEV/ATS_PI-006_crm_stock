@@ -363,10 +363,17 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <span>Nº Serie NFC-e</span>
-                            <input class="form-control" required name="numero_serie_nfce" type="text" value="<?= $nfe_configs->ultimo_num_nfce ?>">
+                            <input class="form-control" required name="numero_serie_nfce" type="text" value="<?= $nfe_configs->num_serie_nfce ?>">
                     </div>
                 </div>
-                
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <span>Ultima Cancela</span>
+                        <input class="form-control" required name="ultimo_num_cancela" type="text" value="<?= $nfe_configs->ultimo_num_cancela ?>">
+                    </div>
+                </div>
+
                 <div class="col-md-4">
                     <div class="form-group">
                         <span>Ultimo Nº NF-e</span>
@@ -409,7 +416,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-12">
                     <div class="form-group">
                         <span class="certificado">
                             <b style="color: red;">*Em desenvolvimento</b><br>
