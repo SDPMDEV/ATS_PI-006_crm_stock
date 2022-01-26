@@ -29,6 +29,7 @@ class Sales extends MY_Controller
         $this->lang->admin_load('sales', $this->Settings->user_language);
         $this->load->library('form_validation');
         $this->load->admin_model('sales_model');
+        $this->load->admin_model('nfe_model');
         $this->load->admin_model('parcelas_model');
         $this->digital_upload_path = 'files/';
         $this->upload_path         = 'assets/uploads/';
@@ -62,7 +63,7 @@ class Sales extends MY_Controller
             if ($this->Owner || $this->Admin) {
                 $date = $this->sma->fld(trim($this->input->post('date')));
             } else {
-                $date = date('Y-m-d H:i:s');
+                $date = date('Y-m-d');
             }
             $warehouse_id     = $this->input->post('warehouse');
             $customer_id      = $this->input->post('customer');
@@ -442,7 +443,7 @@ class Sales extends MY_Controller
             $this->data['units']      = $this->site->getAllBaseUnits();
             //$this->data['currencies'] = $this->sales_model->getAllCurrencies();
             $this->data['fiscalSettings'] = $this->returnApiProps('/get_issuer_configs');
-            $this->data['lastSale'] = $this->sales_model->getLastSaleId();
+            $this->data['lastSale'] = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe;
             $this->data['slnumber']    = ''; //$this->site->getReference('so');
             $this->data['payment_ref'] = ''; //$this->site->getReference('pay');
             $bc                        = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('sales'), 'page' => lang('sales')], ['link' => '#', 'page' => lang('add_sale')]];
@@ -475,7 +476,7 @@ class Sales extends MY_Controller
                 if ($this->Owner || $this->Admin) {
                     $date = $this->sma->fld(trim($this->input->post('date')));
                 } else {
-                    $date = date('Y-m-d H:i:s');
+                    $date = date('Y-m-d');
                 }
                 $dlDetails = [
                     'date'              => $date,
@@ -616,7 +617,7 @@ class Sales extends MY_Controller
             if ($this->Owner || $this->Admin) {
                 $date = $this->sma->fld(trim($this->input->post('date')));
             } else {
-                $date = date('Y-m-d H:i:s');
+                $date = date('Y-m-d');
             }
             $payment = [
                 'date'         => $date,
@@ -1162,7 +1163,7 @@ class Sales extends MY_Controller
             $this->data['tax_rates']  = $this->site->getAllTaxRates();
             $this->data['warehouses'] = $this->site->getAllWarehouses();
             $this->data['fiscalSettings'] = $this->returnApiProps('/get_issuer_configs');
-            $this->data['lastSale'] = $this->sales_model->getLastSaleId();
+            $this->data['lastSale'] = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe;
             $this->data['parcelas'] = $this->parcelas_model->getParcBySale($id);
             $this->data['sale'] = $this->sales_model->getSale($id);
 
@@ -1891,7 +1892,7 @@ class Sales extends MY_Controller
             if ($this->Owner || $this->Admin) {
                 $date = $this->sma->fld(trim($this->input->post('date')));
             } else {
-                $date = date('Y-m-d H:i:s');
+                $date = date('Y-m-d');
             }
 
             $return_surcharge = $this->input->post('return_surcharge') ? $this->input->post('return_surcharge') : 0;
@@ -2216,7 +2217,7 @@ class Sales extends MY_Controller
             if ($this->Owner || $this->Admin) {
                 $date = $this->sma->fld(trim($this->input->post('date')));
             } else {
-                $date = date('Y-m-d H:i:s');
+                $date = date('Y-m-d');
             }
             $warehouse_id     = $this->input->post('warehouse');
             $customer_id      = $this->input->post('customer');
