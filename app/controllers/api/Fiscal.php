@@ -1550,12 +1550,12 @@ class Fiscal extends MY_Controller
     public function saveLastNumbers()
     {
         $this->nfe_model->updateLastNumber([
-            'num_serie_nfe' => $this->input->post('numero_serie_nfe') ?? null,
-            'num_serie_nfce' => $this->input->post('numero_serie_nfce') ?? null,
-            'ultimo_num_nfe' => $this->input->post('ultimo_numero_nfe') ?? null,
-            'ultimo_num_nfce' => $this->input->post('ultimo_numero_nfce') ?? null,
-            'ultimo_num_cte' => $this->input->post('ultimo_numero_cte') ?? null,
-            'ultimo_num_mdfe' => $this->input->post('ultimo_numero_mdfe') ?? null
+            'num_serie_nfe' => $this->input->post('numero_serie_nfe') ?? $this->nfe_model->getAllLastNumbers()->num_serie_nfe,
+            'num_serie_nfce' => $this->input->post('numero_serie_nfce') ?? $this->nfe_model->getAllLastNumbers()->num_serie_nfce,
+            'ultimo_num_nfe' => $this->input->post('ultimo_numero_nfe') ?? $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe,
+            'ultimo_num_nfce' => $this->input->post('ultimo_numero_nfce') ?? $this->nfe_model->getAllLastNumbers()->ultimo_num_nfce,
+            'ultimo_num_cte' => $this->input->post('ultimo_numero_cte') ?? $this->nfe_model->getAllLastNumbers()->ultimo_num_cte,
+            'ultimo_num_mdfe' => $this->input->post('ultimo_numero_mdfe') ?? $this->nfe_model->getAllLastNumbers()->ultimo_num_mdfe
         ]);
     }
 
