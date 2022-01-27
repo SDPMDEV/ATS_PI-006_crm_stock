@@ -1504,18 +1504,18 @@
                         <?php
                         } ?>
 
-                        <li class="mm_fiscal">
+                        <li>
                             <a class="dropmenu" href="#">
                                 <i class="fas fa-file-invoice-dollar" style="font-size: 1.80em; margin-left: 4px"></i>
-                                <span class="text">Fiscal </span>
+                                <span class="text">Fiscal</span>
                                 <span class="chevron closed"></span>
                             </a>
-                            <ul>
-                                <li><a href="<?= admin_url("fiscal/configurar_emitente") ?>"><i class="fas fa-id-card-alt"></i></i>Configurar Emitente</a></li>
-                                <li><a href="<?= admin_url("fiscal/configurar_escritorio") ?>"><i class="fas fa-city"></i></i>Configurar Escritório</a></li>
-                                <li><a href="<?= admin_url("fiscal/natureza_de_operacao") ?>"><i class="fas fa-file-signature"></i></i>Natureza de Operação</a></li>
-                                <li><a href="<?= admin_url("fiscal/tributacao") ?>"><i class="fas fa-cash-register"></i></i>Tributação</a></li>
-                                <li><a href="<?= admin_url("fiscal/manifesto") ?>"><i class="fas fa-file-invoice"></i></i>Manifesto</a></li>
+                            <ul style="padding-left: 8px; background-color: rgb(0, 153, 209);">
+                                <li><a href="<?= admin_url("fiscal/configurar_emitente") ?>"><i class="fas fa-id-card-alt"></i><span class="text">Configurar Emitente</span></a></li>
+                                <li><a href="<?= admin_url("fiscal/configurar_escritorio") ?>"><i class="fas fa-city"></i><span class="text">Configurar Escritório</span></a></li>
+                                <li><a href="<?= admin_url("fiscal/natureza_de_operacao") ?>"><i class="fas fa-file-signature"></i><span class="text">Natureza de Operação</span></a></li>
+                                <li><a href="<?= admin_url("fiscal/tributacao") ?>"><i class="fas fa-cash-register"></i><span class="text">Tributação</span></a></li>
+                                <li><a href="<?= admin_url("fiscal/manifesto") ?>"><i class="fas fa-file-invoice"></i><span class="text">Manifesto</span></a></li>
                             </ul>
                         </li>
                     </ul>
