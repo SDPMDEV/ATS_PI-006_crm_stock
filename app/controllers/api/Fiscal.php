@@ -480,7 +480,7 @@ class Fiscal extends MY_Controller
                 }
 
                 $data = [
-                    'lastId' => $sale->id > $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe ? $sale->id : $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe,
+                    'lastId' => ($this->nfe_model->getAllLastNumbers()->ultimo_num_nfe == null) ? 1 : $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe,
                     'cpf' => '',
                     'cliente' => [
                         'cidade' => [
@@ -599,7 +599,7 @@ class Fiscal extends MY_Controller
                     }
 
                     $data = [
-                        'lastId' => $sale->id > $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe ? $sale->id : $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe,
+                        'lastId' => ($this->nfe_model->getAllLastNumbers()->ultimo_num_nfe == null) ? 1 : $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe,
                         'cpf' => '',
                         'cliente' => [
                             'cidade' => [
@@ -1439,10 +1439,9 @@ class Fiscal extends MY_Controller
     public function getNFce()
     {
         $lastId = $this->get->sale_id ?? $this->sales_model->getLastSaleId();
-        $lastNce = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfce;
 
         $data = [
-            'lastId' => $lastNce ?? 1,
+            'lastId' => ($this->nfe_model->getAllLastNumbers()->ultimo_num_nfce == null) ? 1 : $this->nfe_model->getAllLastNumbers()->ultimo_num_nfce,
             'cpf' => $this->input->post('cpf') ?? null,
             'nome' => '',
             'cliente' => [
