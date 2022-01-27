@@ -355,7 +355,7 @@ class Products extends MY_Controller
             $this->data['brands']              = $this->site->getAllBrands();
             $this->data['base_units']          = $this->site->getAllBaseUnits();
             $this->data['warehouses']          = $warehouses;
-            $this->data['fiscalConfigs']       = $this->returnApiProps("/get_fiscal_settings");
+            $this->data['fiscalConfigs']       = $this->returnApiProps("/get_issuer_configs");
             $this->data['warehouses_products'] = $id ? $this->products_model->getAllWarehousesWithPQ($id) : null;
             $this->data['product']             = $id ? $this->products_model->getProductByID($id) : null;
             $this->data['variants']            = $this->products_model->getAllVariants();
@@ -1253,7 +1253,7 @@ class Products extends MY_Controller
             $this->data['warehouses']          = $warehouses;
             $this->data['warehouses_products'] = $warehouses_products;
             $this->data['product']             = $product;
-            $this->data['fiscalConfigs']       = $this->returnApiProps("/get_fiscal_settings");
+            $this->data['fiscalConfigs']       = $this->returnApiProps("/get_issuer_configs");
             $this->data['productConfigs']      = $this->products_model->getProductConfigs($id);
             $this->data['variants']            = $this->products_model->getAllVariants();
             $this->data['subunits']            = $this->site->getUnitsByBUID($product->unit);

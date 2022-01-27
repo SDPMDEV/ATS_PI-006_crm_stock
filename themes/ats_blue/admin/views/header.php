@@ -1506,16 +1506,16 @@
 
                         <li class="mm_fiscal">
                             <a class="dropmenu" href="#">
-                                <i class="far fa-sticky-note"></i>
-                                <span class="text"> Fiscal </span>
+                                <i class="fas fa-file-invoice-dollar" style="font-size: 1.80em; margin-left: 4px"></i>
+                                <span class="text">Fiscal </span>
                                 <span class="chevron closed"></span>
                             </a>
                             <ul>
-                                <li><a href="<?= admin_url("fiscal/configurar_emitente") ?>"><i class="fa fa-cog"></i>Configurar Emitente</a></li>
-                                <li><a href="<?= admin_url("fiscal/configurar_escritorio") ?>"><i class="fa fa-cog"></i>Configurar Escritório</a></li>
-                                <li><a href="<?= admin_url("fiscal/natureza_de_operacao") ?>"><i class="fa fa-file"></i>Natureza de Operação</a></li>
-                                <li><a href="<?= admin_url("fiscal/tributacao") ?>"><i class="fa fa-file"></i>Tributação</a></li>
-                                <li><a href="<?= admin_url("fiscal/manifesto") ?>"><i class="fa fa-file"></i>Manifesto</a></li>
+                                <li><a href="<?= admin_url("fiscal/configurar_emitente") ?>"><i class="fas fa-id-card-alt"></i></i>Configurar Emitente</a></li>
+                                <li><a href="<?= admin_url("fiscal/configurar_escritorio") ?>"><i class="fas fa-city"></i></i>Configurar Escritório</a></li>
+                                <li><a href="<?= admin_url("fiscal/natureza_de_operacao") ?>"><i class="fas fa-file-signature"></i></i>Natureza de Operação</a></li>
+                                <li><a href="<?= admin_url("fiscal/tributacao") ?>"><i class="fas fa-cash-register"></i></i>Tributação</a></li>
+                                <li><a href="<?= admin_url("fiscal/manifesto") ?>"><i class="fas fa-file-invoice"></i></i>Manifesto</a></li>
                             </ul>
                         </li>
                     </ul>

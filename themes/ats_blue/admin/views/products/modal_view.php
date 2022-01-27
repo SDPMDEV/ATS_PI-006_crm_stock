@@ -42,10 +42,9 @@
                                 <td colspan="2" style="background-color:#FFF;"></td>
                             </tr>
                             <tr>
-                                <td style="width:30%;"><?= lang('barcode_qrcode'); ?></td>
+                                <td style="width:30%;">Código de barras</td>
                                 <td style="width:70%;">
-                                    <img src="<?= admin_url('misc/barcode/' . $product->code . '/' . $product->codBarras . '/74/0'); ?>"
-                                         alt="<?= $product->code; ?>" class="bcimg"/>
+                                    <span><?= $product->codBarras ?></span>
                                 </td>
                             </tr>
                             <tr>

@@ -478,7 +478,7 @@ if (!empty($variants)) {
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="conversao_estoque"><b>Conversão unitária para estoque</b></label>
+                                    <label for="conversao_estoque"><b>Conversão unitária</b></label>
                                     <input type="text" name="conversao_estoque" id="conversao_estoque" class="form-control" v-model="convUnitaria" v-on:change="calcularValorVenda" value="<?= $productConfigs->conversao_unitaria ?>"/>
                                 </div>
                             </div>
