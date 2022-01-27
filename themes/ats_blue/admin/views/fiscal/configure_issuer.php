@@ -353,6 +353,20 @@
                     </div>
                 </div>
 
+                <div class="col-md-4" style="display: none">
+                    <div class="form-group">
+                        <span>Nº Serie NF-e</span>
+                        <input class="form-control" required name="numero_serie_nfe" type="hidden" value="<?= $nfe_configs->num_serie_nfe ?? 1 ?>">
+                    </div>
+                </div>
+
+                <div class="col-md-4" style="display: none">
+                    <div class="form-group">
+                        <span>Nº Serie NFC-e</span>
+                            <input class="form-control" required name="numero_serie_nfce" type="hidden" value="<?= $nfe_configs->num_serie_nfce ?? 1 ?>">
+                    </div>
+                </div>
+
                 <div class="col-md-4">
                     <div class="form-group">
                         <span>Ultima Cancela</span>
@@ -371,6 +385,20 @@
                     <div class="form-group">
                         <span>Ultimo Nº NFC-e'</span>
                         <input class="form-control" required name="ultimo_numero_nfce" type="text" value="<?= $nfe_configs->ultimo_num_nfce ?>">
+                    </div>
+                </div>
+
+                <div class="col-md-4" style="display: none">
+                    <div class="form-group">
+                        <span>Ultimo Nº CT-e</span>
+                        <input class="form-control" required name="ultimo_numero_cte" type="hidden" value="<?= $nfe_configs->ultimo_num_cte ?? 1?>">
+                    </div>
+                </div>
+
+                <div class="col-md-4" style="display: none">
+                    <div class="form-group">
+                        <span>Ultimo Nº MDF-e</span>
+                        <input class="form-control" required name="ultimo_numero_mdfe" type="hidden" value="<?= $nfe_configs->ultimo_num_mdfe ?? 1?>">
                     </div>
                 </div>
 
