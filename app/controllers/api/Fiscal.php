@@ -1453,7 +1453,8 @@ class Fiscal extends MY_Controller
             'produtos' => $this->nfe_model->getAll(),
             'desconto' => $this->sales_model->getSale($lastId)->order_discount,
             'valor_total' => $this->sales_model->getSale($lastId)->grand_total,
-            'troco' => (float)$this->sales_model->getSale($lastId)->paid - (float)$this->sales_model->getSale($lastId)->grand_total,
+            'valor_pago' => $this->get->valor_pago,
+            'troco' => $this->get->troco ?? 0,
             'tipo_pagamento' => $this->nfe_model->getAll()[0]->payment_method,
             'estado' => $this->sales_model->getSale($lastId)->estado,
             'natureza' => [
@@ -1464,6 +1465,10 @@ class Fiscal extends MY_Controller
                 "CFOP_saida_inter_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_saida_inter_estadual,
             ]
         ];
+
+//        echo "<pre>";
+//        print_r($data);
+//        die;
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,$this->api_url . '/generate_nfce');
@@ -1530,6 +1535,8 @@ class Fiscal extends MY_Controller
                     'ultimo_num_nfce' => (int)$data['lastId']+1
                 ]);
 
+                $this->nfe_model->truncate('products_nfe');
+
                 echo '
                     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                     <script>
@@ -1575,15 +1582,15 @@ class Fiscal extends MY_Controller
                 $this->sales_model->getSale($this->sales_model->getLastSaleId());
 
         $products_id = explode(",", $sale->id_produtos);
-        $produts = [];
+        $products_to_nfce = [];
 
         foreach($products_id as $id) {
-            array_push($produts, [true]);
+            array_push($products_to_nfce, [true]);
         }
 
         $data = [
             'id' => $sale->id,
-            'itens' => $produts,
+            'itens' => $products_to_nfce,
             'pedido_delivery_id' => 0,
             'valor_total' => $sale->grand_total,
             'dinheiro_recebido' => $sale->paid,

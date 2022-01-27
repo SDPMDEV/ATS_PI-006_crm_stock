@@ -811,6 +811,8 @@ class Pos extends MY_Controller
         $this->form_validation->set_rules('warehouse', $this->lang->line('warehouse'), 'required');
         $this->form_validation->set_rules('biller', $this->lang->line('biller'), 'required');
 
+        $this->nfe_model->truncate('products_nfe');
+
         if ($this->form_validation->run() == true) {
             $date             = date('Y-m-d H:i:s');
             $warehouse_id     = $this->input->post('warehouse');
@@ -918,6 +920,14 @@ class Pos extends MY_Controller
             } elseif ($this->pos_settings->item_order == 0) {
                 foreach($products as $product) {
                     $pr = $this->products_model->getProductByID($product['product_id']);
+
+                    $map = function($v) {return $v['product_id'];};
+                    $equals = array_count_values(array_map($map, $products));
+                    foreach($equals as $equal => $qty) {
+                        if($equal == $pr->id) {
+                            $product['quantity'] = $qty;
+                        }
+                    }
 
                     $data = [
                         'id' => (int)$pr->id,
