@@ -24,9 +24,9 @@ DROP TABLE IF EXISTS `fiscal_api_table`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `fiscal_api_table` (
   `id` int NOT NULL,
-  `token` varchar(255) DEFAULT NULL,
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -227,7 +227,7 @@ CREATE TABLE `fiscal_manifesta_dves` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -916,14 +916,14 @@ CREATE TABLE `sma_parcelas` (
   `qtd_parcelas` int DEFAULT NULL,
   `num_parcela` int DEFAULT NULL,
   `valor_parcela` decimal(25,4) DEFAULT NULL,
-  `perc_juros` varchar(45) DEFAULT NULL,
+  `perc_juros` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `data_pagamento` datetime DEFAULT NULL,
   `data_vencimento` datetime DEFAULT NULL,
   `valor_pago` decimal(25,4) DEFAULT NULL,
-  `status_parcela` varchar(155) DEFAULT NULL,
-  `tipo_pagamento` varchar(155) DEFAULT NULL,
+  `status_parcela` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tipo_pagamento` varchar(155) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=283 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=283 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1370,26 +1370,26 @@ DROP TABLE IF EXISTS `sma_products_nfe`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `sma_products_nfe` (
   `id` int NOT NULL,
-  `nome` varchar(255) DEFAULT NULL,
-  `NCM` varchar(255) DEFAULT NULL,
-  `CST_CSOSN` varchar(255) DEFAULT NULL,
-  `CFOP_saida_estadual` varchar(255) DEFAULT NULL,
-  `CEST` varchar(255) DEFAULT NULL,
-  `unidade_venda` varchar(255) DEFAULT NULL,
+  `nome` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `NCM` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `CST_CSOSN` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `CFOP_saida_estadual` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `CEST` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `unidade_venda` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `quantidade` int DEFAULT NULL,
   `valor` decimal(10,2) DEFAULT NULL,
   `perc_icms` decimal(10,2) DEFAULT NULL,
-  `CST_PIS` varchar(255) DEFAULT NULL,
+  `CST_PIS` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `perc_pis` decimal(10,2) DEFAULT NULL,
-  `CST_COFINS` varchar(255) DEFAULT NULL,
+  `CST_COFINS` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `perc_cofins` decimal(10,2) DEFAULT NULL,
-  `descricao_anp` varchar(255) DEFAULT NULL,
-  `codigo_anp` varchar(255) DEFAULT NULL,
-  `codBarras` varchar(255) DEFAULT NULL,
-  `payment_method` varchar(255) DEFAULT NULL,
+  `descricao_anp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `codigo_anp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `codBarras` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `perc_iss` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1720,7 +1720,7 @@ CREATE TABLE `sma_sale_items` (
   KEY `product_id` (`product_id`),
   KEY `product_id_2` (`product_id`,`sale_id`),
   KEY `sale_id_2` (`sale_id`,`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=351 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=352 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1800,7 +1800,7 @@ CREATE TABLE `sma_sales` (
   `nfcNumero` varchar(155) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=423 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=424 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2245,7 +2245,7 @@ CREATE TABLE `sma_ultimos_numeros` (
   `ultimo_num_mdfe` varchar(155) NOT NULL DEFAULT '1',
   `ultimo_num_cancela` varchar(155) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2283,7 +2283,7 @@ CREATE TABLE `sma_user_logins` (
   `login` varchar(100) NOT NULL,
   `time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2430,4 +2430,4 @@ CREATE TABLE `sma_wishlist` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-01-27 10:21:56
+-- Dump completed on 2022-02-01 11:18:02
