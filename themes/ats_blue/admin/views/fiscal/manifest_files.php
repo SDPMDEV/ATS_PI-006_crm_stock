@@ -83,11 +83,11 @@
                 <td>{{ doc.chave }}</td>
                 <td>{{ doc.estado }}</td>
                 <td>
-                    <a v-if="doc.tipo === 1 || doc.tipo === 2" style="width: 100%;" class="btn btn-success" v-on:click="getDownloadConfigs(doc.chave)">Completa</a>
-                    <a v-if="doc.tipo === 1 || doc.tipo === 2" style="width: 100%;" class="btn btn-primary" v-bind:href="remote_url.replaceAll('/api', '')+'/dfe/imprimirDanfe/'+doc.chave" target="_blank">Imprimir</a>
-                    <a v-if="doc.tipo === 3" style="width: 100%;" class="btn btn-danger">Desconhecida</a>
-                    <a v-if="doc.tipo === 4" style="width: 100%" class="btn btn-warning">Não realizada</a>
-                    <a v-if="doc.tipo === 0" style="width: 100%;" class="btn btn-info" onclick="" data-toggle="modal" data-target="#modal-manifest" v-on:click="prepareManifest(doc.chave)">Manifestar</a>
+                    <a v-if="doc.tipo == 1 || doc.tipo == 2" style="width: 100%;" class="btn btn-success" v-on:click="getDownloadConfigs(doc.chave)">Completa</a>
+                    <a v-if="doc.tipo == 1 || doc.tipo == 2" style="width: 100%;" class="btn btn-primary" v-bind:href="remote_url.replaceAll('/api', '')+'/dfe/imprimirDanfe/'+doc.chave" target="_blank">Imprimir</a>
+                    <a v-if="doc.tipo == 3" style="width: 100%;" class="btn btn-danger">Desconhecida</a>
+                    <a v-if="doc.tipo == 4" style="width: 100%" class="btn btn-warning">Não realizada</a>
+                    <a v-if="doc.tipo == 0" style="width: 100%;" class="btn btn-info" onclick="" data-toggle="modal" data-target="#modal-manifest" v-on:click="prepareManifest(doc.chave)">Manifestar</a>
                 </td>
             </tr>
             </tbody>
