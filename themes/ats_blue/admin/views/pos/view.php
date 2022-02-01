@@ -452,16 +452,14 @@
                         <div style="clear:both;"></div>
                         <div class="col-xs-12" style="background:#F5F5F5; padding:10px;">
                             <p style="font-weight:bold;">
-                                Please don't forget to disable the header and footer in browser print settings. You can
-                                set Zoom/Scale as you need.
+                                Por favor, não se esqueça de desativar o cabeçalho e o rodapé nas configurações de impressão do navegador. Você pode definir Zoom/Escala conforme o necessário.
                             </p>
                             <p style="text-transform: capitalize;">
-                                <strong>FF:</strong> File &gt; Print Setup &gt; Margin &amp; Header/Footer Make all
-                                --blank--
+                                <strong>FF:</strong> Arquivo > Configuração de Impressão > Margem e Cabeçalho/Rodapé
                             </p>
                             <p style="text-transform: capitalize;">
-                                <strong>chrome:</strong> Menu &gt; Print &gt; Disable Header/Footer in Option &amp; Set
-                                Margins to None
+                                <strong>Chrome:</strong> Configurações &gt; Imprimir &gt; Desativar Cabeçalho/Rodapé
+                                click em opções e coloque as margens como "Nenhuma"
                             </p>
                         </div>
                         <?php

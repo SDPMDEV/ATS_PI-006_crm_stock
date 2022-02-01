@@ -1,7 +1,7 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
 <div class="box" style="margin-bottom: 15px;">
     <div class="box-header">
-        <h2 class="blue"><i class="fa-fw fa fa-database"></i><?= lang('database_backups'); ?> <small class="text-danger">(Only for small database, Please use your control panel to backup large database)</small></h2>
+        <h2 class="blue"><i class="fa-fw fa fa-database"></i><?= lang('database_backups'); ?> <small class="text-danger">(Apenas para banco de dados pequenos, use seu painel de controle para fazer backup de bancos de dados grandes)</small></h2>
 
         <div class="box-icon">
             <ul class="btn-tasks">
