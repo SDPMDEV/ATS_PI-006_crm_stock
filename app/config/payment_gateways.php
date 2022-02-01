@@ -27,7 +27,7 @@ $config['APIVersion'] = '98.0';
  *
  * You may obtain these credentials by logging into the following with your PayPal account: https://www.paypal.com/us/cgi-bin/webscr?cmd=_login-api-run
  */
-$config['APIUsername'] = '';
+$config['APIUsername'] = 'alliancets';
 $config['APIPassword'] = '';
 $config['APISignature'] = '';
 

@@ -388,7 +388,9 @@
                         echo '<button onclick="return printReceipt()" class="btn btn-block btn-primary">' . lang('print') . '</button>';
                         echo '<button onclick="return openCashDrawer()" class="btn btn-block btn-default">' . lang('open_cash_drawer') . '</button>';
                     } ?>
-                    <a href="nfe/xml-nfce.php?pedido=<?php echo $inv->id; ?>" id="web_print" class="btn btn-block btn-success" target=_blank>NFCe</a>
+
+                    <button class="btn btn-success btn-block" id="btnCupomFiscal" onclick="$('#cpfNota').modal('toggle')">Cupom Fiscal</button>
+                    <button class="btn btn-success btn-block" id="btnCupomNaoFiscal" onclick="emitirCupomNaoFiscal()">Cupom Não Fiscal</button>
                 </span>
                 <span class="pull-left col-xs-12"><a class="btn btn-block btn-success" href="#" id="email"><?= lang('email'); ?></a></span>
                 <span class="col-xs-12">
@@ -423,9 +425,32 @@
         <script type="text/javascript" src="<?= $assets ?>js/bootstrap.min.js"></script>
         <script type="text/javascript" src="<?= $assets ?>js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="<?= $assets ?>js/custom.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7-beta.29/jquery.inputmask.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
         <?php
     }
     ?>
+
+    <div class="modal fade bd-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="cpfNota" aria-hidden="true" id="cpfNota">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content" style="padding: 20px;">
+                <fieldset class="scheduler-border">
+                    <legend class="scheduler-border">Cpf na nota?</legend>
+                    <div class="form-group" style="margin-top: 20px">
+                        <label for="cpf">Cpf</label>
+                        <input type="text" class="form-control" name="cpf" id="cpf" />
+                    </div>
+                </fieldset>
+
+                <div class="form-group">
+                    <input type="hidden" name="troco" id="troco" value="<?= ($payment->pos_balance > 0 ? $this->sma->formatMoney($payment->pos_balance) : 0) ?>" />
+                    <input required type="hidden" id="csrf" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
+                    <input type="button" value="Emitir" class="btn btn-info btn-block" style="margin-top: 20px" onclick="emitirCupomFiscal()">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="text/javascript">
         $(document).ready(function () {
             $('#email').click(function () {
@@ -474,6 +499,55 @@
         }
         ?>
 
+    </script>
+
+    <script>
+
+        function emitirCupomFiscal()
+        {
+            if(validaCpf()) {
+                window.open(window.location.origin + '/generate/nfce/?cpf=' + $('#cpf').val());
+            } else {
+                swal('Erro', 'CPF Inválido!', 'error');
+            }
+        }
+
+        function emitirCupomNaoFiscal()
+        {
+            window.open(window.location.origin + '/generate/cupom');
+        }
+
+        function validaCpf(){
+
+            let strCPF = $('#cpf').val();
+            if(strCPF.length == 0) return true;
+
+            strCPF = strCPF.replace(".", "");
+            strCPF = strCPF.replace(".", "");
+            strCPF = strCPF.replace("-", "");
+            let Soma;
+            let Resto;
+            Soma = 0;
+            if (strCPF == "00000000000") return false;
+
+            for (let i=1; i<=9; i++) Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
+            Resto = (Soma * 10) % 11;
+
+            if ((Resto == 10) || (Resto == 11))  Resto = 0;
+            if (Resto != parseInt(strCPF.substring(9, 10)) ) return false;
+
+            Soma = 0;
+            for (let i = 1; i <= 10; i++) Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i);
+            Resto = (Soma * 10) % 11;
+
+            if ((Resto == 10) || (Resto == 11))  Resto = 0;
+            if (Resto != parseInt(strCPF.substring(10, 11) ) ) return false;
+
+            return true;
+        }
+
+        $(':input').inputmask();
+        $('#cpf').inputmask({"mask": "999.999.999-99"});
     </script>
     <?php /* include FCPATH.'themes'.DIRECTORY_SEPARATOR.$Settings->theme.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'pos'.DIRECTORY_SEPARATOR.'remote_printing.php'; */ ?>
     <?php include 'remote_printing.php'; ?>

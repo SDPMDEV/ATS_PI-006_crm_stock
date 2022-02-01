@@ -4,6 +4,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Sales extends MY_Controller
 {
+
+    private $api_url;
+
+    private $api_token;
+
     public function __construct()
     {
         parent::__construct();
@@ -16,9 +21,16 @@ class Sales extends MY_Controller
             $this->session->set_flashdata('warning', lang('access_denied'));
             redirect($_SERVER['HTTP_REFERER']);
         }
+
+        $config = new CI_Config();
+        $this->api_url = $config->config["api_url"];
+        $this->api_token = $config->config['api_token'];
+
         $this->lang->admin_load('sales', $this->Settings->user_language);
         $this->load->library('form_validation');
         $this->load->admin_model('sales_model');
+        $this->load->admin_model('nfe_model');
+        $this->load->admin_model('parcelas_model');
         $this->digital_upload_path = 'files/';
         $this->upload_path         = 'assets/uploads/';
         $this->thumbs_path         = 'assets/uploads/thumbs/';
@@ -51,7 +63,7 @@ class Sales extends MY_Controller
             if ($this->Owner || $this->Admin) {
                 $date = $this->sma->fld(trim($this->input->post('date')));
             } else {
-                $date = date('Y-m-d H:i:s');
+                $date = date('Y-m-d');
             }
             $warehouse_id     = $this->input->post('warehouse');
             $customer_id      = $this->input->post('customer');
@@ -164,6 +176,11 @@ class Sales extends MY_Controller
             $order_tax      = $this->site->calculateOrderTax($this->input->post('order_tax'), ($total + $product_tax - $order_discount));
             $total_tax      = $this->sma->formatDecimal(($product_tax + $order_tax), 4);
             $grand_total    = $this->sma->formatDecimal(($this->sma->formatDecimal($total) + $this->sma->formatDecimal($total_tax) + $this->sma->formatDecimal($shipping) - $this->sma->formatDecimal($order_discount)), 4);
+            $id_produtos = implode(",", $this->input->post('product_id[]'));
+            $quantidades = 0;
+            foreach ($this->input->post('quantity[]') as $qtd) {
+                $quantidades = $quantidades + $qtd;
+            }
             $data           = ['date' => $date,
                 'reference_no'        => $reference,
                 'customer_id'         => $customer_id,
@@ -192,6 +209,22 @@ class Sales extends MY_Controller
                 'paid'                => 0,
                 'created_by'          => $this->session->userdata('user_id'),
                 'hash'                => hash('sha256', microtime() . mt_rand()),
+                'tipo_frete'          => $this->input->post('frete'),
+                'placa_vei'           => $this->input->post('placa-vei'),
+                'uf'                  => $this->input->post('uf'),
+                'especie'             => $this->input->post('especie'),
+                'num_volumes'         => $this->input->post('numeracao_volumes'),
+                'qntd_volumes'        => $this->input->post('qtd_volumes'),
+                'peso_liq'            => $this->input->post('peso_liq'),
+                'peso_bruto'          => $this->input->post('peso_brt'),
+                'lista_preco'         => $this->input->post('price-list'),
+                'payment_method'      => $this->input->post('forma-pagamento') == '--' ?? 'a_vista',
+                'tipo_pagamento'      => ($this->input->post('tipo_pagamento') == '--') ? '01' : $this->input->post('tipo_pagamento'),
+                'id_produtos'         => $id_produtos,
+                'quantidades'          => $quantidades,
+                'natureza'           => $this->input->post('natureza'),
+                'estado'            => 'DISPONIVEL',
+                'sequencia_cce'     => 0
             ];
             if ($this->Settings->indian_gst) {
                 $data['cgst'] = $total_cgst;
@@ -257,6 +290,74 @@ class Sales extends MY_Controller
             if ($quote_id) {
                 $this->db->update('quotes', ['status' => 'completed'], ['id' => $quote_id]);
             }
+
+            if(!empty($this->input->post('qtd_parcelas'))) {
+                $qtd_parcelas = $this->input->post('qtd_parcelas');
+                $perc_juros = $this->input->post('perc_juros') ?? 0;
+                $data_pagamento = $this->input->post('data_pagamento');
+                $data_vencimento = $this->input->post('data_vencimento');
+                $valor_pago = $this->input->post('valor_pago');
+
+                $valor_parcela = $grand_total / $qtd_parcelas;
+                $acrescimo_juros = ($valor_parcela * $perc_juros) / 100;
+
+                $sale_id = $this->sales_model->getLastSaleId();
+                $sale = $this->sales_model->getSale($sale_id);
+
+                for($parcela = 1; $parcela <= $qtd_parcelas; $parcela++) {
+                    if(!empty($valor_pago) && $parcela == 1) {
+                        $dt_parc = [
+                            'sale_id' => $sale_id,
+                            'qtd_parcelas' => $qtd_parcelas,
+                            'num_parcela' => $parcela,
+                            'valor_parcela' => $valor_parcela,
+                            'perc_juros'    => 0,
+                            'data_pagamento' => $data_pagamento,
+                            'data_vencimento' => $data_vencimento,
+                            'status_parcela' => 'PAGO',
+                            'valor_pago'    => $valor_pago,
+                            'tipo_pagamento' => $sale->tipo_pagamento
+                        ];
+                    } else {
+                        if($parcela != 1) {
+                            $data_vencimento = date('Y/m/d',strtotime('+30 days',strtotime($data_vencimento)));
+                            switch( date('w', strtotime($data_vencimento)) ) {
+                                case 0:
+                                    $data_vencimento = date('Y/m/d',strtotime('+1 days',strtotime($data_vencimento)));
+                                    break;
+                                case 6:
+                                    $data_vencimento = date('Y/m/d',strtotime('+2 days',strtotime($data_vencimento)));
+                                    break;
+                            }
+                        }
+
+                        if(!empty($valor_pago)) {
+                            if($valor_pago >= $grand_total) {
+                                $acrescimo_juros = 0;
+                                $perc_juros = 0;
+                            } else {
+                                $valor_parcela =  ($grand_total - $valor_pago) / $qtd_parcelas;
+                            }
+                        }
+
+                        $dt_parc = [
+                            'sale_id' => $sale_id,
+                            'qtd_parcelas' => $qtd_parcelas,
+                            'num_parcela' => $parcela,
+                            'valor_parcela' => $valor_parcela + $acrescimo_juros,
+                            'perc_juros'    => $perc_juros,
+                            'data_pagamento' => ($valor_pago >= $grand_total) ? $data_pagamento : null,
+                            'data_vencimento' => $data_vencimento,
+                            'status_parcela' => ($valor_pago >= $grand_total) ? 'PAGO' : 'PENDENTE',
+                            'valor_pago'    => ($valor_pago >= $grand_total) ? $valor_pago : null,
+                            'tipo_pagamento' => $sale->tipo_pagamento
+                        ];
+                    }
+
+                    $this->parcelas_model->saveParc($dt_parc);
+                }
+            }
+
             $this->session->set_flashdata('message', lang('sale_added'));
             admin_redirect('sales');
         } else {
@@ -341,6 +442,8 @@ class Sales extends MY_Controller
             $this->data['tax_rates']  = $this->site->getAllTaxRates();
             $this->data['units']      = $this->site->getAllBaseUnits();
             //$this->data['currencies'] = $this->sales_model->getAllCurrencies();
+            $this->data['fiscalSettings'] = $this->returnApiProps('/get_issuer_configs');
+            $this->data['lastSale'] = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe;
             $this->data['slnumber']    = ''; //$this->site->getReference('so');
             $this->data['payment_ref'] = ''; //$this->site->getReference('pay');
             $bc                        = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('sales'), 'page' => lang('sales')], ['link' => '#', 'page' => lang('add_sale')]];
@@ -373,7 +476,7 @@ class Sales extends MY_Controller
                 if ($this->Owner || $this->Admin) {
                     $date = $this->sma->fld(trim($this->input->post('date')));
                 } else {
-                    $date = date('Y-m-d H:i:s');
+                    $date = date('Y-m-d');
                 }
                 $dlDetails = [
                     'date'              => $date,
@@ -514,7 +617,7 @@ class Sales extends MY_Controller
             if ($this->Owner || $this->Admin) {
                 $date = $this->sma->fld(trim($this->input->post('date')));
             } else {
-                $date = date('Y-m-d H:i:s');
+                $date = date('Y-m-d');
             }
             $payment = [
                 'date'         => $date,
@@ -630,6 +733,7 @@ class Sales extends MY_Controller
             $this->sma->send_json(['error' => 1, 'msg' => lang('sale_x_action')]);
         }
 
+        $this->parcelas_model->deleteParcBySale($id);
         if ($this->sales_model->deleteSale($id)) {
             if ($this->input->is_ajax_request()) {
                 $this->sma->send_json(['error' => 0, 'msg' => lang('sale_deleted')]);
@@ -939,6 +1043,20 @@ class Sales extends MY_Controller
                 'due_date'            => $due_date,
                 'updated_by'          => $this->session->userdata('user_id'),
                 'updated_at'          => date('Y-m-d H:i:s'),
+                'tipo_frete'          => $this->input->post('frete'),
+                'placa_vei'           => $this->input->post('placa-vei'),
+                'uf'                  => $this->input->post('uf'),
+                'especie'             => $this->input->post('especie'),
+                'num_volumes'         => $this->input->post('numeracao_volumes'),
+                'qntd_volumes'        => $this->input->post('qtd_volumes'),
+                'peso_liq'            => $this->input->post('peso_liq'),
+                'peso_bruto'          => $this->input->post('peso_brt'),
+                'lista_preco'         => $this->input->post('price-list'),
+                'payment_method'      => ($this->input->post('forma-pagamento') == '--') ?? 'a_vista',
+                'tipo_pagamento'      => ($this->input->post('tipo_pagamento') == '--') ?? '01',
+                'id_produtos'         => $id_produtos,
+                'quantidades'          => $quantidades,
+                'natureza'           => $this->input->post('natureza'),
             ];
             if ($this->Settings->indian_gst) {
                 $data['cgst'] = $total_cgst;
@@ -1044,6 +1162,10 @@ class Sales extends MY_Controller
             $this->data['units']      = $this->site->getAllBaseUnits();
             $this->data['tax_rates']  = $this->site->getAllTaxRates();
             $this->data['warehouses'] = $this->site->getAllWarehouses();
+            $this->data['fiscalSettings'] = $this->returnApiProps('/get_issuer_configs');
+            $this->data['lastSale'] = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe;
+            $this->data['parcelas'] = $this->parcelas_model->getParcBySale($id);
+            $this->data['sale'] = $this->sales_model->getSale($id);
 
             $bc   = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('sales'), 'page' => lang('sales')], ['link' => '#', 'page' => lang('edit_sale')]];
             $meta = ['page_title' => lang('edit_sale'), 'bc' => $bc];
@@ -1770,7 +1892,7 @@ class Sales extends MY_Controller
             if ($this->Owner || $this->Admin) {
                 $date = $this->sma->fld(trim($this->input->post('date')));
             } else {
-                $date = date('Y-m-d H:i:s');
+                $date = date('Y-m-d');
             }
 
             $return_surcharge = $this->input->post('return_surcharge') ? $this->input->post('return_surcharge') : 0;
@@ -2095,7 +2217,7 @@ class Sales extends MY_Controller
             if ($this->Owner || $this->Admin) {
                 $date = $this->sma->fld(trim($this->input->post('date')));
             } else {
-                $date = date('Y-m-d H:i:s');
+                $date = date('Y-m-d');
             }
             $warehouse_id     = $this->input->post('warehouse');
             $customer_id      = $this->input->post('customer');
@@ -2608,5 +2730,30 @@ class Sales extends MY_Controller
         $this->data['customer']   = $this->site->getCompanyByID($gift_card->customer_id);
         $this->data['topups']     = $this->sales_model->getAllGCTopups($id);
         $this->load->view($this->theme . 'sales/view_gift_card', $this->data);
+    }
+
+    private function returnApiProps(string $endpoint, array $data = [])
+    {
+        $ch = curl_init($this->api_url . $endpoint);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        if(!empty($data)) {
+            unset($data["api_url"]);
+            unset($data["ajax"]);
+            $data["api_token"] = $this->api_token;
+
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token&".http_build_query($data));
+        } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token");
+        }
+
+        if(curl_exec($ch)) {
+            return json_decode(curl_exec($ch));
+        } else {
+            return curl_error($ch);
+        }
     }
 }

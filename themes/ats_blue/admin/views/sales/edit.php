@@ -136,7 +136,8 @@ $allow_discount = ($Owner || $Admin || $this->session->userdata('allow_discount'
                 echo admin_form_open_multipart('sales/edit/' . $inv->id, $attrib)
                 ?>
 
-
+                <strong>Última NF-e:</strong>&nbsp;&nbsp;&nbsp;<span><?= $lastSale ?></span>
+                <hr>
                 <div class="row">
                     <div class="col-lg-12">
                         <?php if ($Owner || $Admin) {
@@ -155,19 +156,102 @@ $allow_discount = ($Owner || $Admin || $this->session->userdata('allow_discount'
                                 <?php echo form_input('reference_no', ($_POST['reference_no'] ?? ''), 'class="form-control input-tip" id="slref" required="required"'); ?>
                             </div>
                         </div>
-                        <?php if ($Owner || $Admin || !$this->session->userdata('biller_id')) {
-                    ?>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <?= lang('biller', 'slbiller'); ?>
-                                    <?php
-                                    $bl[''] = '';
-                    foreach ($billers as $biller) {
-                        $bl[$biller->id] = $biller->company && $biller->company != '-' ? $biller->company : $biller->name;
-                    }
-                    echo form_dropdown('biller', $bl, ($_POST['biller'] ?? $inv->biller_id), 'id="slbiller" data-placeholder="' . lang('select') . ' ' . lang('biller') . '" required="required" class="form-control input-tip select" style="width:100%;"'); ?>
-                                </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="natureza"><b>Natureza de Operação:</b></label>
+                                <select name="natureza" id="natureza" class="form-control">
+                                    <?php foreach($fiscalSettings->naturezas as $natureza) {?>
+                                        <option value="<?= $natureza->id ?>"><?= $natureza->natureza ?></option>
+                                    <?php }?>
+                                </select>
                             </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="price-list"><b>Lista de Preço</b></label>
+                                <select name="price-list" id="price-list" class="form-control">
+                                    <?php if(isset($fiscalSettings->listPrecos)) {?>
+
+                                        <?php foreach($fiscalSettings->listaPrecos as $lista) {?>
+                                            <?php if($sale->lista_preco == $lista->id) {?>
+                                                <option value="<?= $lista->id?>"><?= $lista->nome ?></option>
+                                            <?php }?>
+                                        <?php }?>
+
+                                        <?php foreach($fiscalSettings->listaPrecos as $lista) {?>
+                                            <option value="<?= $lista->id?>"><?= $lista->nome ?></option>
+                                        <?php }?>
+
+                                    <?php } else {?>
+                                        <option value="0">Padrão</option>
+                                    <?php }?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="tipo_pagamento">Tipo de pagamento</label>
+                                <select class="form-control" name="tipo_pagamento" id="tipo_pagamento">
+                                    <?php foreach($fiscalSettings->tiposPagamento as $value => $pag) { ?>
+                                        <?php if ($sale->tipo_pagamento == $value) { ?>
+                                            <option value="<?= $value ?>">
+                                                <?= $pag ?>
+                                            </option>
+                                        <?php }?>
+                                    <?php } ?>
+
+                                    <?php foreach($fiscalSettings->tiposPagamento as $value => $pag) { ?>
+                                        <option value="<?= $value ?>">
+                                            <?= $pag ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="forma-pagamento">Forma de pagamento</label>
+                                <select class="form-control" name="forma-pagamento" id="forma-pagamento">
+                                    <?php if($sale->payment_method == 'a_vista') { ?>
+                                            <option value="a_vista">A vista</option>
+                                            <option value="30_dias">30 Dias</option>
+                                            <option value="personalizado">Parcelado</option>
+                                            <option value="conta_crediario">Conta crediario</option>
+                                        <?php } else if($sale->payment_method == '30_dias') { ?>
+                                            <option value="30_dias">30 Dias</option>
+                                            <option value="a_vista">A vista</option>
+                                            <option value="personalizado">Parcelado</option>
+                                            <option value="conta_crediario">Conta crediario</option>
+                                        <?php } else if ($sale->payment_method == 'personalizado') {?>
+                                            <option value="personalizado">Parcelado</option>
+                                            <option value="30_dias">30 Dias</option>
+                                            <option value="a_vista">A vista</option>
+                                            <option value="conta_crediario">Conta crediario</option>
+                                        <?php } else { ?>
+                                            <option value="conta_crediario">Conta crediario</option>
+                                            <option value="personalizado">Parcelado</option>
+                                            <option value="30_dias">30 Dias</option>
+                                            <option value="a_vista">A vista</option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        <?php if ($Owner || $Admin || !$this->session->userdata('biller_id')) { ?>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <?= lang('biller', 'slbiller'); ?>
+                                                <?php
+                                                $bl[''] = '';
+                                foreach ($billers as $biller) {
+                                    $bl[$biller->id] = $biller->company && $biller->company != '-' ? $biller->company : $biller->name;
+                                }
+                                echo form_dropdown('biller', $bl, ($_POST['biller'] ?? $inv->biller_id), 'id="slbiller" data-placeholder="' . lang('select') . ' ' . lang('biller') . '" required="required" class="form-control input-tip select" style="width:100%;"'); ?>
+                            </div>
+                        </div>
                         <?php
                 } else {
                     $biller_input = [
@@ -311,25 +395,92 @@ $allow_discount = ($Owner || $Admin || $this->session->userdata('allow_discount'
                         <?php
                                             } ?>
 
-                        <?php if ($allow_discount) {
-                                                ?>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <?= lang('order_discount', 'sldiscount'); ?>
-                                <?php echo form_input('order_discount', '', 'class="form-control input-tip" id="sldiscount" ' . ($allow_discount ? '' : 'readonly="true"')); ?>
+                        <fieldset class="scheduler-border">
+                            <legend class="scheduler-border">Transporte</legend>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <?= lang('shipping', 'slshipping'); ?>
+                                    <?php echo form_input('shipping', '', 'class="form-control input-tip" id="slshipping"'); ?>
+                                </div>
                             </div>
-                        </div>
-                        <?php
-                                            } ?>
 
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <?= lang('shipping', 'slshipping'); ?>
-                                <?php echo form_input('shipping', '', 'class="form-control input-tip" id="slshipping"'); ?>
-
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="frete"><b>Frete</b></label>
+                                    <select name="frete" id="frete" class="form-control">
+                                        <?php foreach($fiscalSettings->tiposFrete as $index => $frete) {?>
+                                            <option value="<?= $index ?>"><?= $index ?> - <?= $frete ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="placa-vei"><b>Placa Veículo</b></label>
+                                    <input type="text" name="placa-vei" id="placa-vei" class="form-control" value="<?= $sale->placa_vei ?>">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="uf"><b>UF</b></label>
+                                    <select name="uf" id="uf" class="form-control">
+                                        <?php foreach($fiscalSettings->estados as $index => $estado) {?>
+                                            <?php if($sale->uf == $index) {?>
+                                                <option value="<?= $index ?>"><?= $estado ?></option>
+                                            <?php }?>
+                                        <?php } ?>
+
+                                        <?php foreach($fiscalSettings->estados as $index => $estado) {?>
+                                            <option value="<?= $index ?>"><?= $estado ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+
+
+                        <fieldset class="scheduler-border">
+                            <legend class="scheduler-border">Volume</legend>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="especie">Espécie</label>
+                                    <input type="text" name="especie" id="especie" class="form-control" value="<?= $sale->especie ?>">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="numeracao_volumes"><b>Numeração de Volumes</b></label>
+                                    <input type="text" name="numeracao_volumes" id="numeracao_volumes" class="form-control" value="<?= $sale->num_volumes ?>">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="qtd_volumes"><b>Quantidade de Volumes</b></label>
+                                    <input type="text" name="qtd_volumes" id="qtd_volumes" class="form-control" value="<?= $sale->qntd_volumes ?>" >
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="peso_liq"><b>Peso Liquido</b></label>
+                                    <input type="text" name="peso_liq" id="peso_liq" class="form-control" value="<?= $sale->peso_liq ?>">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="peso_brt"><b>Peso Bruto</b></label>
+                                    <input type="text" name="peso_brt" id="peso_brt" class="form-control" value="<?= $sale->peso_bruto ?>">
+                                </div>
+                            </div>
+
+                        </fieldset>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <?= lang('attachments', 'document') ?>

@@ -4,6 +4,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Pos extends MY_Controller
 {
+    private string $api_url;
+
+    private string $api_token;
+
     public function __construct()
     {
         parent::__construct();
@@ -17,11 +21,20 @@ class Pos extends MY_Controller
             redirect($_SERVER['HTTP_REFERER']);
         }
 
+        $config = new CI_Config();
+        $this->api_url = $config->config["api_url"];
+        $this->api_token = $config->config['api_token'];
+
         $this->load->admin_model('pos_model');
+        $this->load->admin_model('products_model');
+        $this->load->admin_model('sales_model');
+        $this->load->admin_model('nfe_model');
+
         $this->load->helper('text');
         $this->pos_settings           = $this->pos_model->getSetting();
         $this->pos_settings->pin_code = $this->pos_settings->pin_code ? md5($this->pos_settings->pin_code) : null;
         $this->data['pos_settings']   = $this->pos_settings;
+        $this->data['payment_methods'] = $this->returnApiProps('/get_payment_methods');
         $this->session->set_userdata('last_activity', now());
         $this->lang->admin_load('pos', $this->Settings->user_language);
         $this->load->library('form_validation');
@@ -528,10 +541,10 @@ class Pos extends MY_Controller
 
         $this->load->library('datatables');
         $this->datatables
-        ->select('id, title, type, profile, path, ip_address, port')
-        ->from('printers')
-        ->add_column('Actions', "<div class='text-center'> <a href='" . admin_url('pos/edit_printer/$1') . "' class='btn-warning btn-xs tip' title='" . lang('edit_printer') . "'><i class='fa fa-edit'></i></a> <a href='#' class='btn-danger btn-xs tip po' title='<b>" . lang('delete_printer') . "</b>' data-content=\"<p>" . lang('r_u_sure') . "</p><a class='btn btn-danger po-delete' href='" . admin_url('pos/delete_printer/$1') . "'>" . lang('i_m_sure') . "</a> <button class='btn po-close'>" . lang('no') . "</button>\"  rel='popover'><i class=\"fa fa-trash-o\"></i></a></div>", 'id')
-        ->unset_column('id');
+            ->select('id, title, type, profile, path, ip_address, port')
+            ->from('printers')
+            ->add_column('Actions', "<div class='text-center'> <a href='" . admin_url('pos/edit_printer/$1') . "' class='btn-warning btn-xs tip' title='" . lang('edit_printer') . "'><i class='fa fa-edit'></i></a> <a href='#' class='btn-danger btn-xs tip po' title='<b>" . lang('delete_printer') . "</b>' data-content=\"<p>" . lang('r_u_sure') . "</p><a class='btn btn-danger po-delete' href='" . admin_url('pos/delete_printer/$1') . "'>" . lang('i_m_sure') . "</a> <button class='btn po-close'>" . lang('no') . "</button>\"  rel='popover'><i class=\"fa fa-trash-o\"></i></a></div>", 'id')
+            ->unset_column('id');
         echo $this->datatables->generate();
     }
 
@@ -714,6 +727,10 @@ class Pos extends MY_Controller
         $email_link        = anchor('admin/#', '<i class="fa fa-envelope"></i> ' . lang('email_sale'), 'class="email_receipt" data-id="$1" data-email-address="$2"');
         $edit_link         = anchor('admin/sales/edit/$1', '<i class="fa fa-edit"></i> ' . lang('edit_sale'), 'class="sledit"');
         $return_link       = anchor('admin/sales/return_sale/$1', '<i class="fa fa-angle-double-left"></i> ' . lang('return_sale'));
+
+        $no_tax_link       = anchor('/generate/cupom/?sale_id=$1', '<i class="fas fa-receipt"></i>' . lang('no_tax_sale'), 'target="_blank"');
+        $tax_link       = anchor('/generate/nfce/?cpf=&sale_id=$1', '<i class="fas fa-file-invoice-dollar"></i>' . lang('tax_sale'), 'target="_blank"');
+
         $delete_link       = "<a href='#' class='po' title='<b>" . lang('delete_sale') . "</b>' data-content=\"<p>"
             . lang('r_u_sure') . "</p><a class='btn btn-danger po-delete' href='" . admin_url('sales/delete/$1') . "'>"
             . lang('i_m_sure') . "</a> <button class='btn po-close'>" . lang('no') . "</button>\"  rel='popover'><i class=\"fa fa-trash-o\"></i> "
@@ -729,6 +746,8 @@ class Pos extends MY_Controller
                 <li>' . $payments_link . '</li>
                 <li>' . $add_payment_link . '</li>
                 <li>' . $packagink_link . '</li>
+                <li>' . $no_tax_link . '</li>
+                <li>' . $tax_link . '</li>
                 <li>' . $add_delivery_link . '</li>
                 <li>' . $edit_link . '</li>
                 <li>' . $email_link . '</li>
@@ -791,6 +810,8 @@ class Pos extends MY_Controller
         $this->form_validation->set_rules('customer', $this->lang->line('customer'), 'trim|required');
         $this->form_validation->set_rules('warehouse', $this->lang->line('warehouse'), 'required');
         $this->form_validation->set_rules('biller', $this->lang->line('biller'), 'required');
+
+        $this->nfe_model->truncate('products_nfe');
 
         if ($this->form_validation->run() == true) {
             $date             = date('Y-m-d H:i:s');
@@ -897,6 +918,41 @@ class Pos extends MY_Controller
             if (empty($products)) {
                 $this->form_validation->set_rules('product', lang('order_items'), 'required');
             } elseif ($this->pos_settings->item_order == 0) {
+                foreach($products as $product) {
+                    $pr = $this->products_model->getProductByID($product['product_id']);
+
+                    $map = function($v) {return $v['product_id'];};
+                    $equals = array_count_values(array_map($map, $products));
+                    foreach($equals as $equal => $qty) {
+                        if($equal == $pr->id) {
+                            $product['quantity'] = $qty;
+                        }
+                    }
+
+                    $data = [
+                        'id' => (int)$pr->id,
+                        'nome' => $pr->name,
+                        'NCM' => $pr->NCM,
+                        'CST_CSOSN' => $pr->CST_CSOSN,
+                        'CFOP_saida_estadual' => $pr->CFOP_saida_estadual,
+                        'CEST' => $pr->CEST,
+                        'unidade_venda' => $pr->unidade_venda,
+                        'quantidade' => $product['quantity'],
+                        'valor' => $pr->price,
+                        'perc_icms' => number_format($pr->perc_icms, 2),
+                        'CST_PIS' => $pr->CST_PIS,
+                        'perc_pis' => number_format($pr->perc_pis, 2),
+                        'perc_iss' => $pr->perc_iss,
+                        'CST_COFINS' => $pr->CST_COFINS,
+                        'perc_cofins' => number_format($pr->perc_cofins, 2),
+                        'descricao_anp' => $pr->descricao_anp ?? '',
+                        'codigo_anp' => number_format($pr->codigo_anp, 2),
+                        'codBarras' => $pr->codBarras,
+                        'payment_method' => $this->input->post('paid_by')[0] == 'cash' ? '01' : $this->input->post('paid_by')[0]
+                    ];
+
+                    $this->nfe_model->saveProductToNfe($data);
+                }
                 krsort($products);
             }
 
@@ -939,6 +995,10 @@ class Pos extends MY_Controller
                 'paid'              => $this->input->post('amount-paid') ? $this->input->post('amount-paid') : 0,
                 'created_by'        => $this->session->userdata('user_id'),
                 'hash'              => hash('sha256', microtime() . mt_rand()),
+                'estado'            => 'DISPONIVEL',
+                'sequencia_cce'     => 0,
+                'payment_method'    => 'a_vista',
+                'tipo_pagamento'    => $this->input->post('paid_by')[0]
             ];
             if ($this->Settings->indian_gst) {
                 $data['cgst'] = $total_cgst;
@@ -1138,7 +1198,7 @@ class Pos extends MY_Controller
                 }
 
                 $this->data['items'] = json_encode($pr);
-            // $this->sma->print_arrays($this->data['items']);
+                // $this->sma->print_arrays($this->data['items']);
             } else {
                 $this->data['customer']       = $this->pos_model->getCompanyByID($this->pos_settings->default_customer);
                 $this->data['reference_note'] = null;
@@ -1633,5 +1693,38 @@ class Pos extends MY_Controller
         }
         @chmod($output_path, 0644);
         return false;
+    }
+
+    private function returnApiProps(string $endpoint, array $data = [])
+    {
+        $ch = curl_init($this->api_url . $endpoint);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        if(!empty($data)) {
+            unset($data["api_url"]);
+            unset($data["ajax"]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token&".http_build_query($data));
+        } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token");
+        }
+
+        if(curl_exec($ch)) {
+            return json_decode(curl_exec($ch));
+        } else {
+            return curl_error($ch);
+        }
+    }
+
+    private function toJson(array $arr)
+    {
+        $json = new stdClass();
+        foreach($arr as $index => $value) {
+            $json->$index = $value;
+        }
+
+        return $json;
     }
 }

@@ -66,7 +66,7 @@ if (!empty($variants)) {
         });
     });
 </script>
-<div class="box">
+<div class="box" id="app">
     <div class="box-header">
         <h2 class="blue"><i class="fa-fw fa fa-plus"></i><?= lang('add_product'); ?></h2>
     </div>
@@ -206,16 +206,16 @@ if (!empty($variants)) {
                     </div>
 
                     <?php if ($Settings->invoice_view == 2) {
-                            ?>
+                        ?>
                         <div class="form-group">
                             <?= lang('hsn_code', 'hsn_code'); ?>
                             <?= form_input('hsn_code', set_value('hsn_code', ($product ? $product->hsn_code : '')), 'class="form-control" id="hsn_code"'); ?>
                         </div>
-                    <?php
-                        } ?>
+                        <?php
+                    } ?>
 
                     <?php if ($Settings->tax1) {
-                            ?>
+                        ?>
                         <div class="form-group all">
                             <?= lang('product_tax', 'tax_rate') ?>
                             <?php
@@ -232,18 +232,8 @@ if (!empty($variants)) {
                             $tm = ['1' => lang('exclusive'), '0' => lang('inclusive')];
                             echo form_dropdown('tax_method', $tm, ($_POST['tax_method'] ?? ($product ? $product->tax_method : '')), 'class="form-control select" id="tax_method" placeholder="' . lang('select') . ' ' . lang('tax_method') . '" style="width:100%"'); ?>
                         </div>
-                    <?php
-                        } ?>
-                    <div class="form-group standard">
-                        <?= lang('alert_quantity', 'alert_quantity') ?>
-                        <div
-                            class="input-group"> <?= form_input('alert_quantity', ($_POST['alert_quantity'] ?? ($product ? $this->sma->formatQuantityDecimal($product->alert_quantity) : '')), 'class="form-control tip" id="alert_quantity"') ?>
-                            <span class="input-group-addon">
-                            <input type="checkbox" name="track_quantity" id="track_quantity"
-                                   value="1" <?= ($product ? (isset($product->track_quantity) ? 'checked="checked"' : '') : 'checked="checked"') ?>>
-                        </span>
-                        </div>
-                    </div>
+                        <?php
+                    } ?>
 
                     <div class="form-group all">
                         <?= lang('product_image', 'product_image') ?>
@@ -266,8 +256,8 @@ if (!empty($variants)) {
                         <div class="form-group">
                             <input type="checkbox" class="checkbox" name="attributes"
                                    id="attributes" <?= $this->input->post('attributes') || $product_options ? 'checked="checked"' : ''; ?>><label
-                                for="attributes"
-                                class="padding05"><?= lang('product_has_attributes'); ?></label> <?= lang('eg_sizes_colors'); ?>
+                                    for="attributes"
+                                    class="padding05"><?= lang('product_has_attributes'); ?></label> <?= lang('eg_sizes_colors'); ?>
                         </div>
                         <div class="well well-sm" id="attr-con"
                              style="<?= $this->input->post('attributes') || $product_options ? '' : 'display:none;'; ?>">
@@ -317,39 +307,39 @@ if (!empty($variants)) {
                         <!-- <div class="<?= $product ? 'text-warning' : '' ?>">
                             <strong><?= lang('warehouse_quantity') ?></strong><br>
                             <?php
-                            if (!empty($warehouses)) {
-                                if ($product) {
-                                    echo '<div class="row"><div class="col-md-12"><div class="well"><div id="show_wh_edit">';
-                                    if (!empty($warehouses_products)) {
-                                        echo '<div style="display:none;">';
-                                        foreach ($warehouses_products as $wh_pr) {
-                                            echo '<span class="bold text-info">' . $wh_pr->name . ': <span class="padding05" id="rwh_qty_' . $wh_pr->id . '">' . $this->sma->formatQuantity($wh_pr->quantity) . '</span>' . ($wh_pr->rack ? ' (<span class="padding05" id="rrack_' . $wh_pr->id . '">' . $wh_pr->rack . '</span>)' : '') . '</span><br>';
-                                        }
-                                        echo '</div>';
+                        if (!empty($warehouses)) {
+                            if ($product) {
+                                echo '<div class="row"><div class="col-md-12"><div class="well"><div id="show_wh_edit">';
+                                if (!empty($warehouses_products)) {
+                                    echo '<div style="display:none;">';
+                                    foreach ($warehouses_products as $wh_pr) {
+                                        echo '<span class="bold text-info">' . $wh_pr->name . ': <span class="padding05" id="rwh_qty_' . $wh_pr->id . '">' . $this->sma->formatQuantity($wh_pr->quantity) . '</span>' . ($wh_pr->rack ? ' (<span class="padding05" id="rrack_' . $wh_pr->id . '">' . $wh_pr->rack . '</span>)' : '') . '</span><br>';
                                     }
-                                    foreach ($warehouses as $warehouse) {
-                                        //$whs[$warehouse->id] = $warehouse->name;
-                                        echo '<div class="col-md-6 col-sm-6 col-xs-6" style="padding-bottom:15px;">' . $warehouse->name . '<br><div class="form-group">' . form_hidden('wh_' . $warehouse->id, $warehouse->id) . form_input('wh_qty_' . $warehouse->id, (isset($_POST['wh_qty_' . $warehouse->id]) ? $_POST['wh_qty_' . $warehouse->id] : (isset($warehouse->quantity) ? $warehouse->quantity : '')), 'class="form-control wh" id="wh_qty_' . $warehouse->id . '" placeholder="' . lang('quantity') . '"') . '</div>';
-                                        if ($Settings->racks) {
-                                            echo '<div class="form-group">' . form_input('rack_' . $warehouse->id, (isset($_POST['rack_' . $warehouse->id]) ? $_POST['rack_' . $warehouse->id] : (isset($warehouse->rack) ? $warehouse->rack : '')), 'class="form-control wh" id="rack_' . $warehouse->id . '" placeholder="' . lang('rack') . '"') . '</div>';
-                                        }
-                                        echo '</div>';
-                                    }
-                                    echo '</div><div class="clearfix"></div></div></div></div>';
-                                } else {
-                                    echo '<div class="row"><div class="col-md-12"><div class="well">';
-                                    foreach ($warehouses as $warehouse) {
-                                        //$whs[$warehouse->id] = $warehouse->name;
-                                        echo '<div class="col-md-6 col-sm-6 col-xs-6" style="padding-bottom:15px;">' . $warehouse->name . '<br><div class="form-group">' . form_hidden('wh_' . $warehouse->id, $warehouse->id) . form_input('wh_qty_' . $warehouse->id, (isset($_POST['wh_qty_' . $warehouse->id]) ? $_POST['wh_qty_' . $warehouse->id] : ''), 'class="form-control" id="wh_qty_' . $warehouse->id . '" placeholder="' . lang('quantity') . '"') . '</div>';
-                                        if ($Settings->racks) {
-                                            echo '<div class="form-group">' . form_input('rack_' . $warehouse->id, (isset($_POST['rack_' . $warehouse->id]) ? $_POST['rack_' . $warehouse->id] : ''), 'class="form-control" id="rack_' . $warehouse->id . '" placeholder="' . lang('rack') . '"') . '</div>';
-                                        }
-                                        echo '</div>';
-                                    }
-                                    echo '<div class="clearfix"></div></div></div></div>';
+                                    echo '</div>';
                                 }
+                                foreach ($warehouses as $warehouse) {
+                                    //$whs[$warehouse->id] = $warehouse->name;
+                                    echo '<div class="col-md-6 col-sm-6 col-xs-6" style="padding-bottom:15px;">' . $warehouse->name . '<br><div class="form-group">' . form_hidden('wh_' . $warehouse->id, $warehouse->id) . form_input('wh_qty_' . $warehouse->id, (isset($_POST['wh_qty_' . $warehouse->id]) ? $_POST['wh_qty_' . $warehouse->id] : (isset($warehouse->quantity) ? $warehouse->quantity : '')), 'class="form-control wh" id="wh_qty_' . $warehouse->id . '" placeholder="' . lang('quantity') . '"') . '</div>';
+                                    if ($Settings->racks) {
+                                        echo '<div class="form-group">' . form_input('rack_' . $warehouse->id, (isset($_POST['rack_' . $warehouse->id]) ? $_POST['rack_' . $warehouse->id] : (isset($warehouse->rack) ? $warehouse->rack : '')), 'class="form-control wh" id="rack_' . $warehouse->id . '" placeholder="' . lang('rack') . '"') . '</div>';
+                                    }
+                                    echo '</div>';
+                                }
+                                echo '</div><div class="clearfix"></div></div></div></div>';
+                            } else {
+                                echo '<div class="row"><div class="col-md-12"><div class="well">';
+                                foreach ($warehouses as $warehouse) {
+                                    //$whs[$warehouse->id] = $warehouse->name;
+                                    echo '<div class="col-md-6 col-sm-6 col-xs-6" style="padding-bottom:15px;">' . $warehouse->name . '<br><div class="form-group">' . form_hidden('wh_' . $warehouse->id, $warehouse->id) . form_input('wh_qty_' . $warehouse->id, (isset($_POST['wh_qty_' . $warehouse->id]) ? $_POST['wh_qty_' . $warehouse->id] : ''), 'class="form-control" id="wh_qty_' . $warehouse->id . '" placeholder="' . lang('quantity') . '"') . '</div>';
+                                    if ($Settings->racks) {
+                                        echo '<div class="form-group">' . form_input('rack_' . $warehouse->id, (isset($_POST['rack_' . $warehouse->id]) ? $_POST['rack_' . $warehouse->id] : ''), 'class="form-control" id="rack_' . $warehouse->id . '" placeholder="' . lang('rack') . '"') . '</div>';
+                                    }
+                                    echo '</div>';
+                                }
+                                echo '<div class="clearfix"></div></div></div></div>';
                             }
-                            ?>
+                        }
+                        ?>
                         </div>
                         <div class="clearfix"></div> -->
 
@@ -395,33 +385,284 @@ if (!empty($variants)) {
                         </div>
                     </div>
 
-                <div class="form-group standard">
-                    <div class="form-group">
-                        <?= lang('supplier', 'supplier') ?>
-                        <button type="button" class="btn btn-primary btn-xs" id="addSupplier"><i class="fa fa-plus"></i>
-                        </button>
+                    <div class="form-group standard">
+                        <div class="form-group">
+                            <?= lang('supplier', 'supplier') ?>
+                            <button type="button" class="btn btn-primary btn-xs" id="addSupplier"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="row" id="supplier-con">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <?php
+                                    echo form_input('supplier', ($_POST['supplier'] ?? ''), 'class="form-control ' . ($product ? '' : 'suppliers') . '" id="' . ($product && !empty($product->supplier1) ? 'supplier1' : 'supplier') . '" placeholder="' . lang('select') . ' ' . lang('supplier') . '" style="width:100%;"');
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <?= form_input('supplier_part_no', ($_POST['supplier_part_no'] ?? ''), 'class="form-control tip" id="supplier_part_no" placeholder="' . lang('supplier_part_no') . '"'); ?>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <?= form_input('supplier_price', ($_POST['supplier_price'] ?? ''), 'class="form-control tip" id="supplier_price" placeholder="' . lang('supplier_price') . '"'); ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="ex-suppliers"></div>
                     </div>
-                    <div class="row" id="supplier-con">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <?php
-                                echo form_input('supplier', ($_POST['supplier'] ?? ''), 'class="form-control ' . ($product ? '' : 'suppliers') . '" id="' . ($product && !empty($product->supplier1) ? 'supplier1' : 'supplier') . '" placeholder="' . lang('select') . ' ' . lang('supplier') . '" style="width:100%;"');
-                                ?>
+
+                    <div class="form-group standart">
+                        <input name="modulo_fiscal" type="checkbox" class="checkbox" id="modulo_fiscal" />
+                        <label for="modulo_fiscal" class="padding05">Produto referente ao módulo fiscal</label>
+
+                        <div id="fiscal_inputs" style="display: none; margin: 10px">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ncm"><b>NCM</b></label>
+                                    <input type="text" name="ncm" id="ncm" class="form-control" />
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="form-group">
-                                <?= form_input('supplier_part_no', ($_POST['supplier_part_no'] ?? ''), 'class="form-control tip" id="supplier_part_no" placeholder="' . lang('supplier_part_no') . '"'); ?>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="unidade_compra"><b>Unidade de Compra</b></label>
+                                    <select name="unidade_compra" id="unidade_compra" class="form-control">
+                                        <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                            <option value="<?= $un ?>"><?= $un ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-xs-6">
-                            <div class="form-group">
-                            <?= form_input('supplier_price', ($_POST['supplier_price'] ?? ''), 'class="form-control tip" id="supplier_price" placeholder="' . lang('supplier_price') . '"'); ?>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="conversao_estoque"><b>Conversão unitária</b></label>
+                                    <input type="text" name="conversao_estoque" id="conversao_estoque" class="form-control" v-model="convUnitaria" v-on:change="calcularValorVenda" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="quantidade"><b>Quantidade</b></label>
+                                    <input type="number" name="quantidade" id="quantidade" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="valor_compra"><b>Valor de compra</b></label>
+                                    <input type="text" name="valor_compra" id="valor_compra" class="form-control" v-model="valorCompra" v-on:change="calcularValorVenda" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="valor_venda"><b>Valor de Venda</b></label>
+                                    <input type="text" name="valor_venda" id="valor_venda" class="form-control" v-bind:value="valorVenda" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="unidade_venda"><b>Unidade de Venda</b></label>
+
+                                    <select class="form-control" name="unidade_venda" id="unidade_venda">
+                                        <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                            <option value="<?= $un ?>"><?= $un ?></option>
+                                        <?php } ?>
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="referencia"><b>Referência</b></label>
+                                    <input type="text" name="referencia" id="referencia" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cest"><b>CEST</b></label>
+                                    <input type="text" name="cest" id="cest" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cor"><b>Cor</b></label>
+                                    <select name="cor" id="cor" class="form-control">
+                                        <option value="--">--</option>
+                                        <option value="Preto">Preto</option>
+                                        <option value="Branco">Branco</option>
+                                        <option value="Dourado">Dourado</option>
+                                        <option value="Vermelho">Vermelho</option>
+                                        <option value="Azul">Azul</option>
+                                        <option value="Rosa">Rosa</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cst_CSOSN"><b>CST/CSOSN</b></label>
+                                    <select class="form-control" name="cst_CSOSN" id="cst_CSOSN">
+                                        <?php foreach($fiscalConfigs->listaCSTCSOSN as $value_cstsosn => $cstsosn) { ?>
+                                            <option value="<?= $value_cstsosn ?>"> <?= $value_cstsosn ?> - <?= $cstsosn ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cst_PIS"><b>CST/PIS</b></label>
+                                    <select class="form-control" name="cst_PIS" id="cst_PIS">
+                                        <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
+                                            <option value="<?= $value_piscofins ?>">
+                                                <?= $value_piscofins ?> - <?= $piscofins ?>
+                                            </option>
+                                        <?php }?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cst_COFINS"><b>CST/COFINS</b></label>
+                                    <select class="form-control" name="cst_COFINS" id="cst_COFINS">
+                                        <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
+                                            <option value="<?= $value_piscofins ?>">
+                                                <?= $value_piscofins ?> - <?= $piscofins ?>
+                                            </option>
+                                        <?php }?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cst_IPI"><b>CST IPI</b></label>
+                                    <select class="form-control" name="cst_IPI" id="cst_IPI">
+                                        <?php foreach($fiscalConfigs->listaCSTIPI as $value_cstipi => $cstipi) {?>
+                                            <option value="<?= $value_cstipi ?>">
+                                                <?= $value_cstipi ?> - <?= $cstipi ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="estoque_min"><b>Estoque Minimo</b></label>
+                                    <input type="text" name="estoque_min" id="estoque_min" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="alerta_venc"><b>Alerta de Venc. (Dias)<b></label>
+                                    <input type="text" name="alerta_venc" id="alerta_venc" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cod_barras_ean13"><b>Código de Barras EAN13</b></label>
+                                    <input type="text" name="cod_barras_ean13" id="cod_barras_ean13" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cfop_saida_interno"><b>CFOP saida interno *</b></label>
+                                    <input type="text" name="cfop_saida_interno" id="cfop_saida_interno" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cfop_saida_externo"><b>CFOP saida externo *</b></label>
+                                    <input type="text" name="cfop_saida_externo" id="cfop_saida_externo" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perc_icms"><b>%ICMS *</b></label>
+                                    <input type="text" name="perc_icms" id="perc_icms" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perc_pis"><b>%PIS *</b></label>
+                                    <input type="text" name="perc_pis" id="perc_pis" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perc_cofins"><b>%COFINS *</b></label>
+                                    <input type="text" name="perc_cofins" id="perc_cofins" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perc_ipi"><b>%IPI *</b></label>
+                                    <input type="text" name="perc_ipi" id="perc_ipi" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perc_iss"><b>%ISS *</b></label>
+                                    <input type="text" name="perc_iss" id="perc_iss" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cod_lista_iss"><b>Cod Lista Serviço (iss)</b></label>
+                                    <input type="text" name="cod_lista_iss" id="cod_lista_iss" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ident_anp"><b>Identificação ANP</b></label>
+                                    <select id="ident_anp" class="form-control" name="ident_anp">
+                                        <option value="--">--</option>
+                                        <?php foreach($fiscalConfigs->anps as $value_anps => $anps) { ?>
+                                            <option value="<?= $value_anps ?>">
+                                                <?= $anps ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="col-md-7">
+                                    <div class="form-group">
+                                        <input type="checkbox" class="form-control" name="valor_livre" id="valor_livre">
+                                        <label for="valor_livre"><b> Valor Livre</b></label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="checkbox" class="form-control" name="gerenciar_estoque" id="gerenciar_estoque">
+                                        <label for="gerenciar_estoque"><b> Gerenciar estoque</b></label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div id="ex-suppliers"></div>
-                </div>
 
                 </div>
 
@@ -533,6 +774,13 @@ if (!empty($variants)) {
         });
         $('#extras').on('ifUnchecked', function () {
             $('#extras-con').slideUp();
+        });
+
+        $('#modulo_fiscal').on('ifChecked', function () {
+            $('#fiscal_inputs').slideDown();
+        });
+        $('#modulo_fiscal').on('ifUnchecked', function () {
+            $('#fiscal_inputs').slideUp();
         });
 
         <?= isset($_POST['promotion']) ? '$("#promotion").iCheck("check");' : '' ?>
@@ -783,16 +1031,16 @@ if (!empty($variants)) {
             for (var i in attrs) {
                 if (attrs[i] !== '') {
                     <?php if (!empty($warehouses)) {
-            foreach ($warehouses as $warehouse) {
-                echo '$(\'#attrTable\').show().append(\'<tr class="attr"><td><input type="hidden" name="attr_name[]" value="\' + attrs[i] + \'"><span>\' + attrs[i] + \'</span></td><td class="code text-center"><input type="hidden" name="attr_warehouse[]" value="' . $warehouse->id . '"><span>' . $warehouse->name . '</span></td><td class="price text-right"><input type="hidden" name="attr_price[]" value="0"><span>0</span></span></td><td class="text-center"><i class="fa fa-times delAttr"></i></td></tr>\');';
-                // echo '$(\'#attrTable\').show().append(\'<tr class="attr"><td><input type="hidden" name="attr_name[]" value="\' + attrs[i] + \'"><span>\' + attrs[i] + \'</span></td><td class="code text-center"><input type="hidden" name="attr_warehouse[]" value="' . $warehouse->id . '"><span>' . $warehouse->name . '</span></td><td class="quantity text-center"><input type="hidden" name="attr_quantity[]" value="0"><span>0</span></td><td class="price text-right"><input type="hidden" name="attr_price[]" value="0"><span>0</span></span></td><td class="text-center"><i class="fa fa-times delAttr"></i></td></tr>\');';
-            }
-        } else {
-            ?>
-                        $('#attrTable').show().append('<tr class="attr"><td><input type="hidden" name="attr_name[]" value="' + attrs[i] + '"><span>' + attrs[i] + '</span></td><td class="code text-center"><input type="hidden" name="attr_warehouse[]" value=""><span></span></td><td class="price text-right"><input type="hidden" name="attr_price[]" value="0"><span>0</span></span></td><td class="text-center"><i class="fa fa-times delAttr"></i></td></tr>');
-                        // $('#attrTable').show().append('<tr class="attr"><td><input type="hidden" name="attr_name[]" value="' + attrs[i] + '"><span>' + attrs[i] + '</span></td><td class="code text-center"><input type="hidden" name="attr_warehouse[]" value=""><span></span></td><td class="quantity text-center"><input type="hidden" name="attr_quantity[]" value="0"><span></span></td><td class="price text-right"><input type="hidden" name="attr_price[]" value="0"><span>0</span></span></td><td class="text-center"><i class="fa fa-times delAttr"></i></td></tr>');
+                    foreach ($warehouses as $warehouse) {
+                        echo '$(\'#attrTable\').show().append(\'<tr class="attr"><td><input type="hidden" name="attr_name[]" value="\' + attrs[i] + \'"><span>\' + attrs[i] + \'</span></td><td class="code text-center"><input type="hidden" name="attr_warehouse[]" value="' . $warehouse->id . '"><span>' . $warehouse->name . '</span></td><td class="price text-right"><input type="hidden" name="attr_price[]" value="0"><span>0</span></span></td><td class="text-center"><i class="fa fa-times delAttr"></i></td></tr>\');';
+                        // echo '$(\'#attrTable\').show().append(\'<tr class="attr"><td><input type="hidden" name="attr_name[]" value="\' + attrs[i] + \'"><span>\' + attrs[i] + \'</span></td><td class="code text-center"><input type="hidden" name="attr_warehouse[]" value="' . $warehouse->id . '"><span>' . $warehouse->name . '</span></td><td class="quantity text-center"><input type="hidden" name="attr_quantity[]" value="0"><span>0</span></td><td class="price text-right"><input type="hidden" name="attr_price[]" value="0"><span>0</span></span></td><td class="text-center"><i class="fa fa-times delAttr"></i></td></tr>\');';
+                    }
+                } else {
+                    ?>
+                    $('#attrTable').show().append('<tr class="attr"><td><input type="hidden" name="attr_name[]" value="' + attrs[i] + '"><span>' + attrs[i] + '</span></td><td class="code text-center"><input type="hidden" name="attr_warehouse[]" value=""><span></span></td><td class="price text-right"><input type="hidden" name="attr_price[]" value="0"><span>0</span></span></td><td class="text-center"><i class="fa fa-times delAttr"></i></td></tr>');
+                    // $('#attrTable').show().append('<tr class="attr"><td><input type="hidden" name="attr_name[]" value="' + attrs[i] + '"><span>' + attrs[i] + '</span></td><td class="code text-center"><input type="hidden" name="attr_warehouse[]" value=""><span></span></td><td class="quantity text-center"><input type="hidden" name="attr_quantity[]" value="0"><span></span></td><td class="price text-right"><input type="hidden" name="attr_price[]" value="0"><span>0</span></span></td><td class="text-center"><i class="fa fa-times delAttr"></i></td></tr>');
                     <?php
-        } ?>
+                    } ?>
                 }
             }
         });
@@ -840,7 +1088,7 @@ if (!empty($variants)) {
     });
 
     <?php if ($product) {
-            ?>
+    ?>
     $(document).ready(function () {
         var t = "<?=$product->type?>";
         if (t !== 'standard') {
@@ -895,39 +1143,39 @@ if (!empty($variants)) {
             }
         });
         <?php if ($product->supplier1) {
-                ?>
+        ?>
         select_supplier('supplier1', "<?= $product->supplier1; ?>");
         $('#supplier_price').val("<?= $product->supplier1price == 0 ? '' : $this->sma->formatDecimal($product->supplier1price); ?>");
         <?php
-            } ?>
+        } ?>
         <?php if ($product->supplier2) {
-                ?>
+        ?>
         $('#addSupplier').click();
         select_supplier('supplier_2', "<?= $product->supplier2; ?>");
         $('#supplier_2_price').val("<?= $product->supplier2price == 0 ? '' : $this->sma->formatDecimal($product->supplier2price); ?>");
         <?php
-            } ?>
+        } ?>
         <?php if ($product->supplier3) {
-                ?>
+        ?>
         $('#addSupplier').click();
         select_supplier('supplier_3', "<?= $product->supplier3; ?>");
         $('#supplier_3_price').val("<?= $product->supplier3price == 0 ? '' : $this->sma->formatDecimal($product->supplier3price); ?>");
         <?php
-            } ?>
+        } ?>
         <?php if ($product->supplier4) {
-                ?>
+        ?>
         $('#addSupplier').click();
         select_supplier('supplier_4', "<?= $product->supplier4; ?>");
         $('#supplier_4_price').val("<?= $product->supplier4price == 0 ? '' : $this->sma->formatDecimal($product->supplier4price); ?>");
         <?php
-            } ?>
+        } ?>
         <?php if ($product->supplier5) {
-                ?>
+        ?>
         $('#addSupplier').click();
         select_supplier('supplier_5', "<?= $product->supplier5; ?>");
         $('#supplier_5_price').val("<?= $product->supplier5price == 0 ? '' : $this->sma->formatDecimal($product->supplier5price); ?>");
         <?php
-            } ?>
+        } ?>
         function select_supplier(id, v) {
             $('#' + id).val(v).select2({
                 minimumInputLength: 1,
@@ -969,7 +1217,7 @@ if (!empty($variants)) {
         });
     });
     <?php
-        } ?>
+    } ?>
     $(document).ready(function() {
         $('#unit').change(function(e) {
             var v = $(this).val();
@@ -1050,3 +1298,29 @@ if (!empty($variants)) {
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7-beta.29/jquery.inputmask.min.js" integrity="sha512-Ax4+qW2rAVWrk3SU1ef/L8O0jF6vKSfaMIR3du6efzf5v/pibzDcLFx29YCeR7WphoPO4zranQFsFUf+9Rb+dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            valorCompra: '',
+            valorVenda: '',
+            convUnitaria: '',
+        },
+        methods: {
+            calcularValorVenda: ()=>{
+                if(app.valorCompra != '' &&  app.convUnitaria != '')
+                    app.valorVenda = app.valorCompra / app.convUnitaria
+            }
+        }
+    });
+
+    $(":input").inputmask();
+
+    $("#ncm").inputmask({"mask": "9999.99.99"});
+    $("#cest").inputmask({"mask": "99.999.99"});
+    $("#cod_lista_iss").inputmask({"mask": "99.99"});
+</script>

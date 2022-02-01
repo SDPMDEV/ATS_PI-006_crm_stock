@@ -200,16 +200,16 @@ if (!empty($variants)) {
                     </div>
 
                     <?php if ($Settings->invoice_view == 2) {
-                            ?>
+                        ?>
                         <div class="form-group">
                             <?= lang('hsn_code', 'hsn_code'); ?>
                             <?= form_input('hsn_code', set_value('hsn_code', ($product ? $product->hsn_code : '')), 'class="form-control" id="hsn_code"'); ?>
                         </div>
-                    <?php
-                        } ?>
+                        <?php
+                    } ?>
 
                     <?php if ($Settings->tax1) {
-                            ?>
+                        ?>
                         <div class="form-group all">
                             <?= lang('product_tax', 'tax_rate') ?>
                             <?php
@@ -227,12 +227,12 @@ if (!empty($variants)) {
                             echo form_dropdown('tax_method', $tm, (isset($_POST['tax_method']) ? $_POST['tax_method'] : ($product ? $product->tax_method : '')), 'class="form-control select" id="tax_method" placeholder="' . lang('select') . ' ' . lang('tax_method') . '" style="width:100%"')
                             ?>
                         </div>
-                    <?php
-                        } ?>
+                        <?php
+                    } ?>
                     <div class="form-group standard">
                         <?= lang('alert_quantity', 'alert_quantity') ?>
                         <div
-                            class="input-group"> <?= form_input('alert_quantity', (isset($_POST['alert_quantity']) ? $_POST['alert_quantity'] : ($product ? $this->sma->formatDecimal($product->alert_quantity) : '')), 'class="form-control tip" id="alert_quantity"') ?>
+                                class="input-group"> <?= form_input('alert_quantity', (isset($_POST['alert_quantity']) ? $_POST['alert_quantity'] : ($product ? $this->sma->formatDecimal($product->alert_quantity) : '')), 'class="form-control tip" id="alert_quantity"') ?>
                             <span class="input-group-addon">
                             <input type="checkbox" name="track_quantity" id="inlineCheckbox1"
                                    value="1" <?= ($product ? (!empty($product->track_quantity) ? 'checked="checked"' : '') : 'checked="checked"') ?>>
@@ -276,41 +276,41 @@ if (!empty($variants)) {
                             <?php
                             if ($product_options) {
                                 ?>
-                            <table class="table table-bordered table-condensed table-striped"
-                                   style="<?= $this->input->post('attributes') || $product_options ? '' : 'display:none;'; ?> margin-top: 10px;">
-                                <thead>
-                                <tr class="active">
-                                    <th><?= lang('name') ?></th>
-                                    <th><?= lang('warehouse') ?></th>
-                                    <th><?= lang('quantity') ?></th>
-                                    <th><?= lang('price_addition') ?></th>
-                                </tr>
-                                </thead>
-                                <tbody>
+                                <table class="table table-bordered table-condensed table-striped"
+                                       style="<?= $this->input->post('attributes') || $product_options ? '' : 'display:none;'; ?> margin-top: 10px;">
+                                    <thead>
+                                    <tr class="active">
+                                        <th><?= lang('name') ?></th>
+                                        <th><?= lang('warehouse') ?></th>
+                                        <th><?= lang('quantity') ?></th>
+                                        <th><?= lang('price_addition') ?></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php
+                                    foreach ($product_options as $option) {
+                                        echo '<tr><td class="col-xs-3"><input type="hidden" name="attr_id[]" value="' . $option->id . '"><span>' . $option->name . '</span></td><td class="code text-center col-xs-3"><span>' . $option->wh_name . '</span></td><td class="quantity text-center col-xs-2"><span>' . $this->sma->formatQuantity($option->wh_qty) . '</span></td><td class="price text-right col-xs-2">' . $this->sma->formatMoney($option->price) . '</td></tr>';
+                                    } ?>
+                                    </tbody>
+                                </table>
                                 <?php
-                                foreach ($product_options as $option) {
-                                    echo '<tr><td class="col-xs-3"><input type="hidden" name="attr_id[]" value="' . $option->id . '"><span>' . $option->name . '</span></td><td class="code text-center col-xs-3"><span>' . $option->wh_name . '</span></td><td class="quantity text-center col-xs-2"><span>' . $this->sma->formatQuantity($option->wh_qty) . '</span></td><td class="price text-right col-xs-2">' . $this->sma->formatMoney($option->price) . '</td></tr>';
-                                } ?>
-                            </tbody>
-                            </table>
-                            <?php
                             }
                             if ($product_variants) {
                                 ?>
                                 <h3 class="bold"><?=lang('update_variants'); ?></h3>
                                 <table class="table table-bordered table-condensed table-striped" style="margin-top: 10px;">
-                                <thead>
-                                <tr class="active">
-                                    <th class="col-xs-8"><?= lang('name') ?></th>
-                                    <th class="col-xs-4"><?= lang('price_addition') ?></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php
-                                foreach ($product_variants as $pv) {
-                                    echo '<tr><td class="col-xs-3"><input type="hidden" name="variant_id_' . $pv->id . '" value="' . $pv->id . '"><input type="text" name="variant_name_' . $pv->id . '" value="' . $pv->name . '" class="form-control"></td><td class="price text-right col-xs-2"><input type="text" name="variant_price_' . $pv->id . '" value="' . $pv->price . '" class="form-control"></td></tr>';
-                                } ?>
-                                </tbody>
+                                    <thead>
+                                    <tr class="active">
+                                        <th class="col-xs-8"><?= lang('name') ?></th>
+                                        <th class="col-xs-4"><?= lang('price_addition') ?></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php
+                                    foreach ($product_variants as $pv) {
+                                        echo '<tr><td class="col-xs-3"><input type="hidden" name="variant_id_' . $pv->id . '" value="' . $pv->id . '"><input type="text" name="variant_name_' . $pv->id . '" value="' . $pv->name . '" class="form-control"></td><td class="price text-right col-xs-2"><input type="text" name="variant_price_' . $pv->id . '" value="' . $pv->price . '" class="form-control"></td></tr>';
+                                    } ?>
+                                    </tbody>
                                 </table>
                                 <?php
                             }
@@ -337,28 +337,28 @@ if (!empty($variants)) {
                                 <div class="table-responsive">
                                     <table id="attrTable" class="table table-bordered table-condensed table-striped" style="margin-bottom: 0; margin-top: 10px;">
                                         <thead>
-                                            <tr class="active">
-                                                <th><?= lang('name') ?></th>
-                                                <th><?= lang('warehouse') ?></th>
-                                                <th><?= lang('quantity') ?></th>
-                                                <th><?= lang('price_addition') ?></th>
-                                                <th><i class="fa fa-times attr-remove-all"></i></th>
-                                            </tr>
+                                        <tr class="active">
+                                            <th><?= lang('name') ?></th>
+                                            <th><?= lang('warehouse') ?></th>
+                                            <th><?= lang('quantity') ?></th>
+                                            <th><?= lang('price_addition') ?></th>
+                                            <th><i class="fa fa-times attr-remove-all"></i></th>
+                                        </tr>
                                         </thead>
                                         <tbody><?php
-                                            if ($this->input->post('attributes')) {
-                                                $a = sizeof($_POST['attr_name']);
-                                                for ($r = 0; $r <= $a; $r++) {
-                                                    if (isset($_POST['attr_name'][$r]) && (isset($_POST['attr_warehouse'][$r]) || isset($_POST['attr_quantity'][$r]))) {
-                                                        echo '<tr class="attr">
+                                        if ($this->input->post('attributes')) {
+                                            $a = sizeof($_POST['attr_name']);
+                                            for ($r = 0; $r <= $a; $r++) {
+                                                if (isset($_POST['attr_name'][$r]) && (isset($_POST['attr_warehouse'][$r]) || isset($_POST['attr_quantity'][$r]))) {
+                                                    echo '<tr class="attr">
                                                         <td><input type="hidden" name="attr_name[]" value="' . $_POST['attr_name'][$r] . '"><span>' . $_POST['attr_name'][$r] . '</span></td>
                                                         <td class="code text-center"><input type="hidden" name="attr_warehouse[]" value="' . (isset($_POST['attr_warehouse'][$r]) ? $_POST['attr_warehouse'][$r] : '') . '"><input type="hidden" name="attr_wh_name[]" value="' . (isset($_POST['attr_wh_name'][$r]) ? $_POST['attr_wh_name'][$r] : '') . '"><span>' . (isset($_POST['attr_wh_name'][$r]) ? $_POST['attr_wh_name'][$r] : '') . '</span></td>
                                                         <td class="quantity text-center"><input type="hidden" name="attr_quantity[]" value="' . $_POST['attr_quantity'][$r] . '"><span>' . $_POST['attr_quantity'][$r] . '</span></td>
                                                         <td class="price text-right"><input type="hidden" name="attr_price[]" value="' . $_POST['attr_price'][$r] . '"><span>' . $_POST['attr_price'][$r] . '</span></span></td><td class="text-center"><i class="fa fa-times delAttr"></i></td>
                                                     </tr>';
-                                                    }
                                                 }
                                             }
+                                        }
                                         ?></tbody>
                                     </table>
                                 </div>
@@ -446,6 +446,315 @@ if (!empty($variants)) {
                         <div id="ex-suppliers"></div>
                     </div>
 
+                    <div>
+                        <input name="modulo_fiscal" type="checkbox" class="checkbox" id="modulo_fiscal" <?= ($productConfigs->NCM) ? 'checked' : ''?>/>
+                        <label for="modulo_fiscal" class="padding05">Produto referente ao módulo fiscal</label>
+
+                        <div id="fiscal_inputs" style="display: none; margin: 10px">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ncm"><b>NCM</b></label>
+                                    <input value="<?= $productConfigs->NCM ?>" type="text" name="ncm" id="ncm" class="form-control" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="unidade_compra"><b>Unidade de Compra</b></label>
+                                    <select name="unidade_compra" id="unidade_compra" class="form-control">
+                                        <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                            <?php if($un == $productConfigs->unidade_compra) {?>
+                                                <option value="<?= $un ?>"><?= $un ?></option>
+                                            <?php }?>
+                                        <?php } ?>
+
+                                        <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                            <option value="<?= $un ?>"><?= $un ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="conversao_estoque"><b>Conversão unitária</b></label>
+                                    <input type="text" name="conversao_estoque" id="conversao_estoque" class="form-control" v-model="convUnitaria" v-on:change="calcularValorVenda" value="<?= $productConfigs->conversao_unitaria ?>"/>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="quantidade"><b>Quantidade</b></label>
+                                    <input value="<?= $productConfigs->quantity ?>" name="quantidade" id="quantidade" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="valor_compra"><b>Valor de compra</b></label>
+                                    <input value="<?= $productConfigs->cost ?>" type="text" name="valor_compra" id="valor_compra" class="form-control" v-model="valorCompra" v-on:change="calcularValorVenda" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="valor_venda"><b>Valor de Venda</b></label>
+                                    <input value="<?= $productConfigs->price ?>" type="text" name="valor_venda" id="valor_venda" class="form-control" v-bind:value="valorVenda" />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="unidade_venda"><b>Unidade de Venda</b></label>
+
+                                    <select class="form-control" name="unidade_venda" id="unidade_venda">
+                                        <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                            <?php if($un == $productConfigs->unidade_venda) {?>
+                                                <option value="<?= $un ?>"><?= $un ?></option>
+                                            <?php }?>
+                                        <?php } ?>
+
+                                        <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                            <option value="<?= $un ?>"><?= $un ?></option>
+                                        <?php } ?>
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="referencia"><b>Referência</b></label>
+                                    <input value="<?= $productConfigs->referencia ?>" type="text" name="referencia" id="referencia" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cest"><b>CEST</b></label>
+                                    <input value="<?= $productConfigs->CEST ?>" type="text" name="cest" id="cest" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cor"><b>Cor</b></label>
+                                    <select name="cor" id="cor" class="form-control">
+                                        <?php if($productConfigs->cor) {?>
+                                            <option value="<?= $productConfigs->cor ?>"><?= $productConfigs->cor ?></option>
+                                            <option value="Preto">Preto</option>
+                                            <option value="Branco">Branco</option>
+                                            <option value="Dourado">Dourado</option>
+                                            <option value="Vermelho">Vermelho</option>
+                                            <option value="Azul">Azul</option>
+                                            <option value="Rosa">Rosa</option>
+                                        <?php } else { ?>
+                                            <option value="--">--</option>
+                                            <option value="Preto">Preto</option>
+                                            <option value="Branco">Branco</option>
+                                            <option value="Dourado">Dourado</option>
+                                            <option value="Vermelho">Vermelho</option>
+                                            <option value="Azul">Azul</option>
+                                            <option value="Rosa">Rosa</option>
+                                        <?php }?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cst_CSOSN"><b>CST/CSOSN</b></label>
+                                    <select class="form-control" name="cst_CSOSN" id="cst_CSOSN">
+                                        <?php foreach($fiscalConfigs->listaCSTCSOSN as $value_cstsosn => $cstsosn) { ?>
+                                            <?php if($value_cstsosn == $productConfigs->CST_CSOSN) { ?>
+                                                <option value="<?= $value_cstsosn ?>"> <?= $value_cstsosn ?> - <?= $cstsosn ?></option>
+                                            <?php }?>
+                                        <?php } ?>
+
+                                        <?php foreach($fiscalConfigs->listaCSTCSOSN as $value_cstsosn => $cstsosn) { ?>
+                                            <option value="<?= $value_cstsosn ?>"> <?= $value_cstsosn ?> - <?= $cstsosn ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cst_PIS"><b>CST/PIS</b></label>
+                                    <select class="form-control" name="cst_PIS" id="cst_PIS">
+                                        <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
+                                            <?php if($value_piscofins == $productConfigs->CST_PIS) {?>
+                                                <option value="<?= $value_piscofins ?>">
+                                                    <?= $value_piscofins ?> - <?= $piscofins ?>
+                                                </option>
+                                            <?php }?>
+                                        <?php }?>
+
+                                        <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
+                                            <option value="<?= $value_piscofins ?>">
+                                                <?= $value_piscofins ?> - <?= $piscofins ?>
+                                            </option>
+                                        <?php }?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cst_COFINS"><b>CST/COFINS</b></label>
+                                    <select class="form-control" name="cst_COFINS" id="cst_COFINS">
+                                        <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
+                                            <?php if($value_piscofins == $productConfigs->CST_COFINS) { ?>
+                                                <option value="<?= $value_piscofins ?>">
+                                                    <?= $value_piscofins ?> - <?= $piscofins ?>
+                                                </option>
+                                            <?php }?>
+                                        <?php }?>
+
+                                        <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
+                                            <option value="<?= $value_piscofins ?>">
+                                                <?= $value_piscofins ?> - <?= $piscofins ?>
+                                            </option>
+                                        <?php }?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cst_IPI"><b>CST IPI</b></label>
+                                    <select class="form-control" name="cst_IPI" id="cst_IPI">
+                                        <?php foreach($fiscalConfigs->listaCSTIPI as $value_cstipi => $cstipi) {?>
+                                            <?php if($cstipi == $productConfigs->CST_IPI) {?>
+                                                <option value="<?= $value_cstipi ?>">
+                                                    <?= $value_cstipi ?> - <?= $cstipi ?>
+                                                </option>
+                                            <?php }?>
+                                        <?php } ?>
+
+                                        <?php foreach($fiscalConfigs->listaCSTIPI as $value_cstipi => $cstipi) {?>
+                                            <option value="<?= $value_cstipi ?>">
+                                                <?= $value_cstipi ?> - <?= $cstipi ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="estoque_min"><b>Estoque Minimo</b></label>
+                                    <input value="<?= $productConfigs->estoque_minimo ?>" type="text" name="estoque_min" id="estoque_min" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="alerta_venc"><b>Alerta de Venc. (Dias)<b></label>
+                                    <input value="<?= $productConfigs->alerta_vencimento ?>" type="text" name="alerta_venc" id="alerta_venc" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cod_barras_ean13"><b>Código de Barras EAN13</b></label>
+                                    <input value="<?= $productConfigs->codBarras ?>" type="text" name="cod_barras_ean13" id="cod_barras_ean13" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cfop_saida_interno"><b>CFOP saida interno *</b></label>
+                                    <input value="<?= $productConfigs->CFOP_saida_estadual ?>" type="text" name="cfop_saida_interno" id="cfop_saida_interno" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cfop_saida_externo"><b>CFOP saida externo *</b></label>
+                                    <input value="<?= $productConfigs->CFOP_saida_inter_estadual ?>" type="text" name="cfop_saida_externo" id="cfop_saida_externo" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perc_icms"><b>%ICMS *</b></label>
+                                    <input value="<?= $productConfigs->perc_icms ?>" type="text" name="perc_icms" id="perc_icms" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perc_pis"><b>%PIS *</b></label>
+                                    <input value="<?= $productConfigs->perc_pis ?>" type="text" name="perc_pis" id="perc_pis" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perc_cofins"><b>%COFINS *</b></label>
+                                    <input value="<?= $productConfigs->perc_cofins ?>" type="text" name="perc_cofins" id="perc_cofins" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perc_ipi"><b>%IPI *</b></label>
+                                    <input value="<?= $productConfigs->perc_ipi ?>" type="text" name="perc_ipi" id="perc_ipi" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perc_iss"><b>%ISS *</b></label>
+                                    <input value="<?= $productConfigs->perc_iss ?>" type="text" name="perc_iss" id="perc_iss" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="cod_lista_iss"><b>Cod Lista Serviço (iss)</b></label>
+                                    <input value="<?= $productConfigs->cListServ ?>" type="text" name="cod_lista_iss" id="cod_lista_iss" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="ident_anp"><b>Identificação ANP</b></label>
+                                    <select name="ident_anp" id="ident_anp" class="form-control">
+                                        <?php foreach($fiscalConfigs->anps as $value_anps => $anps) { ?>
+                                            <?php if($value_anps == $productConfigs->codigo_anp) {?>
+                                                <option value="<?= $value_anps ?>">
+                                                    <?= $anps ?>
+                                                </option>
+                                            <?php } ?>
+                                        <?php } ?>
+
+                                        <?php foreach($fiscalConfigs->anps as $value_anps => $anps) { ?>
+                                            <option value="<?= $value_anps ?>">
+                                                <?= $anps ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="col-md-7">
+                                    <div class="form-group">
+                                        <input value="<?= $productConfigs->valor_livre ?>" type="checkbox" class="form-control" name="valor_livre" id="valor_livre">
+                                        <label for="valor_livre"><b> Valor Livre</b></label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input value="<?= $productConfigs->gerenciar_estoque ?>" type="checkbox" class="form-control" name="gerenciar_estoque" id="gerenciar_estoque">
+                                        <label  for="gerenciar_estoque"><b> Gerenciar estoque</b></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-md-12">
@@ -464,7 +773,7 @@ if (!empty($variants)) {
                     </div>
                     <div class="form-group">
                         <input name="cf" type="checkbox" class="checkbox" id="extras" value="" checked="checked"/><label
-                            for="extras" class="padding05"><?= lang('custom_fields') ?></label>
+                                for="extras" class="padding05"><?= lang('custom_fields') ?></label>
                     </div>
                     <div class="row" id="extras-con">
 
@@ -788,7 +1097,7 @@ if (!empty($variants)) {
     });
 
     <?php if ($product) {
-            ?>
+    ?>
     $(document).ready(function () {
         $('#enable_wh').click(function () {
             var whs = $('.wh');
@@ -857,48 +1166,48 @@ if (!empty($variants)) {
             }
         });
         <?php if ($product->supplier1) {
-                ?>
+        ?>
         select_supplier('supplier1', "<?= $product->supplier1; ?>");
         $('#supplier_price').val("<?= $this->sma->formatDecimal($product->supplier1price); ?>");
         $('#supplier_part_no').val("<?= $product->supplier1_part_no; ?>");
         <?php
-            } else {
-                ?>
-            $('#supplier1').addClass('rsupplier');
+        } else {
+        ?>
+        $('#supplier1').addClass('rsupplier');
         <?php
-            } ?>
+        } ?>
         <?php if ($product->supplier2) {
-                ?>
+        ?>
         $('#addSupplier').click();
         select_supplier('supplier_2', "<?= $product->supplier2; ?>");
         $('#supplier_2_price').val("<?= $this->sma->formatDecimal($product->supplier2price); ?>");
         $('#supplier_2_part_no').val("<?= $product->supplier2_part_no; ?>");
         <?php
-            } ?>
+        } ?>
         <?php if ($product->supplier3) {
-                ?>
+        ?>
         $('#addSupplier').click();
         select_supplier('supplier_3', "<?= $product->supplier3; ?>");
         $('#supplier_3_price').val("<?= $this->sma->formatDecimal($product->supplier3price); ?>");
         $('#supplier_3_part_no').val("<?= $product->supplier3_part_no; ?>");
         <?php
-            } ?>
+        } ?>
         <?php if ($product->supplier4) {
-                ?>
+        ?>
         $('#addSupplier').click();
         select_supplier('supplier_4', "<?= $product->supplier4; ?>");
         $('#supplier_4_price').val("<?= $this->sma->formatDecimal($product->supplier4price); ?>");
         $('#supplier_4_part_no').val("<?= $product->supplier4_part_no; ?>");
         <?php
-            } ?>
+        } ?>
         <?php if ($product->supplier5) {
-                ?>
+        ?>
         $('#addSupplier').click();
         select_supplier('supplier_5', "<?= $product->supplier5; ?>");
         $('#supplier_5_price').val("<?= $this->sma->formatDecimal($product->supplier5price); ?>");
         $('#supplier_5_part_no').val("<?= $product->supplier5_part_no; ?>");
         <?php
-            } ?>
+        } ?>
         function select_supplier(id, v) {
             $('#' + id).val(v).select2({
                 minimumInputLength: 1,
@@ -935,7 +1244,7 @@ if (!empty($variants)) {
         }
     });
     <?php
-        } ?>
+    } ?>
     $(document).ready(function () {
         $('#enable_wh').trigger('click');
         $('#unit').change(function(e) {
@@ -971,6 +1280,13 @@ if (!empty($variants)) {
         });
         $('#digital_file').removeAttr('required');
         $('form[data-toggle="validator"]').bootstrapValidator('removeField', 'digital_file');
+
+        $('#modulo_fiscal').on('ifChecked', function () {
+            $('#fiscal_inputs').slideDown();
+        });
+        $('#modulo_fiscal').on('ifUnchecked', function () {
+            $('#fiscal_inputs').slideUp();
+        });
     });
 </script>
 
@@ -979,7 +1295,7 @@ if (!empty($variants)) {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true"><i
-                            class="fa fa-2x">&times;</i></span><span class="sr-only">Close</span></button>
+                                class="fa fa-2x">&times;</i></span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="aModalLabel"><?= lang('add_product_manually') ?></h4>
             </div>
             <div class="modal-body" id="pr_popover_content">
@@ -1017,3 +1333,28 @@ if (!empty($variants)) {
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7-beta.29/jquery.inputmask.min.js" integrity="sha512-Ax4+qW2rAVWrk3SU1ef/L8O0jF6vKSfaMIR3du6efzf5v/pibzDcLFx29YCeR7WphoPO4zranQFsFUf+9Rb+dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(()=>{
+        if($("#modulo_fiscal").is(":checked"))
+            $("#fiscal_inputs").show();
+    })
+</script>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            valorCompra: '',
+            valorVenda: '',
+            convUnitaria: '',
+        },
+        methods: {
+            calcularValorVenda: ()=>{
+                if(app.valorCompra != '' &&  app.convUnitaria != '')
+                    app.valorVenda = app.valorCompra / app.convUnitaria
+            }
+        }
+    });
+</script>

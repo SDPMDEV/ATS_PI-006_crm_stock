@@ -432,6 +432,33 @@ class Products_model extends CI_Model
         return false;
     }
 
+    public function getProductByRef($ref)
+    {
+        $q = $this->db->get_where('products', ['referencia' => $ref], 1);
+        if ($q->num_rows() > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public function getProductId($ref)
+    {
+        $q = $this->db->get_where('products', ['referencia' => $ref], 1);
+        if ($q->num_rows() > 0) {
+            return $q->result()[0]->id;
+        }
+        return false;
+    }
+
+    public function getProductConfigs($id)
+    {
+        $q = $this->db->get_where('products', ['id' => $id], 1);
+        if ($q->num_rows() > 0) {
+            return $q->result()[0];
+        }
+        return false;
+    }
+
     public function getProductByID($id)
     {
         $q = $this->db->get_where('products', ['id' => $id], 1);

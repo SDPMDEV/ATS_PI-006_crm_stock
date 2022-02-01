@@ -66,7 +66,7 @@ if (!empty($variants)) {
         });
     });
 </script>
-<div class="box">
+<div class="box" id="app">
     <div class="box-header">
         <h2 class="blue"><i class="fa-fw fa fa-plus"></i><?= lang('add_product'); ?></h2>
     </div>
@@ -234,16 +234,6 @@ if (!empty($variants)) {
                         </div>
                     <?php
                         } ?>
-                    <div class="form-group standard">
-                        <?= lang('alert_quantity', 'alert_quantity') ?>
-                        <div
-                            class="input-group"> <?= form_input('alert_quantity', ($_POST['alert_quantity'] ?? ($product ? $this->sma->formatQuantityDecimal($product->alert_quantity) : '')), 'class="form-control tip" id="alert_quantity"') ?>
-                            <span class="input-group-addon">
-                            <input type="checkbox" name="track_quantity" id="track_quantity"
-                                   value="1" <?= ($product ? (isset($product->track_quantity) ? 'checked="checked"' : '') : 'checked="checked"') ?>>
-                        </span>
-                        </div>
-                    </div>
 
                     <div class="form-group all">
                         <?= lang('product_image', 'product_image') ?>
@@ -422,6 +412,257 @@ if (!empty($variants)) {
                     </div>
                     <div id="ex-suppliers"></div>
                 </div>
+                
+                <div class="form-group standart">
+                    <input name="modulo_fiscal" type="checkbox" class="checkbox" id="modulo_fiscal" />
+                    <label for="modulo_fiscal" class="padding05">Produto referente ao módulo fiscal</label>
+
+                    <div id="fiscal_inputs" style="display: none; margin: 10px">
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ncm"><b>NCM</b></label>
+                                <input type="text" name="ncm" id="ncm" class="form-control" />
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="unidade_compra"><b>Unidade de Compra</b></label>
+                                <select name="unidade_compra" id="unidade_compra" class="form-control">
+                                    <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                        <option value="<?= $un ?>"><?= $un ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="conversao_estoque"><b>Conversão unitária para estoque</b></label>
+                                <input type="text" name="conversao_estoque" id="conversao_estoque" class="form-control" v-model="convUnitaria" v-on:change="calcularValorVenda" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="quantidade"><b>Quantidade</b></label>
+                                <input type="number" name="quantidade" id="quantidade" class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="valor_compra"><b>Valor de compra</b></label>
+                                <input type="text" name="valor_compra" id="valor_compra" class="form-control" v-model="valorCompra" v-on:change="calcularValorVenda" />
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="valor_venda"><b>Valor de Venda</b></label>
+                                <input type="text" name="valor_venda" id="valor_venda" class="form-control" v-bind:value="valorVenda" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="unidade_venda"><b>Unidade de Venda</b></label>
+
+                                <select class="form-control" name="unidade_venda" id="unidade_venda">
+                                    <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                        <option value="<?= $un ?>"><?= $un ?></option>
+                                    <?php } ?>
+                                </select>
+
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="referencia"><b>Referência</b></label>
+                                <input type="text" name="referencia" id="referencia" class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cest"><b>CEST</b></label>
+                                <input type="text" name="cest" id="cest" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cor"><b>Cor</b></label>
+                                <select name="cor" id="cor" class="form-control">
+                                    <option value="--">--</option>
+                                    <option value="Preto">Preto</option>
+                                    <option value="Branco">Branco</option>
+                                    <option value="Dourado">Dourado</option>
+                                    <option value="Vermelho">Vermelho</option>
+                                    <option value="Azul">Azul</option>
+                                    <option value="Rosa">Rosa</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cst_CSOSN"><b>CST/CSOSN</b></label>
+                                <select class="form-control" name="cst_CSOSN" id="cst_CSOSN">
+                                    <?php foreach($fiscalConfigs->listaCSTCSOSN as $value_cstsosn => $cstsosn) { ?>
+                                        <option value="<?= $value_cstsosn ?>"> <?= $value_cstsosn ?> - <?= $cstsosn ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cst_PIS"><b>CST/PIS</b></label>
+                                <select class="form-control" name="cst_PIS" id="cst_PIS">
+                                    <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
+                                        <option value="<?= $value_piscofins ?>">
+                                            <?= $value_piscofins ?> - <?= $piscofins ?>
+                                        </option>
+                                    <?php }?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cst_COFINS"><b>CST/COFINS</b></label>
+                                <select class="form-control" name="cst_COFINS" id="cst_COFINS">
+                                    <?php foreach($fiscalConfigs->listaCSTPISCOFINS as $value_piscofins => $piscofins) { ?>
+                                        <option value="<?= $value_piscofins ?>">
+                                            <?= $value_piscofins ?> - <?= $piscofins ?>
+                                        </option>
+                                    <?php }?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cst_IPI"><b>CST IPI</b></label>
+                                <select class="form-control" name="cst_IPI" id="cst_IPI">
+                                    <?php foreach($fiscalConfigs->listaCSTIPI as $value_cstipi => $cstipi) {?>    
+                                        <option value="<?= $value_cstipi ?>">
+                                            <?= $value_cstipi ?> - <?= $cstipi ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="estoque_min"><b>Estoque Minimo</b></label>
+                                <input type="text" name="estoque_min" id="estoque_min" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="alerta_venc"><b>Alerta de Venc. (Dias)<b></label>
+                                <input type="text" name="alerta_venc" id="alerta_venc" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cod_barras_ean13"><b>Código de Barras EAN13</b></label>
+                                <input type="text" name="cod_barras_ean13" id="cod_barras_ean13" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cfop_saida_interno"><b>CFOP saida interno *</b></label>
+                                <input type="text" name="cfop_saida_interno" id="cfop_saida_interno" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cfop_saida_externo"><b>CFOP saida externo *</b></label>
+                                <input type="text" name="cfop_saida_externo" id="cfop_saida_externo" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="perc_icms"><b>%ICMS *</b></label>
+                                <input type="text" name="perc_icms" id="perc_icms" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="perc_pis"><b>%PIS *</b></label>
+                                <input type="text" name="perc_pis" id="perc_pis" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="perc_cofins"><b>%COFINS *</b></label>
+                                <input type="text" name="perc_cofins" id="perc_cofins" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="perc_ipi"><b>%IPI *</b></label>
+                                <input type="text" name="perc_ipi" id="perc_ipi" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="perc_iss"><b>%ISS *</b></label>
+                                <input type="text" name="perc_iss" id="perc_iss" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cod_lista_iss"><b>Cod Lista Serviço (iss)</b></label>
+                                <input type="text" name="cod_lista_iss" id="cod_lista_iss" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ident_anp"><b>Identificação ANP</b></label>
+                                <select id="ident_anp" class="form-control" name="ident_anp">
+                                    <option value="--">--</option>
+                                    <?php foreach($fiscalConfigs->anps as $value_anps => $anps) { ?>
+                                        <option value="<?= $value_anps ?>">
+                                            <?= $anps ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="col-md-7">
+                                <div class="form-group">
+                                    <input type="checkbox" class="form-control" name="valor_livre" id="valor_livre">
+                                    <label for="valor_livre"><b> Valor Livre</b></label>
+                                </div>
+
+                                <div class="form-group">
+                                    <input type="checkbox" class="form-control" name="gerenciar_estoque" id="gerenciar_estoque">
+                                    <label for="gerenciar_estoque"><b> Gerenciar estoque</b></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 </div>
 
@@ -533,6 +774,13 @@ if (!empty($variants)) {
         });
         $('#extras').on('ifUnchecked', function () {
             $('#extras-con').slideUp();
+        });
+
+        $('#modulo_fiscal').on('ifChecked', function () {
+            $('#fiscal_inputs').slideDown();
+        });
+        $('#modulo_fiscal').on('ifUnchecked', function () {
+            $('#fiscal_inputs').slideUp();
         });
 
         <?= isset($_POST['promotion']) ? '$("#promotion").iCheck("check");' : '' ?>
@@ -1050,3 +1298,29 @@ if (!empty($variants)) {
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7-beta.29/jquery.inputmask.min.js" integrity="sha512-Ax4+qW2rAVWrk3SU1ef/L8O0jF6vKSfaMIR3du6efzf5v/pibzDcLFx29YCeR7WphoPO4zranQFsFUf+9Rb+dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            valorCompra: '',
+            valorVenda: '',
+            convUnitaria: '',
+        },
+        methods: {
+            calcularValorVenda: ()=>{
+                if(app.valorCompra != '' &&  app.convUnitaria != '')
+                    app.valorVenda = app.valorCompra / app.convUnitaria
+            }
+        }
+    });
+
+    $(":input").inputmask();
+
+    $("#ncm").inputmask({"mask": "9999.99.99"});
+    $("#cest").inputmask({"mask": "99.999.99"});
+    $("#cod_lista_iss").inputmask({"mask": "99.99"});
+</script>

@@ -245,6 +245,9 @@
                     echo form_hidden('quote_id', $quote_id);
                 }
                 ?>
+
+                <strong>Última NF-e:</strong>&nbsp;&nbsp;&nbsp;<span><?= $lastSale ?></span>
+                <hr>
                 <div class="row">
                     <div class="col-lg-12">
                         <?php if ($Owner || $Admin) {
@@ -264,8 +267,48 @@
                                 <?php echo form_input('reference_no', ($_POST['reference_no'] ?? $slnumber), 'class="form-control input-tip" id="slref"'); ?>
                             </div>
                         </div>
-                        <?php if ($Owner || $Admin || !$this->session->userdata('biller_id')) {
-                    ?>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="natureza"><b>Natureza de Operação:</b></label>
+                                <select name="natureza" id="natureza" class="form-control">
+                                    <?php foreach($fiscalSettings->naturezas as $natureza) {?>
+                                        <option value="<?= $natureza->id ?>"><?= $natureza->natureza ?></option>
+                                    <?php }?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="price-list"><b>Lista de Preço</b></label>
+                                <select name="price-list" id="price-list" class="form-control">
+                                    <?php if(isset($fiscalSettings->listPrecos)) {?>
+                                        <?php foreach($fiscalSettings->listaPrecos as $lista) {?>
+                                            <option value="<?= $lista->id?>"><?= $lista->nome?></option>
+                                        <?php }?>
+                                    <?php } else {?>
+                                        <option value="0">Padrão</option>
+                                    <?php }?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="tipo_pagamento">Tipo de pagamento</label>
+                                <select class="form-control" name="tipo_pagamento" id="tipo_pagamento">
+                                    <option value="--" selected>Selecione a forma de pagamento</option>
+                                    <?php foreach($fiscalSettings->tiposPagamento as $value => $pag) { ?>
+                                        <option value="<?= $value ?>">
+                                            <?= $pag ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <?php if ($Owner || $Admin || !$this->session->userdata('biller_id')) { ?>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <?= lang('biller', 'slbiller'); ?>
@@ -388,7 +431,7 @@
                             <div class="control-group table-group">
                                 <label class="table-label"><?= lang('order_items'); ?> *</label>
 
-                                <div class="controls table-controls">
+                                <div class="controls table-controls table-responsive">
                                     <table id="slTable" class="table items table-striped table-bordered table-condensed table-hover sortable_table">
                                         <thead>
                                         <tr>
@@ -453,27 +496,90 @@
                         <?php
                                             } ?>
 
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <?= lang('shipping', 'slshipping'); ?>
-                                <?php echo form_input('shipping', '', 'class="form-control input-tip" id="slshipping"'); ?>
 
+                        <fieldset class="scheduler-border">
+                            <legend class="scheduler-border">Transporte</legend>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="shipping"><b>Valor</b></label>
+                                    <?php echo form_input('shipping', '', 'class="form-control input-tip" id="slshipping"'); ?>
+
+                                </div>
                             </div>
-                        </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="frete"><b>Frete</b></label>
+                                    <select name="frete" id="frete" class="form-control">
+                                        <?php foreach($fiscalSettings->tiposFrete as $index => $frete) {?>
+                                            <option value="<?= $index ?>"><?= $index ?> - <?= $frete ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="placa-vei"><b>Placa Veículo</b></label>
+                                    <input type="text" name="placa-vei" id="placa-vei" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="uf"><b>UF</b></label>
+                                    <select name="uf" id="uf" class="form-control">
+                                        <?php foreach($fiscalSettings->estados as $index => $estado) {?>
+                                            <option value="<?= $index ?>"><?= $estado ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="scheduler-border">
+                            <legend class="scheduler-border">Volume</legend>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="especie">Espécie</label>
+                                    <input type="text" name="especie" id="especie" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="numeracao_volumes"><b>Numeração de Volumes</b></label>
+                                    <input type="text" name="numeracao_volumes" id="numeracao_volumes" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="qtd_volumes"><b>Quantidade de Volumes</b></label>
+                                    <input type="text" name="qtd_volumes" id="qtd_volumes" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="peso_liq"><b>Peso Liquido</b></label>
+                                    <input type="text" name="peso_liq" id="peso_liq" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="peso_brt"><b>Peso Bruto</b></label>
+                                    <input type="text" name="peso_brt" id="peso_brt" class="form-control">
+                                </div>
+                            </div>
+
+                        </fieldset>
 
                         <div class="col-md-4">
                             <div class="form-group">
                                 <?= lang('attachments', 'document') ?>
                                 <input id="document" type="file" data-browse-label="<?= lang('browse'); ?>" name="attachments[]" multiple data-show-upload="false" data-show-preview="false" class="form-control file">
-                            </div>
-                        </div>
-
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <?= lang('sale_status', 'slsale_status'); ?>
-                                <?php $sst = ['completed' => lang('completed'), 'pending' => lang('pending')];
-                                echo form_dropdown('sale_status', $sst, '', 'class="form-control input-tip" required="required" id="slsale_status"'); ?>
-
                             </div>
                         </div>
                         <div class="col-sm-4">
@@ -483,6 +589,30 @@
 
                             </div>
                         </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <?= lang('sale_status', 'slsale_status'); ?>
+                                <?php $sst = ['pending' => lang('pending'), 'completed' => lang('completed')];
+                                echo form_dropdown('sale_status', $sst, '', 'class="form-control input-tip" required="required" id="slsale_status"');
+                                ?>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="forma-pagamento">Forma de pagamento</label>
+                                <select class="form-control" name="forma-pagamento" id="forma-pagamento">
+                                    <option value="--">Selecione a forma de pagamento</option>
+                                    <option value="a_vista">A vista</option>
+                                    <option value="30_dias">30 Dias</option>
+                                    <option value="personalizado">Parcelado</option>
+                                    <option value="conta_crediario">Conta crediario</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <?php if ($Owner || $Admin || $GP['sales-payments']) {
                                     ?>
                         <div class="col-sm-4">
@@ -498,8 +628,48 @@
                                     echo form_hidden('payment_status', 'pending');
                                 }
                         ?>
-                        <div class="clearfix"></div>
 
+                        <div class="clearfix"></div>
+                        <div class="col-md-4" id="parcelas" style="display: none;">
+                            <fieldset class="scheduler-border">
+                                <legend class="scheduler-border">Parcelas</legend>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="qtd_parcelas"><b>Quantidade de Parcelas</b></label>
+                                        <input type="number" name="qtd_parcelas" id="qtd_parcelas" class="form-control" max="12" min="1">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="perc_juros"><b>Percentual de juros (%)</b></label>
+                                        <input type="text" min="0" max="100" name="perc_juros" id="perc_juros" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="data_pagamento"><b>Data de pagamento</b></label>
+                                        <input type="date" name="data_pagamento" id="data_pagamento" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="data_vencimento"><b>Data de vencimento</b></label>
+                                        <input type="date" name="data_vencimento" id="data_vencimento" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div id="div_valor_pago" class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="valor_pago"><b>Valor pago</b></label>
+                                        <input type="text" name="valor_pago" id="valor_pago" class="form-control">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
                         <div id="payments" style="display: none;">
                             <div class="col-md-12">
                                 <div class="well well-sm well_1">
@@ -632,7 +802,8 @@
                         <div class="col-md-12">
                             <div
                                 class="fprom-group"><?php echo form_submit('add_sale', lang('submit'), 'id="add_sale" class="btn btn-primary" style="padding: 6px 15px; margin:15px 0;"'); ?>
-                                <button type="button" class="btn btn-danger" id="reset"><?= lang('reset') ?></div>
+                                <button type="button" class="btn btn-danger" id="reset"><?= lang('reset') ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -925,6 +1096,8 @@
         </div>
     </div>
 </div>
+
+
 <script type="text/javascript">
     $(document).ready(function () {
         $('#gccustomer').select2({
@@ -954,4 +1127,52 @@
             return false;
         });
     });
+</script>
+<script>
+    $(document).ready(()=>{
+        if( $("#forma-pagamento").val() == 'personalizado' ) {
+            $('#parcelas').slideDown();
+        }
+
+        let today = new Date();
+        let posDate = new Date().setDate(today.getDate()+30);
+        posDate = new Date(posDate);
+
+        $("#data_pagamento").val(today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2));
+        $("#data_vencimento").val(posDate.getFullYear() + '-' + ('0' + (posDate.getMonth() + 1)).slice(-2) + '-' + ('0' + posDate.getDate()).slice(-2));
+
+        $("#forma-pagamento").change(()=>{
+            if( $("#forma-pagamento").val() == 'personalizado' ) {
+                $('#parcelas').slideDown();
+            } else {
+                $('#parcelas').slideUp();
+                $('#qtd_parcelas').val('');
+                $('#valor_parcela').val('');
+                $('#valor_pago').val('');
+            }
+        });
+
+        let formatedDate = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+        $('#data_pagamento').change(()=>{
+            if($('#data_pagamento').val() <= formatedDate) {
+                $("#div_valor_pago").slideDown();
+            } else {
+                $("#div_valor_pago").slideUp();
+                $("#valor_pago").val('');
+            }
+        })
+
+        $("#frete").change(()=>{
+            if($("#frete").val() == '9') {
+                $('#slshipping').attr('disabled', 'disabled');
+                $('#placa-vei').attr('disabled', 'disabled');
+
+                $('#slshipping').val('');
+                $('#placa-vei').val('');
+            } else {
+                $('#slshipping').removeAttr('disabled');
+                $('#placa-vei').removeAttr('disabled');
+            }
+        });
+    })
 </script>

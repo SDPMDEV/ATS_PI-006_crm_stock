@@ -4,9 +4,17 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Customers extends MY_Controller
 {
+    private $api_url;
+
+    private $api_token;
+
     public function __construct()
     {
         parent::__construct();
+
+        $config = new CI_Config();
+        $this->api_url = $config->config["api_url"];
+        $this->api_token = $config->config['api_token'];
 
         if (!$this->loggedIn) {
             $this->session->set_userdata('requested_page', $this->uri->uri_string());
@@ -43,7 +51,7 @@ class Customers extends MY_Controller
                 'address'             => $this->input->post('address'),
                 'vat_no'              => $this->input->post('vat_no'),
                 'city'                => $this->input->post('city'),
-                'state'               => $this->input->post('state'),
+                'state'               => substr($this->input->post('state'), -2),
                 'postal_code'         => $this->input->post('postal_code'),
                 'country'             => $this->input->post('country'),
                 'phone'               => $this->input->post('phone'),
@@ -54,6 +62,15 @@ class Customers extends MY_Controller
                 'cf5'                 => $this->input->post('cf5'),
                 'cf6'                 => $this->input->post('cf6'),
                 'gst_no'              => $this->input->post('gst_no'),
+                'contribuinte'       => $this->input->post('contribuinte'),
+                'cep'                => $this->input->post('cep'),
+                'cpf_cnpj'          => $this->input->post('cpf_cnpj'),
+                'consumidor_final'  => $this->input->post('consumidor_final'),
+                'ie_rg'             => $this->input->post('ie_rg'),
+                'rua'               => $this->input->post('rua'),
+                'numero'            => $this->input->post('numero'),
+                'bairro'            => $this->input->post('bairro'),
+                'UF'              => $this->input->post('UF')
             ];
         } elseif ($this->input->post('add_customer')) {
             $this->session->set_flashdata('error', validation_errors());
@@ -69,6 +86,7 @@ class Customers extends MY_Controller
             $this->data['modal_js']        = $this->site->modal_js();
             $this->data['customer_groups'] = $this->companies_model->getAllCustomerGroups();
             $this->data['price_groups']    = $this->companies_model->getAllPriceGroups();
+            $this->data['configs']       = $this->returnApiProps('/get_issuer_configs');
             $this->load->view($this->theme . 'customers/add', $this->data);
         }
     }
@@ -404,7 +422,7 @@ class Customers extends MY_Controller
                 'address'             => $this->input->post('address'),
                 'vat_no'              => $this->input->post('vat_no'),
                 'city'                => $this->input->post('city'),
-                'state'               => $this->input->post('state'),
+                'state'               => substr($this->input->post('state'), -2),
                 'postal_code'         => $this->input->post('postal_code'),
                 'country'             => $this->input->post('country'),
                 'phone'               => $this->input->post('phone'),
@@ -416,6 +434,15 @@ class Customers extends MY_Controller
                 'cf6'                 => $this->input->post('cf6'),
                 'award_points'        => $this->input->post('award_points'),
                 'gst_no'              => $this->input->post('gst_no'),
+                'contribuinte'       => $this->input->post('contribuinte'),
+                'cep'                => $this->input->post('cep'),
+                'cpf_cnpj'          => $this->input->post('cpf_cnpj'),
+                'consumidor_final'  => $this->input->post('consumidor_final'),
+                'ie_rg'             => $this->input->post('ie_rg'),
+                'rua'               => $this->input->post('rua'),
+                'numero'            => $this->input->post('numero'),
+                'bairro'            => $this->input->post('bairro'),
+                'UF'              => $this->input->post('UF')
             ];
         } elseif ($this->input->post('edit_customer')) {
             $this->session->set_flashdata('error', validation_errors());
@@ -431,6 +458,7 @@ class Customers extends MY_Controller
             $this->data['modal_js']        = $this->site->modal_js();
             $this->data['customer_groups'] = $this->companies_model->getAllCustomerGroups();
             $this->data['price_groups']    = $this->companies_model->getAllPriceGroups();
+            $this->data['configs']       = $this->returnApiProps('/get_issuer_configs');
             $this->load->view($this->theme . 'customers/edit', $this->data);
         }
     }
@@ -553,6 +581,19 @@ class Customers extends MY_Controller
         // $this->sma->checkPermissions('index');
         $row = $this->companies_model->getCompanyByID($id);
         $this->sma->send_json([['id' => $row->id, 'text' => ($row->company && $row->company != '-' ? $row->company : $row->name)]]);
+    }
+
+    public function getCustomerByID($id)
+    {
+        $this->db->from('companies');
+        $this->db->order_by("id", $id);
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            return $query->result()[0];
+        }
+
+        return false;
     }
 
     public function getCustomers()
@@ -687,9 +728,35 @@ class Customers extends MY_Controller
         }
     }
 
+    private function returnApiProps(string $endpoint, array $data = [])
+    {
+        $ch = curl_init($this->api_url . $endpoint);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        if(!empty($data)) {
+            unset($data["api_url"]);
+            unset($data["ajax"]);
+            $data["api_token"] = $this->api_token;
+
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token&".http_build_query($data));
+        } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token");
+        }
+
+        if(curl_exec($ch)) {
+            return json_decode(curl_exec($ch));
+        } else {
+            return curl_error($ch);
+        }
+    }
+
     public function index($action = null)
     {
         $this->sma->checkPermissions();
+
 
         $this->data['error']  = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         $this->data['action'] = $action;

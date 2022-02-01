@@ -318,4 +318,5 @@ $lang['qty_x_price']                        = 'Qtd x Preço';
 $lang['print_dot']                          = 'Imprimir . (Arquivo)';
 $lang['sale_number']                        = 'Número de Venda';
 $lang['sale_ref']                           = 'Referência de Venda';
-
+$lang['no_tax_sale']                        = 'Emitir Cupom não fiscal';
+$lang['tax_sale']                           = 'Emitir Cupom fiscal';

@@ -1,0 +1,16 @@
+
+
+=========== DEPENDÊNCIAS INSTALADAS COM SUCESSO. ===========
+
+Passos restantes:
+
+1 - Configurar o Arquivo .env da API
+2 - Após configurar o arquivo .ENV, execute o comando 'composer install' e logo em seguida o comando 'php artisan key:generate' (dentro da api)
+3 - Executar o Arquivo DUMP responsável por criar o banco de dados e as tabelas.
+4 - Configurar o TOKEN que deseja utilizar na API. Para isso, salve o Token na tabela fiscal_api_table
+
+============================================================
+Inserir no arquivo 'config.php' (dentro do sistema de stock) a linha de código:
+
+$config['api_token'] = '<token da tabela fiscal_api_table>';
+============================================================

@@ -4,6 +4,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Products extends MY_Controller
 {
+    private $api_url;
+
+    private $api_token;
+
     public function __construct()
     {
         parent::__construct();
@@ -11,6 +15,11 @@ class Products extends MY_Controller
             $this->session->set_userdata('requested_page', $this->uri->uri_string());
             $this->sma->md('login');
         }
+
+        $config = new CI_Config();
+        $this->api_url = $config->config["api_url"];
+        $this->api_token = $config->config['api_token'];
+
         $this->lang->admin_load('products', $this->Settings->user_language);
         $this->load->library('form_validation');
         $this->load->admin_model('products_model');
@@ -96,6 +105,33 @@ class Products extends MY_Controller
                 'hsn_code'          => $this->input->post('hsn_code'),
                 'hide'              => $this->input->post('hide') ? $this->input->post('hide') : 0,
                 'second_name'       => $this->input->post('second_name'),
+                'fiscal'            => $this->input->post('modulo_fiscal'),
+                'NCM'               => $this->input->post('ncm'),
+                'conversao_unitaria'=> $this->input->post('conversao_estoque'),
+                'unidade_compra'    => $this->input->post('unidade_compra'),
+                'unidade_venda'     => $this->input->post('unidade_venda'),
+                'CEST'              => $this->input->post('cest'),
+                'cor'               => $this->input->post('cor'),
+                'CST_CSOSN'         => $this->input->post('cst_CSOSN'),
+                'CST_PIS'           => $this->input->post('cst_PIS'),
+                'CST_COFINS'        => $this->input->post('cst_COFINS'),
+                'CST_IPI'           => $this->input->post('cst_IPI'),
+                'estoque_minimo'    => $this->input->post('estoque_min') ?? 0,
+                'alerta_vencimento' => $this->input->post('alerta_venc') ?? 0,
+                'codBarras'         => $this->input->post('cod_barras_ean13') ?? 'SEM GTIN',
+                'CFOP_saida_inter_estadual' => $this->input->post('cfop_saida_externo'),
+                'CFOP_saida_estadual'       => $this->input->post('cfop_saida_interno'),
+                'perc_icms'                 => $this->input->post('perc_icms'),
+                'perc_pis'                  => $this->input->post('perc_pis'),
+                'perc_cofins'               => $this->input->post('perc_cofins'),
+                'perc_ipi'                  => $this->input->post('perc_ipi'),
+                'perc_iss'                  => $this->input->post('perc_iss'),
+                'cListServ'                 => $this->input->post('cod_lista_iss'),
+                'codigo_anp'                => $this->input->post('ident_anp') == '--' ?? '',
+                'gerenciar_estoque'         => $this->input->post('gerenciar_estoque') ?? false,
+                'valor_livre'               => $this->input->post('valor_livre') ?? false,
+                'quantity'                  => $this->input->post('quantidade'),
+                'referencia'                => $this->input->post('referencia')
             ];
             $warehouse_qty      = null;
             $product_attributes = null;
@@ -319,6 +355,7 @@ class Products extends MY_Controller
             $this->data['brands']              = $this->site->getAllBrands();
             $this->data['base_units']          = $this->site->getAllBaseUnits();
             $this->data['warehouses']          = $warehouses;
+            $this->data['fiscalConfigs']       = $this->returnApiProps("/get_issuer_configs");
             $this->data['warehouses_products'] = $id ? $this->products_model->getAllWarehousesWithPQ($id) : null;
             $this->data['product']             = $id ? $this->products_model->getProductByID($id) : null;
             $this->data['variants']            = $this->products_model->getAllVariants();
@@ -961,6 +998,33 @@ class Products extends MY_Controller
                 'hide'              => $this->input->post('hide') ? $this->input->post('hide') : 0,
                 'hide_pos'          => $this->input->post('hide_pos') ? $this->input->post('hide_pos') : 0,
                 'second_name'       => $this->input->post('second_name'),
+                'fiscal'            => $this->input->post('modulo_fiscal'),
+                'NCM'               => $this->input->post('ncm'),
+                'conversao_unitaria'=> $this->input->post('conversao_estoque'),
+                'unidade_compra'    => $this->input->post('unidade_compra'),
+                'unidade_venda'     => $this->input->post('unidade_venda'),
+                'CEST'              => $this->input->post('cest'),
+                'cor'               => $this->input->post('cor'),
+                'CST_CSOSN'         => $this->input->post('cst_CSOSN'),
+                'CST_PIS'           => $this->input->post('cst_PIS'),
+                'CST_COFINS'        => $this->input->post('cst_COFINS'),
+                'CST_IPI'           => $this->input->post('cst_IPI'),
+                'estoque_minimo'    => $this->input->post('estoque_min') ?? 0,
+                'alerta_vencimento' => $this->input->post('alerta_venc') ?? 0,
+                'codBarras'         => $this->input->post('cod_barras_ean13') ?? 'SEM GTIN',
+                'CFOP_saida_inter_estadual' => $this->input->post('cfop_saida_externo'),
+                'CFOP_saida_estadual'       => $this->input->post('cfop_saida_interno'),
+                'perc_icms'                 => $this->input->post('perc_icms'),
+                'perc_pis'                  => $this->input->post('perc_pis'),
+                'perc_cofins'               => $this->input->post('perc_cofins'),
+                'perc_ipi'                  => $this->input->post('perc_ipi'),
+                'perc_iss'                  => $this->input->post('perc_iss'),
+                'cListServ'                 => $this->input->post('cod_lista_iss'),
+                'codigo_anp'                => $this->input->post('ident_anp') == '--' ?? '',
+                'gerenciar_estoque'         => $this->input->post('gerenciar_estoque') ?? false,
+                'valor_livre'               => $this->input->post('valor_livre') ?? false,
+                'quantity'                  => $this->input->post('quantidade'),
+                'referencia'                => $this->input->post('referencia')
             ];
             $warehouse_qty      = null;
             $product_attributes = null;
@@ -1189,6 +1253,8 @@ class Products extends MY_Controller
             $this->data['warehouses']          = $warehouses;
             $this->data['warehouses_products'] = $warehouses_products;
             $this->data['product']             = $product;
+            $this->data['fiscalConfigs']       = $this->returnApiProps("/get_issuer_configs");
+            $this->data['productConfigs']      = $this->products_model->getProductConfigs($id);
             $this->data['variants']            = $this->products_model->getAllVariants();
             $this->data['subunits']            = $this->site->getUnitsByBUID($product->unit);
             $this->data['product_variants']    = $this->products_model->getProductOptions($id);
@@ -1532,19 +1598,19 @@ class Products extends MY_Controller
         $this->load->library('datatables');
         if ($warehouse_id) {
             $this->datatables
-            ->select($this->db->dbprefix('products') . ".id as productid, {$this->db->dbprefix('products')}.image as image, {$this->db->dbprefix('products')}.code as code, {$this->db->dbprefix('products')}.name as name, {$this->db->dbprefix('brands')}.name as brand, {$this->db->dbprefix('categories')}.name as cname, cost as cost, price as price, COALESCE(wp.quantity, 0) as quantity, {$this->db->dbprefix('units')}.code as unit, wp.rack as rack, alert_quantity", false)
-            ->from('products');
+                ->select($this->db->dbprefix('products') . ".id as productid, {$this->db->dbprefix('products')}.image as image, {$this->db->dbprefix('products')}.code as code, {$this->db->dbprefix('products')}.name as name, {$this->db->dbprefix('brands')}.name as brand, {$this->db->dbprefix('categories')}.name as cname, cost as cost, price as price, COALESCE(wp.quantity, 0) as quantity, {$this->db->dbprefix('units')}.code as unit, wp.rack as rack, alert_quantity", false)
+                ->from('products');
             if ($this->Settings->display_all_products) {
                 $this->datatables->join("( SELECT product_id, quantity, rack from {$this->db->dbprefix('warehouses_products')} WHERE warehouse_id = {$warehouse_id}) wp", 'products.id=wp.product_id', 'left');
             } else {
                 $this->datatables->join('warehouses_products wp', 'products.id=wp.product_id', 'left')
-                ->where('wp.warehouse_id', $warehouse_id)
-                ->where('wp.quantity !=', 0);
+                    ->where('wp.warehouse_id', $warehouse_id)
+                    ->where('wp.quantity !=', 0);
             }
             $this->datatables->join('categories', 'products.category_id=categories.id', 'left')
-            ->join('units', 'products.unit=units.id', 'left')
-            ->join('brands', 'products.brand=brands.id', 'left');
-        // ->group_by("products.id");
+                ->join('units', 'products.unit=units.id', 'left')
+                ->join('brands', 'products.brand=brands.id', 'left');
+            // ->group_by("products.id");
         } else {
             $this->datatables
                 ->select($this->db->dbprefix('products') . ".id as productid, {$this->db->dbprefix('products')}.image as image, {$this->db->dbprefix('products')}.code as code, {$this->db->dbprefix('products')}.name as name, {$this->db->dbprefix('brands')}.name as brand, {$this->db->dbprefix('categories')}.name as cname, cost as cost, price as price, COALESCE(quantity, 0) as quantity, {$this->db->dbprefix('units')}.code as unit, '' as rack, alert_quantity", false)
@@ -1564,12 +1630,12 @@ class Products extends MY_Controller
         }
         if ($supplier) {
             $this->datatables->group_start()
-            ->where('supplier1', $supplier)
-            ->or_where('supplier2', $supplier)
-            ->or_where('supplier3', $supplier)
-            ->or_where('supplier4', $supplier)
-            ->or_where('supplier5', $supplier)
-            ->group_end();
+                ->where('supplier1', $supplier)
+                ->or_where('supplier2', $supplier)
+                ->or_where('supplier3', $supplier)
+                ->or_where('supplier4', $supplier)
+                ->or_where('supplier5', $supplier)
+                ->group_end();
         }
         $this->datatables->add_column('Actions', $action, 'productid, image, code, name');
         echo $this->datatables->generate();
@@ -1784,10 +1850,39 @@ class Products extends MY_Controller
             $this->data['warehouse']    = $this->session->userdata('warehouse_id') ? $this->site->getWarehouseByID($this->session->userdata('warehouse_id')) : null;
         }
 
-        $this->data['supplier'] = $this->input->get('supplier') ? $this->site->getCompanyByID($this->input->get('supplier')) : null;
-        $bc                     = [['link' => base_url(), 'page' => lang('home')], ['link' => '#', 'page' => lang('products')]];
-        $meta                   = ['page_title' => lang('products'), 'bc' => $bc];
+        $this->data['supplier']    = $this->input->get('supplier') ? $this->site->getCompanyByID($this->input->get('supplier')) : null;
+        $bc                        = [['link' => base_url(), 'page' => lang('home')], ['link' => '#', 'page' => lang('products')]];
+        $meta                      = ['page_title' => lang('products'), 'bc' => $bc];
+
+
         $this->page_construct('products/index', $meta, $this->data);
+    }
+
+    private function getFiscalInfos($data = [])
+    {
+        $api_url = $this->api_url;
+
+        $ch = curl_init($api_url . '/get_issuer_configs');
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        if(!empty($data)) {
+            unset($data["api_url"]);
+            unset($data["ajax"]);
+            $data["api_token"] = $api_url;
+
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$api_url&".http_build_query($data));
+        } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$api_url");
+        }
+
+        if(curl_exec($ch)) {
+            return json_decode(curl_exec($ch));
+        } else {
+            return curl_error($ch);
+        }
     }
 
     /* --------------------------------------------------------------------------------------------- */
@@ -2448,5 +2543,41 @@ class Products extends MY_Controller
         $this->data['warehouse']         = $this->site->getWarehouseByID($stock_count->warehouse_id);
         $this->data['adjustment']        = $this->products_model->getAdjustmentByCountID($id);
         $this->load->view($this->theme . 'products/view_count', $this->data);
+    }
+
+    private function returnApiProps(string $endpoint, array $data = [])
+    {
+        $ch = curl_init($this->api_url . $endpoint);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        if(!empty($data)) {
+            unset($data["api_url"]);
+            unset($data["ajax"]);
+            $data["api_token"] = $this->api_token;
+
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token&".http_build_query($data));
+        } else {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token");
+        }
+
+        if(curl_exec($ch)) {
+            return json_decode(curl_exec($ch));
+        } else {
+            return curl_error($ch);
+        }
+    }
+
+    private function mask($mask, $str)
+    {
+        $str = str_replace(" ","",$str);
+
+        for($i=0;$i<strlen($str);$i++){
+            $mask[strpos($mask,"#")] = $str[$i];
+        }
+
+        return $mask;
     }
 }

@@ -41,7 +41,7 @@
                     </div>
                     <div class="col-xs-7 text-right order_barcodes">
                         <img src="<?= admin_url('misc/barcode/' . $this->sma->base64url_encode($inv->reference_no) . '/code128/74/0/1'); ?>" alt="<?= $inv->reference_no; ?>" class="bcimg" />
-                        <?= $this->sma->qrcode('link', urlencode(admin_url('sales/view/' . $inv->id)), 2); ?>
+
                     </div>
                     <div class="clearfix"></div>
                 </div>
