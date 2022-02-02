@@ -1007,14 +1007,14 @@ $ps = ['0' => lang('disable'), '1' => lang('enable')];
         <?php
         if (!DEMO) {
             ?>
-            <a class="btn btn-primary btn-xs pull-right" target="_blank" href="<?= admin_url('cron/run'); ?>">Run cron job now</a>
+            <a class="btn btn-primary btn-xs pull-right" target="_blank" href="<?= admin_url('cron/run'); ?>">Executar cron job agora</a>
         <?php
         } ?>
-        <p><strong>Cron Job</strong> (run at 1:00 AM daily):</p>
+        <p><strong>Cron Job</strong> (executado à 1:00 da manhã diariamente):</p>
         <pre>0 1 * * * wget -qO- <?= admin_url('cron/run'); ?> &gt;/dev/null 2&gt;&amp;1</pre>
-        OR
+        OU
         <pre>0 1 * * * <?= (defined('PHP_BINDIR') ? PHP_BINDIR . DIRECTORY_SEPARATOR : '') . 'php ' . FCPATH . ' admin/cron run'; ?> >/dev/null 2>&1</pre>
-        For CLI: <code>schedule path/to/php path/to/index.php controller method</code>
+        Para CLI: <code>schedule path/to/php path/to/index.php controller method</code>
     </p></div>
     <?php
     } ?>
