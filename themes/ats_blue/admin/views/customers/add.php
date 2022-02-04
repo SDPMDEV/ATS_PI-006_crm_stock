@@ -66,6 +66,10 @@
                         <input type="tel" name="phone" class="form-control" required="required" id="phone"/>
                     </div>
                     <div class="form-group">
+                        <?= lang('address', 'address'); ?>
+                        <?php echo form_input('address', $customer->address, 'class="form-control" id="address" required="required"'); ?>
+                    </div>
+                    <div class="form-group">
                         <?= lang('city', 'city'); ?>
                         <?php echo form_input('city', '', 'class="form-control" id="city" required="required"'); ?>
                     </div>

@@ -123,6 +123,13 @@
                                                             <i class="fa fa-money margin-right-md"></i> <?= lang('cod') ?>
                                                         </span>
                                                     </label>
+
+                                                    <label style="display: inline-block; width: auto;">
+                                                        <input type="radio" name="payment_method" value="mercado_pago" id="mercado_pago" required="required">
+                                                        <span>
+                                                            <i class="fa fa-money margin-right-md"></i> Mercado Pago
+                                                        </span>
+                                                    </label>
                                                 </div>
                                                 <hr>
                                                 <div class="form-group">
@@ -354,6 +361,13 @@
                                                             <input type="radio" name="payment_method" value="cod" id="cod" required="required">
                                                             <span>
                                                                 <i class="fa fa-money margin-right-md"></i> <?= lang('cod') ?>
+                                                            </span>
+                                                        </label>
+
+                                                        <label style="display: inline-block; width: auto;">
+                                                            <input type="radio" name="payment_method" value="mercado_pago" id="mercado_pago" required="required">
+                                                                <span>
+                                                                <i class="fa fa-money margin-right-md"></i> Mercado Pago
                                                             </span>
                                                         </label>
                                                     </div>
