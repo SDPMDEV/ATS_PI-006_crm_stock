@@ -468,14 +468,16 @@ class Shop extends MY_Shop_Controller
                 $this->data['stripe_secret_key']      = $this->config->item('stripe_secret_key');
                 $this->data['stripe_publishable_key'] = $this->config->item('stripe_publishable_key');
 
+                $this->setOrderStatus($order->id, $_GET['status'] ?? '');
+
                 if($order->payment_method == 'mercado_pago') {
                     $config = new CI_Config();
                     $api_url = $config->config["api_url"];
 
                     $mp_data = [
-                        'success_url' => base_url() . '/shop/orders/' . $order->id . '/?success=1',
-                        'failure_url' => base_url() . '/shop/orders/' . $order->id . '/?failure=1',
-                        'pending_url' => base_url() . '/shop/orders/' . $order->id . '/?pending=1',
+                        'success_url' => base_url() . '/shop/orders/' . $order->id . '/?status=success',
+                        'failure_url' => base_url() . '/shop/orders/' . $order->id . '/?status=failure',
+                        'pending_url' => base_url() . '/shop/orders/' . $order->id . '/?status=pending',
                         'title' => 'Venda - ' . $order->id,
                         'quantity' => $order->total_items,
                         'unit_price' => $order->grand_total,
@@ -761,5 +763,24 @@ class Shop extends MY_Shop_Controller
         $this->data['page_title'] = lang('wishlist');
         $this->data['page_desc']  = '';
         $this->page_construct('pages/wishlist', $this->data);
+    }
+
+    private function setOrderStatus(int $order_id, string $order_status = '')
+    {
+        $this->load->admin_model('sales_model');
+
+        if(!empty($order_status)) {
+            if($order_status == "failure" || $order_status == "pending") {
+                $this->sales_model->upSale($order_id, [
+                    'sale_status' => 'pending',
+                    'payment_status' => 'pending'
+                ]);
+            } elseif($order_status == "success") {
+                $this->sales_model->upSale($order_id, [
+                    'sale_status' => 'paid',
+                    'payment_status' => 'paid'
+                ]);
+            }
+        }
     }
 }

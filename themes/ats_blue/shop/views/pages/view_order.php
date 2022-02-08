@@ -3,9 +3,24 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-12">
-
                 <div class="row">
                     <div class="col-sm-9 col-md-10">
+                        <?php if( (isset($_GET['status']) && $_GET['status'] == "failure") || (isset($inv->payment_status) && $inv->payment_status == "pending")) { ?>
+                            <div class="alert alert-info">
+                                <p><strong>Compra ainda não concluída: </strong> Certifique-se de selecionar um método de pagamento</p>
+                            </div>
+                        <?php }?>
+
+                        <?php if( (isset($_GET['status']) && $_GET['status'] == 'success') || (isset($inv->payment_status) && $inv->payment_status == "paid")) { ?>
+                            <div class="alert alert-success">
+                                <p>
+                                    <strong>Compra efetuada com sucesso: </strong>
+                                    você pode acessar mais informações sobre sua compra clicando <a href="#">aqui</a>.
+                                    <br><br>
+                                    Obrigado pela preferência, volte sempre.
+                                </p>
+                            </div>
+                        <?php }?>
 
                         <div class="panel panel-default margin-top-lg">
                             <div class="panel-heading text-bold">
@@ -357,7 +372,7 @@
                                         } ?>
                                 </div>
                                 <?php
-                                if ($inv->grand_total > $inv->paid && !$inv->attachment) {
+                                if ($inv->grand_total > $inv->paid && !$inv->attachment && $inv->payment_status != 'paid') {
                                     echo '<div class="no-print well well-sm" style="margin:20px 0 0 0;">';
                                     if (!empty($shop_settings->bank_details)) {
                                         echo '<div class="text-center">';
@@ -372,14 +387,14 @@
 
                                     if($inv->payment_method == 'mercado_pago') {
                                         echo '
-                                        <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
-                                            <strong style="font-size: 16px; margin-bottom: 15px">Clique abaixo para efetuar o pagamento</strong>
-                                            <a href="'. $mp_link .'">
-                                                <img src="https://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_735X40.jpg?v=1" 
-                                                    alt="Mercado Pago - Efetuar pagamento" title="Mercado Pago - Efetuar pagamento" 
-                                                    width="735" height="40"/>
-                                            </a>
-                                        </div>';
+                                    <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
+                                        <strong style="font-size: 16px; margin-bottom: 15px">Clique abaixo para efetuar o pagamento</strong>
+                                        <a href="'. $mp_link .'">
+                                            <img src="https://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_735X40.jpg?v=1" 
+                                                alt="Mercado Pago - Efetuar pagamento" title="Mercado Pago - Efetuar pagamento" 
+                                                width="735" height="40"/>
+                                        </a>
+                                    </div>';
                                     } else {
                                         echo '<div class="payment_buttons">';
                                         $btn_code = '<div id="payment_buttons" class="text-center margin010">';
@@ -389,6 +404,7 @@
                                         if ($skrill->active == '1' && $inv->grand_total != '0.00') {
                                             $btn_code .= ' <a href="' . site_url('pay/skrill/' . $inv->id) . '"><img src="' . base_url('assets/images/btn-skrill.png') . '" alt="Pay by Skrill"></a>';
                                         }
+
                                     }
 
                                     if ($shop_settings->stripe == 1 && $stripe_publishable_key) {
