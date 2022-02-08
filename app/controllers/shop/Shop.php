@@ -492,6 +492,7 @@ class Shop extends MY_Shop_Controller
                         CURLOPT_CUSTOMREQUEST => 'GET'
                     ]);
                     $res = json_decode(curl_exec($curl));
+                    curl_close($curl);
 
                     if(!$res->error) {
                         $this->data['mp_link'] = $res->link;
@@ -781,6 +782,35 @@ class Shop extends MY_Shop_Controller
                     'payment_status' => 'paid'
                 ]);
             }
+        }
+
+        $this->sales_model->upSale($order_id, [
+            'collection_id' => $_GET['collection_id'] ?? null
+        ]);
+    }
+
+    public function orderDetails($id)
+    {
+        $config = new CI_Config();
+        $api_url = $config->config["api_url"];
+
+        $curl = curl_init($api_url . '/mercado_pago/get_notification');
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS => http_build_query(['collection_id' => $id])
+        ]);
+        $res = json_decode(curl_exec($curl));
+        curl_close($curl);
+
+        if(!$res->error) {
+            echo "<pre>";
+            print_r($res);
+            die;
+        } else {
+            $this->session->set_flashdata('error', "Compra sem status. Certifique-se de selecionar uma forma de pagamento");
+            redirect('/shop/orders');
         }
     }
 }
