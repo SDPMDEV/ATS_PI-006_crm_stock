@@ -28,7 +28,7 @@
                     </tr>
                     <tr>
                         <td><strong><?= lang('vat_no'); ?></strong></td>
-                        <td><?= $customer->vat_no; ?></strong></td>
+                        <td><?= $customer->cpf_cnpj; ?></strong></td>
                     </tr>
                     <tr>
                         <td><strong><?= lang('gst_no'); ?></strong></td>
@@ -64,7 +64,7 @@
                     </tr>
                     <tr>
                         <td><strong><?= lang('postal_code'); ?></strong></td>
-                        <td><?= $customer->postal_code; ?></strong></td>
+                        <td><?= $customer->cep; ?></strong></td>
                     </tr>
                     <tr>
                         <td><strong><?= lang('country'); ?></strong></td>
@@ -72,7 +72,7 @@
                     </tr>
                     <tr>
                         <td><strong><?= lang('ccf1'); ?></strong></td>
-                        <td><?= $customer->cf1; ?></strong></td>
+                        <td><?= $customer->ie_rg; ?></strong></td>
                     </tr>
                     <tr>
                         <td><strong><?= lang('ccf2'); ?></strong></td>

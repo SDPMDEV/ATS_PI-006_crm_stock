@@ -14,8 +14,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="control-label"
-                               for="customer_group"><?php echo $this->lang->line('customer_group'); ?></label>
+                        <label class="control-label" for="customer_group"><?php echo $this->lang->line('customer_group'); ?></label>
                         <?php
                         foreach ($customer_groups as $customer_group) {
                             $cgs[$customer_group->id] = $customer_group->name;
@@ -26,8 +25,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label class="control-label"
-                               for="price_group"><?php echo $this->lang->line('price_group'); ?></label>
+                        <label class="control-label" for="price_group"><?php echo $this->lang->line('price_group'); ?></label>
                         <?php
                         $pgs[''] = lang('select') . ' ' . lang('price_group');
                         foreach ($price_groups as $price_group) {
@@ -68,25 +66,30 @@
                                value="<?= $customer->phone ?>"/>
                     </div>
                     <div class="form-group">
+                        <?= lang('address', 'address'); ?>
+                        <?php echo form_input('address', $customer->address, 'class="form-control" id="address" required="required"'); ?>
+                    </div>
+                    <div class="form-group">
                         <?= lang('city', 'city'); ?>
                         <?php echo form_input('city', $customer->city, 'class="form-control" id="city" required="required"'); ?>
                     </div>
                     <div class="form-group">
                         <label for="state"><b>Estado</b></label>
+                        <label for="state"><b>Estado</b></label>
                         <select name="state" id="state" class="form-control">
-                            <?php foreach ($configs->estados as $cMun => $estado) { ?>
-                                <?php if ($customer->state == $estado) { ?>
+                            <?php foreach($configs->estados as $cMun => $estado) {?>
+                                <?php if($customer->state == $estado) { ?>
                                     <option value="<?= $cMun . ' - ' . $estado ?>">
                                         <?= $estado ?>
                                     </option>
                                 <?php } ?>
-                            <?php } ?>
+                            <?php }?>
 
-                            <?php foreach ($configs->estados as $cMun => $estado) { ?>
+                            <?php foreach($configs->estados as $cMun => $estado) {?>
                                 <option value="<?= $cMun . ' - ' . $estado ?>">
                                     <?= $estado ?>
                                 </option>
-                            <?php } ?>
+                            <?php }?>
                         </select>
                     </div>
                     <!-- col-md-6 -->
@@ -107,8 +110,7 @@
 
                     <div class="form-group">
                         <label for="numero">Número</label>
-                        <input type="text" name="numero" id="numero" class="form-control"
-                               value="<?= $customer->numero ?>">
+                        <input type="text" name="numero" id="numero" class="form-control" value="<?= $customer->numero ?>">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -117,10 +119,10 @@
                     <div class="form-group">
                         <label for="contribuinte">Contribuinte</label>
                         <select name="contribuinte" id="contribuinte" class="form-control">
-                            <?php if ($customer->contribuinte == 1) { ?>
+                            <?php if($customer->contribuinte == 1) {?>
                                 <option value="1">Sim</option>
                                 <option value="0">Não</option>
-                            <?php } else { ?>
+                            <?php } else {?>
                                 <option value="0">Não</option>
                                 <option value="1">Sim</option>
                             <?php } ?>
@@ -135,20 +137,19 @@
 
                     <div class="form-group">
                         <label for="cpf_cnpj">CPF/CNPJ</label>
-                        <input type="text" name="cpf_cnpj" id="cpf_cnpj" class="form-control"
-                               value="<?= $customer->cpf_cnpj ?>">
+                        <input type="text" name="cpf_cnpj" id="cpf_cnpj" class="form-control" value="<?= $customer->cpf_cnpj ?>">
                     </div>
 
                     <div class="form-group">
                         <label for="consumidor_final">Consumidor Final</label>
                         <select name="consumidor_final" id="consumidor_final" class="form-control">
-                            <?php if ($customer->cosumidor_final == 1) { ?>
+                            <?php if($customer->cosumidor_final == 1) {?>
                                 <option value="1">Sim</option>
                                 <option value="0">Não</option>
                             <?php } else { ?>
                                 <option value="0">Não</option>
                                 <option value="1">Sim</option>
-                            <?php } ?>
+                            <?php }?>
 
                         </select>
                     </div>
@@ -179,14 +180,12 @@
 
                     <div class="form-group">
                         <label for="bairro">Bairro</label>
-                        <input type="text" name="bairro" id="bairro" class="form-control"
-                               value="<?= $customer->bairro ?>">
+                        <input type="text" name="bairro" id="bairro" class="form-control" value="<?= $customer->bairro ?>">
                     </div>
 
                     <div class="form-group">
                         <label for="UF">DDD</label>
-                        <input readonly type="text" name="UF" id="UF" class="form-control"
-                               placeholder="Preenchimento automático" value="<?= $customer->cMun ?>">
+                        <input readonly type="text" name="UF" id="UF" class="form-control" placeholder="Preenchimento automático" value="<?= $customer->cMun ?>">
                     </div>
                 </div>
             </div>
@@ -199,11 +198,11 @@
 </div>
 <?= $modal_js ?>
 <script>
-    $(document).ready(function (e) {
-        $('#UF').val($('#state').find(":selected").val().substring(0, 2))
+    $(document).ready(function(e){
+        $('#UF').val($('#state').find(":selected").val().substring(0,2))
 
-        $("#state").change(() => {
-            $('#UF').val($('#state').find(":selected").val().substring(0, 2))
+        $("#state").change(()=>{
+            $('#UF').val($('#state').find(":selected").val().substring(0,2))
         });
     })
 </script>
