@@ -467,6 +467,37 @@ class Shop extends MY_Shop_Controller
                 $this->config->load('payment_gateways');
                 $this->data['stripe_secret_key']      = $this->config->item('stripe_secret_key');
                 $this->data['stripe_publishable_key'] = $this->config->item('stripe_publishable_key');
+
+                if($order->payment_method == 'mercado_pago') {
+                    $config = new CI_Config();
+                    $api_url = $config->config["api_url"];
+
+                    $mp_data = [
+                        'success_url' => base_url() . '/shop/orders/' . $order->id . '/?success=1',
+                        'failure_url' => base_url() . '/shop/orders/' . $order->id . '/?failure=1',
+                        'pending_url' => base_url() . '/shop/orders/' . $order->id . '/?pending=1',
+                        'title' => 'Venda - ' . $order->id,
+                        'quantity' => $order->total_items,
+                        'unit_price' => $order->grand_total,
+                        'notification_url' => base_url() . '/shop/orders/' . $order->id . '/notification',
+                        'sale_id' => $order->id
+                    ];
+
+                    $curl = curl_init($api_url . '/mercado_pago/make_payment/?' . http_build_query($mp_data));
+                    curl_setopt_array($curl, [
+                        CURLOPT_SSL_VERIFYPEER => false,
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_CUSTOMREQUEST => 'GET'
+                    ]);
+                    $res = json_decode(curl_exec($curl));
+
+                    if(!$res->error) {
+                        $this->data['mp_link'] = $res->link;
+                    } else {
+                        $this->data['mp_link'] = "/?link_error=1";
+                    }
+                }
+
                 $this->page_construct('pages/view_order', $this->data);
             } else {
                 $this->session->set_flashdata('error', lang('access_denied'));

@@ -369,13 +369,26 @@
                                         echo form_close();
                                         echo '</div><hr class="divider or">';
                                     }
-                                    echo '<div class="payment_buttons">';
-                                    $btn_code = '<div id="payment_buttons" class="text-center margin010">';
-                                    if ($paypal->active == '1' && $inv->grand_total != '0.00') {
-                                        $btn_code .= '<a href="' . site_url('pay/paypal/' . $inv->id) . '"><img src="' . base_url('assets/images/btn-paypal.png') . '" alt="Pay by PayPal"></a> ';
-                                    }
-                                    if ($skrill->active == '1' && $inv->grand_total != '0.00') {
-                                        $btn_code .= ' <a href="' . site_url('pay/skrill/' . $inv->id) . '"><img src="' . base_url('assets/images/btn-skrill.png') . '" alt="Pay by Skrill"></a>';
+
+                                    if($inv->payment_method == 'mercado_pago') {
+                                        echo '
+                                        <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
+                                            <strong style="font-size: 16px; margin-bottom: 15px">Clique abaixo para efetuar o pagamento</strong>
+                                            <a href="'. $mp_link .'">
+                                                <img src="https://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_735X40.jpg?v=1" 
+                                                    alt="Mercado Pago - Efetuar pagamento" title="Mercado Pago - Efetuar pagamento" 
+                                                    width="735" height="40"/>
+                                            </a>
+                                        </div>';
+                                    } else {
+                                        echo '<div class="payment_buttons">';
+                                        $btn_code = '<div id="payment_buttons" class="text-center margin010">';
+                                        if ($paypal->active == '1' && $inv->grand_total != '0.00') {
+                                            $btn_code .= '<a href="' . site_url('pay/paypal/' . $inv->id) . '"><img src="' . base_url('assets/images/btn-paypal.png') . '" alt="Pay by PayPal"></a> ';
+                                        }
+                                        if ($skrill->active == '1' && $inv->grand_total != '0.00') {
+                                            $btn_code .= ' <a href="' . site_url('pay/skrill/' . $inv->id) . '"><img src="' . base_url('assets/images/btn-skrill.png') . '" alt="Pay by Skrill"></a>';
+                                        }
                                     }
 
                                     if ($shop_settings->stripe == 1 && $stripe_publishable_key) {
