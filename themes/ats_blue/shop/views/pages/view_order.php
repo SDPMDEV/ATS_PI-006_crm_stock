@@ -5,22 +5,29 @@
             <div class="col-xs-12">
                 <div class="row">
                     <div class="col-sm-9 col-md-10">
-                        <?php if( (isset($_GET['status']) && $_GET['status'] == "failure") || (isset($inv->payment_status) && $inv->payment_status == "pending")) { ?>
+                        <?php if( !isset($inv->collection_id) || !isset($_GET['collection_id'])) { ?>
                             <div class="alert alert-info">
                                 <p><strong>Compra ainda não concluída: </strong> Certifique-se de selecionar um método de pagamento</p>
                             </div>
-                        <?php }?>
-
-                        <?php if( (isset($_GET['status']) && $_GET['status'] == 'success') || (isset($inv->payment_status) && $inv->payment_status == "paid")) { ?>
+                        <?php } else {?>
                             <div class="alert alert-success">
                                 <p>
                                     <strong>Compra efetuada com sucesso: </strong>
-                                    você pode acessar mais informações sobre sua compra clicando <a href="#">aqui</a>.
+                                    você pode acessar mais informações sobre sua compra clicando <a target="_blank" href="/order/details/<?= $inv->collection_id ?>">aqui</a>.
                                     <br><br>
                                     Obrigado pela preferência, volte sempre.
                                 </p>
                             </div>
                         <?php }?>
+
+                        <?php if(isset($_GET['link_error']) && $_GET['link_error'] == '1') { ?>
+                            <div class="alert alert-danger">
+                                <p>
+                                    <strong>Erro: </strong>
+                                    Ocorreu um erro ao gerar o link para acesso do mercado pago, por favor entre em contato com o administrador do sistema.
+                                </p>
+                            </div>
+                        <?php } ?>
 
                         <div class="panel panel-default margin-top-lg">
                             <div class="panel-heading text-bold">
@@ -372,7 +379,7 @@
                                         } ?>
                                 </div>
                                 <?php
-                                if ($inv->grand_total > $inv->paid && !$inv->attachment && $inv->payment_status != 'paid') {
+                                if ($inv->grand_total > $inv->paid && !$inv->attachment && !isset($inv->collection_id)) {
                                     echo '<div class="no-print well well-sm" style="margin:20px 0 0 0;">';
                                     if (!empty($shop_settings->bank_details)) {
                                         echo '<div class="text-center">';
@@ -387,7 +394,7 @@
 
                                     if($inv->payment_method == 'mercado_pago') {
                                         echo '
-                                    <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center;">
+                                    <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; overflow: hidden">
                                         <strong style="font-size: 16px; margin-bottom: 15px">Clique abaixo para efetuar o pagamento</strong>
                                         <a href="'. $mp_link .'">
                                             <img src="https://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_735X40.jpg?v=1" 

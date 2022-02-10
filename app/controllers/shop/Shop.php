@@ -473,12 +473,17 @@ class Shop extends MY_Shop_Controller
                 if($order->payment_method == 'mercado_pago') {
                     $config = new CI_Config();
                     $api_url = $config->config["api_url"];
+                    $names = [];
+
+                    foreach($this->shop_model->getOrderItems($id) as $product) {
+                        $names[] = $product->product_name;
+                    }
 
                     $mp_data = [
                         'success_url' => base_url() . '/shop/orders/' . $order->id . '/?status=success',
                         'failure_url' => base_url() . '/shop/orders/' . $order->id . '/?status=failure',
                         'pending_url' => base_url() . '/shop/orders/' . $order->id . '/?status=pending',
-                        'title' => 'Venda - ' . $order->id,
+                        'title' => implode(", ", $names),
                         'quantity' => $order->total_items,
                         'unit_price' => $order->grand_total,
                         'notification_url' => base_url() . '/shop/orders/' . $order->id . '/notification',
@@ -497,7 +502,7 @@ class Shop extends MY_Shop_Controller
                     if(!$res->error) {
                         $this->data['mp_link'] = $res->link;
                     } else {
-                        $this->data['mp_link'] = "/?link_error=1";
+                        $this->data['mp_link'] = base_url() . "/shop/orders/" . $order->id . "/?link_error=1";
                     }
                 }
 
@@ -774,22 +779,18 @@ class Shop extends MY_Shop_Controller
             if($order_status == "failure" || $order_status == "pending") {
                 $this->sales_model->upSale($order_id, [
                     'sale_status' => 'pending',
-                    'payment_status' => 'pending'
+                    'collection_id' => $_REQUEST['collection_id'] ?? null
                 ]);
             } elseif($order_status == "success") {
                 $this->sales_model->upSale($order_id, [
                     'sale_status' => 'paid',
-                    'payment_status' => 'paid'
+                    'collection_id' => $_REQUEST['collection_id'] ?? null
                 ]);
             }
         }
-
-        $this->sales_model->upSale($order_id, [
-            'collection_id' => $_GET['collection_id'] ?? null
-        ]);
     }
 
-    public function orderDetails($id)
+    public function orderDetails($collection_id)
     {
         $config = new CI_Config();
         $api_url = $config->config["api_url"];
@@ -799,7 +800,7 @@ class Shop extends MY_Shop_Controller
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS => http_build_query(['collection_id' => $id])
+            CURLOPT_POSTFIELDS => http_build_query(['collection_id' => $collection_id ?? $_REQUEST['collection_id']])
         ]);
         $res = json_decode(curl_exec($curl));
         curl_close($curl);
