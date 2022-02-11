@@ -468,7 +468,7 @@ class Shop extends MY_Shop_Controller
                 $this->data['stripe_secret_key']      = $this->config->item('stripe_secret_key');
                 $this->data['stripe_publishable_key'] = $this->config->item('stripe_publishable_key');
 
-                $this->setOrderStatus($order->id, $_GET['status'] ?? '');
+                $this->setOrderStatus($order->id, $_GET['status'] ?? '', $_GET['collection_id'] ?? '');
 
                 if($order->payment_method == 'mercado_pago') {
                     $config = new CI_Config();
@@ -771,23 +771,14 @@ class Shop extends MY_Shop_Controller
         $this->page_construct('pages/wishlist', $this->data);
     }
 
-    private function setOrderStatus(int $order_id, string $order_status = '')
+    private function setOrderStatus($order_id = null, $order_status = null, $collection_id = null)
     {
         $this->load->admin_model('sales_model');
 
-        if(!empty($order_status)) {
-            if($order_status == "failure" || $order_status == "pending") {
-                $this->sales_model->upSale($order_id, [
-                    'sale_status' => 'pending',
-                    'collection_id' => $_REQUEST['collection_id'] ?? null
-                ]);
-            } elseif($order_status == "success") {
-                $this->sales_model->upSale($order_id, [
-                    'sale_status' => 'paid',
-                    'collection_id' => $_REQUEST['collection_id'] ?? null
-                ]);
-            }
-        }
+        $this->sales_model->upSale($order_id, [
+            'sale_status' => $order_status ?? 'pending',
+            'collection_id' => $collection_id
+        ]);
     }
 
     public function orderDetails($collection_id)
@@ -806,9 +797,8 @@ class Shop extends MY_Shop_Controller
         curl_close($curl);
 
         if(!$res->error) {
-            echo "<pre>";
-            print_r($res);
-            die;
+            $this->data['mercado_pago'] = $res->mercado_pago;
+            $this->page_construct('order_details', $this->data);
         } else {
             $this->session->set_flashdata('error', "Compra sem status. Certifique-se de selecionar uma forma de pagamento");
             redirect('/shop/orders');
