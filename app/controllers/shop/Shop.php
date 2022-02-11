@@ -771,13 +771,13 @@ class Shop extends MY_Shop_Controller
         $this->page_construct('pages/wishlist', $this->data);
     }
 
-    private function setOrderStatus($order_id = null, $order_status = null, $collection_id = null)
+    private function setOrderStatus($order_id = null, $order_status = null, $collection_id = '')
     {
         $this->load->admin_model('sales_model');
 
         $this->sales_model->upSale($order_id, [
             'sale_status' => $order_status ?? 'pending',
-            'collection_id' => $collection_id
+            'collection_id' => ($collection_id == 'null') ? '' : $collection_id
         ]);
     }
 
