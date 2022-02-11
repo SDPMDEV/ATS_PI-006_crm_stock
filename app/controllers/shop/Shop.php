@@ -775,10 +775,20 @@ class Shop extends MY_Shop_Controller
     {
         $this->load->admin_model('sales_model');
 
-        $this->sales_model->upSale($order_id, [
-            'sale_status' => $order_status ?? 'pending',
-            'collection_id' => ($collection_id == 'null') ? '' : $collection_id
-        ]);
+        if($order_status == null || $order_status == 'null') {
+            $sale = $this->sales_model->getSale($order_id);
+            if(!isset($sale->collection_id) || $sale->collection_id == "") {
+                $this->sales_model->upSale($order_id, [
+                    'collection_id' => ($collection_id == 'null') ? '' : $collection_id
+                ]);
+            }
+        } else {
+            $this->sales_model->upSale($order_id, [
+                'sale_status' => ($order_status == "failure" || $order_status == "pending") ? 'pending' : 'paid',
+                'payment_status' => ($order_status == "failure" || $order_status == "pending") ? 'pending' : 'paid',
+                'collection_id' => ($collection_id == 'null') ? '' : $collection_id
+            ]);
+        }
     }
 
     public function orderDetails($collection_id)
