@@ -83,6 +83,12 @@
                         </div>
                     </div>
                 <?php } ?>
+
+                <?php if(!empty( (array)$mercado_pago->card )) { ?>
+                        <p>Últimos 4 dígitos do cartão: <strong><?= $mercado_pago->card->last_four_digits ?></strong></p>
+                        <p>Titular do cartão: <strong><?= $mercado_pago->card->cardholder->name ?></strong></p>
+                        <p><?= $mercado_pago->card->cardholder->identification->type ?>: <strong><?= $mercado_pago->card->cardholder->identification->number ?></strong></p>
+                <?php } ?>
             </div>
 
             <div class="col-md-12">
