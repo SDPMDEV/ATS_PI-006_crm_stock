@@ -5,15 +5,15 @@
             <div class="col-xs-12">
                 <div class="row">
                     <div class="col-sm-9 col-md-10">
-                        <?php if( !isset($inv->collection_id) || !isset($_GET['collection_id'])) { ?>
+                        <?php if( $_GET['collection_id'] == 'null' || $_GET['collection_id'] == null) { ?>
                             <div class="alert alert-info">
                                 <p><strong>Compra ainda não concluída: </strong> Certifique-se de selecionar um método de pagamento</p>
                             </div>
-                        <?php } else {?>
+                        <?php } else { ?>
                             <div class="alert alert-success">
                                 <p>
                                     <strong>Compra efetuada com sucesso: </strong>
-                                    você pode acessar mais informações sobre sua compra clicando <a target="_blank" href="/order/details/<?= $inv->collection_id ?>">aqui</a>.
+                                    você pode acessar mais informações sobre sua compra clicando <a target="_blank" href="/order/details/<?= $_GET['collection_id'] ?>">aqui</a>.
                                     <br><br>
                                     Obrigado pela preferência, volte sempre.
                                 </p>
@@ -379,7 +379,7 @@
                                         } ?>
                                 </div>
                                 <?php
-                                if ($inv->grand_total > $inv->paid && !$inv->attachment && !isset($inv->collection_id)) {
+                                if ($inv->grand_total > $inv->paid && !$inv->attachment) {
                                     echo '<div class="no-print well well-sm" style="margin:20px 0 0 0;">';
                                     if (!empty($shop_settings->bank_details)) {
                                         echo '<div class="text-center">';

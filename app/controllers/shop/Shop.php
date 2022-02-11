@@ -796,7 +796,7 @@ class Shop extends MY_Shop_Controller
         $res = json_decode(curl_exec($curl));
         curl_close($curl);
 
-        if(!$res->error) {
+        if(!$res->error && !isset($res->mercado_pago->error)) {
             $this->data['mercado_pago'] = $res->mercado_pago;
             $this->page_construct('order_details', $this->data);
         } else {

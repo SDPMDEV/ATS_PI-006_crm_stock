@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<div class="container" style="background: #fff; padding: 20px">
+<section class="page-contents">
+    <div class="container" style="background: #fff; padding: 20px">
     <div class="row">
         <div class="col-md-12">
             <div class="col-md-12">
@@ -13,18 +14,21 @@
                     <table class="table" style="border: 1px solid #000">
                         <tr style="background: #283b87; color: #fff">
                             <th>Nome</th>
+                            <th style="text-align: center">Quantidade</th>
                             <th style="text-align: center">Valor</th>
                         </tr>
 
                         <?php foreach($mercado_pago->additional_info->items as $product) { ?>
                             <tr>
                                 <td><?= $product->title ?></td>
+                                <td style="text-align: center"><?= $product->quantity ?></td>
                                 <td style="text-align: center">R$ <?= $product->unit_price ?></td>
                             </tr>
                         <?php } ?>
 
                         <tr style="background: #283b87; color: #fff">
                             <td style="text-align: center">TOTAL</td>
+                            <td></td>
                             <td style="text-align: center">R$ <?= $mercado_pago->transaction_details->total_paid_amount ?></td>
                         </tr>
                     </table>
@@ -91,6 +95,7 @@
         </div>
     </div>
 </div>
+</section>
 <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
