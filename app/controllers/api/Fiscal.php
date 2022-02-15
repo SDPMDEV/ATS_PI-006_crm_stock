@@ -520,8 +520,16 @@ class Fiscal extends MY_Controller
                     'estado' => $sale->estado
                 ];
 
+
+                $ch = curl_init($this->api_url . '/generate_danfe/?' . http_build_query($data));
+                curl_setopt_array($ch,[
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                    CURLOPT_RETURNTRANSFER => true,
+                ]);
+
                 header("Content-Type: application/pdf");
-                echo file_get_contents($this->api_url . '/generate_danfe/?' . http_build_query($data));
+                echo curl_exec($ch);
             } else {
                 echo '
                     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -642,6 +650,7 @@ class Fiscal extends MY_Controller
                     $ch = curl_init();
                     curl_setopt($ch, CURLOPT_URL,$this->api_url . '/generate_nf');
                     curl_setopt($ch, CURLOPT_POST, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
@@ -1037,8 +1046,15 @@ class Fiscal extends MY_Controller
                 $res = $this->returnApiProps('/print_cce', $data);
 
                 if(!$res->error) {
+                    $ch = curl_init($this->api_url . '/print_cce/?' . http_build_query($data));
+                    curl_setopt_array($ch,[
+                        CURLOPT_SSL_VERIFYPEER => false,
+                        CURLOPT_CUSTOMREQUEST => "GET",
+                        CURLOPT_RETURNTRANSFER => true,
+                    ]);
+
                     header('Content-type: application/pdf');
-                    echo file_get_contents($this->api_url . '/print_cce/?' . http_build_query($data));
+                    echo curl_exec($ch);
                 } else {
                     echo '
                         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -1074,8 +1090,15 @@ class Fiscal extends MY_Controller
             $res = $this->returnApiProps('/print_cce', $data);
 
             if(!$res->error) {
+                $ch = curl_init($this->api_url . '/print_cce/?' . http_build_query($data));
+                curl_setopt_array($ch,[
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                    CURLOPT_RETURNTRANSFER => true,
+                ]);
+
                 header('Content-type: application/pdf');
-                echo file_get_contents($this->api_url . '/print_cce/?' . http_build_query($data));
+                echo curl_exec($ch);
             } else {
                 echo '
                     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -1108,7 +1131,14 @@ class Fiscal extends MY_Controller
             if(count($this->get->val) == 1) {
                 $sale = $this->sales_model->getSale($this->get->val[0]);
 
-                $res = file_get_contents($this->api_url . '/download_xml/?' . http_build_query(['chave' => $sale->chave]));
+                $ch = curl_init($this->api_url . '/download_xml/?' . http_build_query(['chave' => $sale->chave]));
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_CUSTOMREQUEST => "GET"
+                ]);
+
+                $res = curl_exec($ch);
 
                 if(!$sale->chave) {
                     die(
@@ -1154,7 +1184,13 @@ class Fiscal extends MY_Controller
                     ]);
                 }
 
-                $res = file_get_contents($this->api_url . '/download_xml_zip/?' . http_build_query(['xmls' => $xml_to_download]));
+                $ch = curl_init($this->api_url . '/download_xml_zip/?' . http_build_query(['xmls' => $xml_to_download]));
+                curl_setopt_array($ch, [
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_RETURNTRANSFER => true,
+                ]);
+                $res = curl_exec($ch);
 
                 if(!$res->error) {
                     echo '
@@ -1214,11 +1250,26 @@ class Fiscal extends MY_Controller
                     'chave' => $sale->chave
                 ];
 
-                $res = (object)json_decode(file_get_contents($this->api_url . '/print_cancel/?' . http_build_query($data)));
+                $ch = curl_init($this->api_url . '/print_cancel/?' . http_build_query($data));
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                    CURLOPT_SSL_VERIFYPEER => false
+                ]);
+
+                $res = (object)json_decode(curl_exec($ch));
 
                 if(!$res->error) {
                     header('Content-type: application/pdf');
-                    echo file_get_contents($this->api_url . '/print_cancel/?' . http_build_query($data));
+
+                    $ch = curl_init($this->api_url . '/print_cancel/?' . http_build_query($data));
+                    curl_setopt_array($ch, [
+                            CURLOPT_RETURNTRANSFER => true,
+                            CURLOPT_CUSTOMREQUEST => "GET",
+                            CURLOPT_SSL_VERIFYPEER => false
+                    ]);
+
+                    echo curl_exec($ch);
                 } else {
                     echo '
                         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -1250,12 +1301,23 @@ class Fiscal extends MY_Controller
                 'chave' => $this->get->chave
             ];
 
-
-            $res = (object)json_decode(file_get_contents($this->api_url . '/print_cancel/?' . http_build_query($data)));
+            $ch = curl_init($this->api_url . '/print_cancel/?' . http_build_query($data));
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_SSL_VERIFYPEER => false
+            ]);
+            $res = (object)json_decode(curl_exec($ch));
 
             if(!$res->error) {
                 header('Content-type: application/pdf');
-                echo file_get_contents($this->api_url . '/print_cancel/?' . http_build_query($data));
+                $ch = curl_init($this->api_url . '/print_cancel/?' . http_build_query($data));
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                    CURLOPT_SSL_VERIFYPEER => false
+                ]);
+                echo curl_exec($ch);
             } else {
                 echo '
                         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -1359,7 +1421,14 @@ class Fiscal extends MY_Controller
                 ]);
             }
 
-            $res = json_decode(file_get_contents($this->api_url . "/send_nfe_xml/?" . http_build_query(['sales_to_pdf' => $salesToPdf])));
+            $ch = curl_init($this->api_url . "/send_nfe_xml/?" . http_build_query(['sales_to_pdf' => $salesToPdf]));
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_SSL_VERIFYPEER => false
+            ]);
+
+            $res = json_decode(curl_exec($ch));
 
             if($res->error) {
                 echo '
@@ -1403,13 +1472,28 @@ class Fiscal extends MY_Controller
                 'chave' => $this->get->chave
             ];
 
-            $res = file_get_contents($this->api_url . '/print_nfce/?' . http_build_query($data));
+            $ch = curl_init($this->api_url . '/print_nfce/?' . http_build_query($data));
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_SSL_VERIFYPEER => false
+            ]);
+
+            $res = curl_exec($ch);
 
             if(!$res->error) {
                 $this->nfe_model->truncate('products_nfe');
 
                 header('Content-type: application/pdf');
-                echo file_get_contents($this->api_url . '/print_nfce/?' . http_build_query($data));
+
+                $ch = curl_init($this->api_url . '/print_nfce/?' . http_build_query($data));
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                    CURLOPT_SSL_VERIFYPEER => false
+                ]);
+
+                echo curl_exec($ch);
             } else {
                 echo '
                     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -1472,6 +1556,7 @@ class Fiscal extends MY_Controller
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,$this->api_url . '/generate_nfce');
         curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
@@ -1601,11 +1686,26 @@ class Fiscal extends MY_Controller
             'api_token' => $this->api_token
         ];
 
-        $res = file_get_contents($this->api_url . '/generate_cupom/?' . http_build_query($data));
+        $ch = curl_init($this->api_url . '/generate_cupom/?' . http_build_query($data));
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_SSL_VERIFYPEER => false
+        ]);
+
+        $res = curl_exec($ch);
 
         if($res) {
             header("Content-Type: application/pdf");
-            echo file_get_contents($this->api_url . '/generate_cupom/?' . http_build_query($data));
+
+            $ch = curl_init($this->api_url . '/generate_cupom/?' . http_build_query($data));
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_SSL_VERIFYPEER => false
+            ]);
+
+            echo curl_exec($ch);
         } else {
             die('
                 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
