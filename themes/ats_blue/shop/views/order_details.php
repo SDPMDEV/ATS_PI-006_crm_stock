@@ -90,6 +90,32 @@
                         <p><?= $mercado_pago->card->cardholder->identification->type ?>: <strong><?= $mercado_pago->card->cardholder->identification->number ?></strong></p>
                 <?php } ?>
             </div>
+            <?php if($mercado_pago->payment_type_id == 'ticket') { ?>
+                <div class="col-md-12 text-center">
+                    <h1>Boleto</h1>
+                    <hr>
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; margin-bottom: 50px">
+                        <input type="text" id="code_to_copy" style="padding: 10px;
+                                border-radius: 10px;
+                                overflow: hidden;
+                                width: 100%;
+                                border: 2px dashed #ced1e2;
+                                text-overflow: '----';
+                                white-space: nowrap;
+                                display: flex;
+                                flex-direction: row;
+                                margin-bottom: 10px;
+                                text-align: center"
+                               readonly
+                               value="<?= $mercado_pago->barcode->content ?>"
+                        />
+
+                        <button onclick="copyToClipboard()" class="btn btn-info">Copiar Código</button>
+                    </div>
+
+                    <embed width="1000" height="1000" src="<?= $mercado_pago->transaction_details->external_resource_url ?>" />
+                </div>
+            <?php }?>
 
             <div class="col-md-12">
                 <?php if($mercado_pago->status == "approved") { ?>

@@ -693,6 +693,7 @@ $lang['login_to_your_account']      = 'Por favor acesse sua conta.';
 $lang['forgot_password_successful'] = 'O e-mail foi enviado com instruções de redefinição de senha';
 $lang['site_logs']                  = 'Logs do Site';
 $lang['pending_waiting_transfer']   = 'Esperando transação';
+$lang['pending_waiting_payment']    = 'Esperando pagamento';
 $lang['accredited']                 = 'O pagamento foi aprovado e credenciado.';
 $lang['pending']                    = 'Pendente';
 $lang['approved']                   = 'Aprovado';
