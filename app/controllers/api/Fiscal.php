@@ -642,6 +642,7 @@ class Fiscal extends MY_Controller
                     $ch = curl_init();
                     curl_setopt($ch, CURLOPT_URL,$this->api_url . '/generate_nf');
                     curl_setopt($ch, CURLOPT_POST, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
@@ -1472,6 +1473,7 @@ class Fiscal extends MY_Controller
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,$this->api_url . '/generate_nfce');
         curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
