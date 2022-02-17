@@ -506,6 +506,22 @@ class Shop extends MY_Shop_Controller
                     }
                 }
 
+                if($order->payment_method == 'sicoob') {
+
+                    $config = new CI_Config();
+
+                    $curl = curl_init($config->config["api_url"] . '/sicoob/get_key');
+                    curl_setopt_array($curl, [
+                        CURLOPT_SSL_VERIFYPEER => false,
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_CUSTOMREQUEST => 'GET'
+                    ]);
+                    $res = json_decode(curl_exec($curl));
+                    curl_close($curl);
+
+                    $this->data["sicoob_key"] = $res->sicoob_key;
+                }
+
                 $this->page_construct('pages/view_order', $this->data);
             } else {
                 $this->session->set_flashdata('error', lang('access_denied'));

@@ -30,6 +30,7 @@ class system_settings extends MY_Controller
         $this->lang->admin_load('settings', $this->Settings->user_language);
         $this->load->library('form_validation');
         $this->load->admin_model('settings_model');
+        $this->load->admin_model('sicoob_model');
         $this->upload_path        = 'assets/uploads/';
         $this->thumbs_path        = 'assets/uploads/thumbs/';
         $this->image_types        = 'gif|jpg|jpeg|png|tif';
@@ -2327,6 +2328,63 @@ class system_settings extends MY_Controller
         }
     }
 
+    public function boleto_sicoob()
+    {
+        $bc   = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('system_settings'), 'page' => lang('system_settings')], ['link' => '#', 'page' => "Boleto Sicoob"]];
+        $meta = ['page_title' => "Configurar Boleto Sicoob", 'bc' => $bc];
+
+        $curl = curl_init($this->api_url . "/sicoob/get_key/?api_token=".$this->api_token);
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_CUSTOMREQUEST => "GET"
+        ]);
+        $res = json_decode(curl_exec($curl));
+
+        $this->data['configs'] = $this->sicoob_model->getAll();
+        $this->data["sicoob_key"] = $res->sicoob_key;
+        $this->data["set_key"] = $this->api_url . "/sicoob/set_key/?api_token=".$this->api_token;
+        $this->page_construct('settings/boleto_sicoob', $meta, $this->data);
+    }
+
+    public function save_sicoob_configs()
+    {
+        if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->session->set_flashdata('message', lang('permission_denied'));
+            redirect('/');
+        }
+
+        $data = [
+            "venc_em_dias" => $this->input->post("venc_em_dias"),
+            "valor_iof" => $this->input->post("valor_iof"),
+            "multa_em_dias" => $this->input->post("multa_em_dias"),
+            "juros_em_dias" => $this->input->post("juros_em_dias"),
+            "inst_1" => strip_tags($this->input->post("inst_1")),
+            "inst_2" => strip_tags($this->input->post("inst_2")),
+            "inst_3" => strip_tags($this->input->post("inst_3")),
+            "inst_4" => strip_tags($this->input->post("inst_4")),
+            "inst_5" => strip_tags($this->input->post("inst_5")),
+            "data_desc_1" => $this->input->post("data_desc_1"),
+            "data_desc_2" => $this->input->post("data_desc_2"),
+            "data_desc_3" => $this->input->post("data_desc_3"),
+            "valor_desc_1" => $this->input->post("valor_desc_1"),
+            "valor_desc_2" => $this->input->post("valor_desc_2"),
+            "valor_desc_3" => $this->input->post("valor_desc_3"),
+            "num_cliente" => $this->input->post("num_cliente"),
+            "cooperativa" => $this->input->post("cooperativa"),
+            "perc_juros" => $this->input->post("perc_juros"),
+            "perc_taxa_mora" => $this->input->post("perc_taxa_mora"),
+            "num_conta_corrente" => $this->input->post("num_conta_corrente")
+        ];
+
+        if(!$this->sicoob_model->save($data)) {
+            $this->session->set_flashdata('message', "Erro ao salvar dados.");
+        } else {
+            $this->session->set_flashdata('message', "Dados salvos com sucesso.");
+        }
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+
     public function mercado_pago()
     {
         $curl = curl_init($this->api_url . "/mercado_pago/get_keys/?api_token=".$this->api_token);
@@ -2339,7 +2397,7 @@ class system_settings extends MY_Controller
         $res = json_decode(curl_exec($curl));
 
         $bc   = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('system_settings'), 'page' => lang('system_settings')], ['link' => '#', 'page' => "Mercado Pago"]];
-        $meta = ['page_title' => lang('paypal_settings'), 'bc' => $bc];
+        $meta = ['page_title' => "Configurações Mercado Pago", 'bc' => $bc];
         $this->data["public_key"] = $res->public_key ?? "";
         $this->data["access_token"] = $res->access_token ?? "";
         $this->data["set_keys"] = $this->api_url . "/mercado_pago/set_keys";
