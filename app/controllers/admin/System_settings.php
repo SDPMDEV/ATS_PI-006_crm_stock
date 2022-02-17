@@ -4,6 +4,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class system_settings extends MY_Controller
 {
+    /**
+     * @var string|mixed
+     */
+    private string $api_url;
+
+    /**
+     * @var string|mixed
+     */
+    private string $api_token;
+
     public function __construct()
     {
         parent::__construct();
@@ -25,6 +35,10 @@ class system_settings extends MY_Controller
         $this->image_types        = 'gif|jpg|jpeg|png|tif';
         $this->digital_file_types = 'zip|psd|ai|rar|pdf|doc|docx|xls|xlsx|ppt|pptx|gif|jpg|jpeg|png|tif';
         $this->allowed_file_size  = '1024';
+
+        $config = new CI_Config();
+        $this->api_url = $config->config["api_url"];
+        $this->api_token = $config->config['api_token'];
     }
 
     public function add_brand()
@@ -2311,6 +2325,25 @@ class system_settings extends MY_Controller
             $meta = ['page_title' => lang('paypal_settings'), 'bc' => $bc];
             $this->page_construct('settings/paypal', $meta, $this->data);
         }
+    }
+
+    public function mercado_pago()
+    {
+        $curl = curl_init($this->api_url . "/mercado_pago/get_keys/?api_token=".$this->api_token);
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_CUSTOMREQUEST => "GET"
+        ]);
+
+        $res = json_decode(curl_exec($curl));
+
+        $bc   = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('system_settings'), 'page' => lang('system_settings')], ['link' => '#', 'page' => "Mercado Pago"]];
+        $meta = ['page_title' => lang('paypal_settings'), 'bc' => $bc];
+        $this->data["public_key"] = $res->public_key ?? "";
+        $this->data["access_token"] = $res->access_token ?? "";
+        $this->data["set_keys"] = $this->api_url . "/mercado_pago/set_keys";
+        $this->page_construct('settings/mercado_pago', $meta, $this->data);
     }
 
     public function permissions($id = null)

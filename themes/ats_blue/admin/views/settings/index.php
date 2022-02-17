@@ -77,8 +77,14 @@ $ps = ['0' => lang('disable'), '1' => lang('enable')];
 
         <div class="box-icon">
             <ul class="btn-tasks">
+                <li class="dropdown">
+                    <a href="<?= admin_url('system_settings/mercado_pago') ?>" class="toggle_down">
+                        <i class="icon fa fa-cart-arrow-down"></i>
+                        <span class="padding-right-10">Mercado Pago</span>
+                    </a>
+                </li>
                 <li class="dropdown"><a href="<?= admin_url('system_settings/paypal') ?>" class="toggle_up"><i
-                            class="icon fa fa-paypal"></i><span
+                            class="icon fab fa-paypal"></i><span
                             class="padding-right-10"><?= lang('paypal'); ?></span></a></li>
                 <li class="dropdown"><a href="<?= admin_url('system_settings/skrill') ?>" class="toggle_down"><i
                             class="icon fa fa-bank"></i><span class="padding-right-10"><?= lang('skrill'); ?></span></a>
