@@ -80,10 +80,18 @@
                                             <?= lang('state', 'state'); ?>
                                             <select name="state" id="state" class="form-control">
                                                 <?php foreach ($configs->estados as $cEst => $estado) { ?>
-                                                    <option value="<?= $cEst . '-' . $estado ?>">
+                                                    <?php if($estado == $customer->state) { ?>
+                                                        <option value="<?= $cEst ?>-<?= $estado ?>">
+                                                            <?= $estado ?>
+                                                        </option>
+                                                    <?php }?>
+                                                <?php } ?>
+
+                                                <?php foreach ($configs->estados as $cEst => $estado) { ?>
+                                                    <option value="<?= $cEst ?>-<?= $estado ?>">
                                                         <?= $estado ?>
                                                     </option>
-                                                <?php } ?>
+                                                <?php }?>
                                             </select>
                                         </div>
                                     </div>
