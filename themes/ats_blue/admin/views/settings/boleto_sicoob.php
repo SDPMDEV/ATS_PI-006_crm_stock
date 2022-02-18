@@ -35,7 +35,7 @@
 
                         <div class="form-group">
                             <label for="valor_iof">Valor IOF: </label>
-                            <input type="text" id="valor_iof" name="valor_iof" value="<?= $configs->valor_iof ?>">
+                            <input data-inputmask="'mask': '99.99'" type="text" id="valor_iof" name="valor_iof" value="<?= $configs->valor_iof ?>">
                         </div>
 
                         <div class="form-group">
@@ -60,12 +60,12 @@
 
                         <div class="form-group">
                             <label for="perc_juros">Percentual de juros</label>
-                            <input type="number" id="perc_juros" name="perc_juros" value="<?= $configs->perc_juros ?>">
+                            <input data-inputmask="'mask': '99.99'" type="text" id="perc_juros" name="perc_juros" value="<?= $configs->perc_juros ?>">
                         </div>
 
                         <div class="form-group">
                             <label for="perc_taxa_mora">Percetual de taxa mora</label>
-                            <input type="number" id="perc_taxa_mora" name="perc_taxa_mora" value="<?= $configs->perc_taxa_mora ?>">
+                            <input data-inputmask="'mask': '99.99'" type="text" id="perc_taxa_mora" name="perc_taxa_mora" value="<?= $configs->perc_taxa_mora ?>">
                         </div>
 
                         <div class="form-group">
@@ -127,7 +127,7 @@
                             <input type="number" name="data_desc_1" id="data_desc_1" class="form-control" value="<?= $configs->data_desc_1 ?>">
 
                             <label for="valor_desc_1">Valor 1º desconto: (% do valor total)</label>
-                            <input type="number" name="valor_desc_1" id="valor_desc_1" class="form-control" max="100" min="0" value="<?= $configs->valor_desc_1 ?>">
+                            <input data-inputmask="'mask': '99.99'" type="text" name="valor_desc_1" id="valor_desc_1" class="form-control" max="100" min="0" value="<?= $configs->valor_desc_1 ?>">
                         </div>
 
                         <div class="form-group" style="margin-top: 50px">
@@ -135,7 +135,7 @@
                             <input type="number" name="data_desc_2" id="data_desc_2" class="form-control" value="<?= $configs->data_desc_2 ?>">
 
                             <label for="valor_desc_2">Valor 2º desconto: (% do valor total)</label>
-                            <input type="number" name="valor_desc_2" id="valor_desc_2" class="form-control" max="100" min="0" value="<?= $configs->valor_desc_2 ?>">
+                            <input data-inputmask="'mask': '99.99'" type="text" name="valor_desc_2" id="valor_desc_2" class="form-control" max="100" min="0" value="<?= $configs->valor_desc_2 ?>">
                         </div>
 
                         <div class="form-group" style="margin-top: 50px">
@@ -143,7 +143,7 @@
                             <input type="number" name="data_desc_3" id="data_desc_3" class="form-control" value="<?= $configs->data_desc_3 ?>">
 
                             <label for="valor_desc_3">Valor 3º desconto: (% do valor total)</label>
-                            <input type="number" name="valor_desc_3" id="valor_desc_3" class="form-control" max="100" min="0" value="<?= $configs->valor_desc_3 ?>">
+                            <input data-inputmask="'mask': '99.99'" type="text" name="valor_desc_3" id="valor_desc_3" class="form-control" max="100" min="0" value="<?= $configs->valor_desc_3 ?>">
                         </div>
                     </fieldset>
                 </div>
@@ -156,6 +156,7 @@
     </div>
 </div>
 <script src="/assets/packages/toastr.min.js"></script>
+<script src="/assets/packages/jquery.inputmask.min.js"></script>
 <script>
     $("#sicoob_form").submit(e=>{
         e.preventDefault();
@@ -168,5 +169,7 @@
         })
     })
 
-    $()
+    $(document).ready(()=>{
+        $(":input").inputmask();
+    });
 </script>

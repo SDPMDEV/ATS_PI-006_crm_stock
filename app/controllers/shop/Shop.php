@@ -507,6 +507,9 @@ class Shop extends MY_Shop_Controller
                 }
 
                 if($order->payment_method == 'sicoob') {
+                    ini_set("display_errors", 1);
+
+                    $this->load->admin_model("sicoob_model");
 
                     $config = new CI_Config();
 
@@ -519,7 +522,21 @@ class Shop extends MY_Shop_Controller
                     $res = json_decode(curl_exec($curl));
                     curl_close($curl);
 
-                    $this->data["sicoob_key"] = $res->sicoob_key;
+                    $curl = curl_init($config->config["api_url"] . '/get_issuer');
+                    curl_setopt_array($curl, [
+                        CURLOPT_SSL_VERIFYPEER => false,
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_CUSTOMREQUEST => 'POST'
+                    ]);
+                    $issuer = json_decode(curl_exec($curl));
+                    curl_close($curl);
+
+                    if (! $this->sicoob_model->checkCustomer($order->customer_id)) {
+                        $this->session->set_flashdata('error', "Alguns dados precisam ser preenchidos antes de gerar o boleto.");
+                        redirect('/profile');
+                    }
+
+                    $this->data["sicoob_settings"] = $this->sicoob_model->getBoletoConfigs($order->customer_id, $order->id, $issuer, $res->sicoob_key);
                 }
 
                 $this->page_construct('pages/view_order', $this->data);
