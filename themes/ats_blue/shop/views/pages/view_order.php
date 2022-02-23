@@ -5,19 +5,21 @@
             <div class="col-xs-12">
                 <div class="row">
                     <div class="col-sm-9 col-md-10">
-                        <?php if( $inv->collection_id == '' ) { ?>
-                            <div class="alert alert-info">
-                                <p><strong>Compra ainda não concluída: </strong> Certifique-se de selecionar um método de pagamento</p>
-                            </div>
-                        <?php } else { ?>
-                            <div class="alert alert-success">
-                                <p>
-                                    <strong>Compra efetuada com sucesso: </strong>
-                                    você pode acessar mais informações sobre sua compra clicando <a target="_blank" href="/order/details/<?= $_GET['collection_id'] ?? $inv->collection_id ?>">aqui</a>.
-                                    <br><br>
-                                    Obrigado pela preferência, volte sempre.
-                                </p>
-                            </div>
+                        <?php if ( $inv->payment_method == 'mercado_pago' ) { ?>
+                            <?php if( $inv->collection_id == '' ) { ?>
+                                <div class="alert alert-info">
+                                    <p><strong>Compra ainda não concluída: </strong> Certifique-se de selecionar um método de pagamento</p>
+                                </div>
+                            <?php } else { ?>
+                                <div class="alert alert-success">
+                                    <p>
+                                        <strong>Compra efetuada com sucesso: </strong>
+                                        você pode acessar mais informações sobre sua compra clicando <a target="_blank" href="/order/details/<?= $_GET['collection_id'] ?? $inv->collection_id ?>">aqui</a>.
+                                        <br><br>
+                                        Obrigado pela preferência, volte sempre.
+                                    </p>
+                                </div>
+                            <?php }?>
                         <?php }?>
 
                         <?php if(isset($_GET['link_error']) && $_GET['link_error'] == '1') { ?>
@@ -405,9 +407,15 @@
                                     }
 
                                     if($inv->payment_method == 'sicoob') {
-                                        echo "<pre>";
-                                        print_r($sicoob_settings);
-                                        echo "</pre>";
+                                        echo "<div style='display: flex; flex-direction: column; align-items: end;'>";
+                                        echo "<button onclick='PrintElem(`boleto-sicoob`)' class='btn btn-info' style='margin-top: 20px' id='imprimirBoletoSiccob'>
+                                                    <i class='fa fa-print'></i>&nbsp;&nbsp;Imprimir boleto
+                                              </button>";
+                                        echo "</div><hr>";
+
+                                        echo "<div style='display: flex; align-items: center; justify-content: center' id='boleto-sicoob'>";
+                                        print_r($boleto_sicoob);
+                                        echo "</div>";
                                     }
                                     echo "</pre>";
 
@@ -459,6 +467,25 @@
         </div>
     </div>
 </section>
+<script>
+    function PrintElem(elem)
+    {
+        let mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+        mywindow.document.write('<html><head><title>' + document.title  + '</title>');
+        mywindow.document.write('</head><body >');
+        mywindow.document.write(document.getElementById(elem).innerHTML);
+        mywindow.document.write('</body></html>');
+
+        mywindow.document.close(); // necessary for IE >= 10
+        mywindow.focus(); // necessary for IE >= 10*/
+
+        mywindow.print();
+        mywindow.close();
+
+        return true;
+    }
+</script>
 <script>
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);

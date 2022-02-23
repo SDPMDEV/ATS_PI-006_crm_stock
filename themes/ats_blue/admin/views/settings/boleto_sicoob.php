@@ -27,129 +27,135 @@
                 <input type="hidden" name="<?= $this->security->get_csrf_token_name(); ?>" value="<?= $this->security->get_csrf_hash(); ?>">
 
                 <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="agencia">Agencia</label>
+                            <input type="text" id="agencia" name="agencia" class="form-control" value="<?= $configs->agencia ?>">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="conta">Conta</label>
+                            <input type="text" id="conta" name="conta" class="form-control" value="<?= $configs->conta ?>">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="convenio">Convenio</label>
+                            <input type="text" id="convenio" name="convenio" class="form-control" value="<?= $configs->convenio ?>">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="mora_multa">Valor de multa mora (%)</label>
+                            <input type="text" id="mora_multa" name="mora_multa" class="form-control" value="<?= $configs->multa_mora ?>">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="desconto">Desconto Opcional (%)</label>
+                            <input type="text" id="desconto" name="desconto" class="form-control" value="<?= $configs->desc_opcional ?>">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="outro_acrescimo">Acrescimo Opcional (%)</label>
+                            <input type="text" id="outro_acrescimo" name="outro_acrescimo" class="form-control" value="<?= $configs->acres_opcional ?>">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="deducoes">Outras Deduções (R$)</label>
+                            <input type="text" id="deducoes" name="deducoes" class="form-control" value="<?= $configs->deducoes ?>">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="especie">Espécie do documento</label>
+                            <select name="especie" id="especie" class="form-control">
+                                <?php foreach ($especies as $index => $item) { ?>
+                                    <?php if ($index == $configs->especie) { ?>
+                                        <option value="<?= $index ?>">
+                                            <?= $item ?>
+                                        </option>
+                                    <?php } ?>
+                                <?php }?>
+
+                                <?php foreach ($especies as $index => $item) { ?>
+                                    <option value="<?= $index ?>">
+                                        <?= $item ?>
+                                    </option>
+                                <?php }?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="venc_dias">Dias para vencer o boleto</label>
+                            <input type="number" name="venc_dias" id="venc_dias" class="form-control" value="<?= $configs->venc_dias ?>">
+                        </div>
+                    </div>
+
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label for="venc_em_dias">Vencer boleto em: (dias pós emissão)</label>
-                            <input type="number" id="venc_em_dias" name="venc_em_dias" value="<?= $configs->venc_em_dias ?>">
+                            <label for="inst1">1º Instrução</label>
+                            <textarea name="inst1" id="inst1" cols="30" rows="10" class="form-control">
+                                <?= $configs->inst1 ?>
+                            </textarea>
                         </div>
+                    </div>
 
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="valor_iof">Valor IOF: </label>
-                            <input data-inputmask="'mask': '99.99'" type="text" id="valor_iof" name="valor_iof" value="<?= $configs->valor_iof ?>">
+                            <label for="inst2">2º Instrução</label>
+                            <textarea name="inst2" id="inst2" cols="30" rows="10" class="form-control">
+                                <?= $configs->inst2 ?>
+                            </textarea>
                         </div>
+                    </div>
 
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="multa_em_dias">Aplicar multa pós vencimento em: (dias)</label>
-                            <input type="text" id="multa_em_dias" name="multa_em_dias" value="<?= $configs->multa_em_dias ?>">
+                            <label for="inst3">3º Instrução</label>
+                            <textarea name="inst3" id="inst3" cols="30" rows="10" class="form-control">
+                                <?= $configs->inst3 ?>
+                            </textarea>
                         </div>
+                    </div>
 
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="juros_em_dias">Aplicar juros pós vencimento em: (dias)</label>
-                            <input type="text" id="juros_em_dias" name="juros_em_dias" value="<?= $configs->juros_em_dias ?>">
+                            <label for="inst4">4º Instrução</label>
+                            <textarea name="inst4" id="inst4" cols="30" rows="10" class="form-control">
+                                <?= $configs->inst4 ?>
+                            </textarea>
                         </div>
+                    </div>
 
+                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="num_cliente">Número do cliente</label>
-                            <input type="number" id="num_cliente" name="num_cliente" value="<?= $configs->num_cliente ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="cooperativa">Cooperativa</label>
-                            <input type="text" id="cooperativa" name="cooperativa" value="<?= $configs->cooperativa ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="perc_juros">Percentual de juros</label>
-                            <input data-inputmask="'mask': '99.99'" type="text" id="perc_juros" name="perc_juros" value="<?= $configs->perc_juros ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="perc_taxa_mora">Percetual de taxa mora</label>
-                            <input data-inputmask="'mask': '99.99'" type="text" id="perc_taxa_mora" name="perc_taxa_mora" value="<?= $configs->perc_taxa_mora ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="num_conta_corrente">Número da conta corrente</label>
-                            <input type="number" id="num_conta_corrente" name="num_conta_corrente" value="<?= $configs->num_conta_corrente ?>">
+                            <label for="inst5">5º Instrução</label>
+                            <textarea name="inst5" id="inst5" cols="30" rows="10" class="form-control">
+                                <?= $configs->inst5 ?>
+                            </textarea>
                         </div>
                     </div>
                 </div>
 
-                <hr>
-
-                <div class="col-md-6">
-                    <fieldset class="scheduler-border">
-                        <legend class="scheduler-border">Instruções</legend>
-
+                <div class="col-md-12">
+                    <div class="text-right">
                         <div class="form-group">
-                            <label for="inst_1">1º Instrução</label>
-                            <textarea name="inst_1" id="inst_1" cols="30" rows="10">
-                                <?= $configs->inst_1 ?>
-                            </textarea>
+                            <input type="submit" value="Salvar Configurações" class="btn btn-info">
                         </div>
-
-                        <div class="form-group">
-                            <label for="inst_2">2º Instrução</label>
-                            <textarea name="inst_2" id="inst_2" cols="30" rows="10">
-                                <?= $configs->inst_2 ?>
-                            </textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="inst_3">3º Instrução</label>
-                            <textarea name="inst_3" id="inst_3" cols="30" rows="10">
-                                <?= $configs->inst_3 ?>
-                            </textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="inst_4">4º Instrução</label>
-                            <textarea name="inst_4" id="inst_4" cols="30" rows="10">
-                                <?= $configs->inst_4 ?>
-                            </textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="inst_5">5º Instrução</label>
-                            <textarea name="inst_5" id="inst_5" cols="30" rows="10">
-                                <?= $configs->inst_5 ?>
-                            </textarea>
-                        </div>
-                    </fieldset>
-                </div>
-
-                <div class="col-md-6">
-                    <fieldset class="scheduler-border">
-                        <legend class="scheduler-border">Descontos</legend>
-
-                        <div class="form-group">
-                            <label for="data_desc_1">Data 1º desconto: (dias pós emissão)</label>
-                            <input type="number" name="data_desc_1" id="data_desc_1" class="form-control" value="<?= $configs->data_desc_1 ?>">
-
-                            <label for="valor_desc_1">Valor 1º desconto: (% do valor total)</label>
-                            <input data-inputmask="'mask': '99.99'" type="text" name="valor_desc_1" id="valor_desc_1" class="form-control" max="100" min="0" value="<?= $configs->valor_desc_1 ?>">
-                        </div>
-
-                        <div class="form-group" style="margin-top: 50px">
-                            <label for="data_desc_2">Data 2º desconto: (dias pós emissão)</label>
-                            <input type="number" name="data_desc_2" id="data_desc_2" class="form-control" value="<?= $configs->data_desc_2 ?>">
-
-                            <label for="valor_desc_2">Valor 2º desconto: (% do valor total)</label>
-                            <input data-inputmask="'mask': '99.99'" type="text" name="valor_desc_2" id="valor_desc_2" class="form-control" max="100" min="0" value="<?= $configs->valor_desc_2 ?>">
-                        </div>
-
-                        <div class="form-group" style="margin-top: 50px">
-                            <label for="data_desc_3">Data 3º desconto: (dias pós emissão)</label>
-                            <input type="number" name="data_desc_3" id="data_desc_3" class="form-control" value="<?= $configs->data_desc_3 ?>">
-
-                            <label for="valor_desc_3">Valor 3º desconto: (% do valor total)</label>
-                            <input data-inputmask="'mask': '99.99'" type="text" name="valor_desc_3" id="valor_desc_3" class="form-control" max="100" min="0" value="<?= $configs->valor_desc_3 ?>">
-                        </div>
-                    </fieldset>
-                </div>
-
-                <div class="form-group text-center">
-                    <input type="submit" value="Salvar Configurações" class="btn btn-info" style="width: 70%">
+                    </div>
                 </div>
             </form>
         </fieldset>
@@ -171,5 +177,15 @@
 
     $(document).ready(()=>{
         $(":input").inputmask();
+
+        $("#desconto").inputmask('99.99');
+        $("#outro_acrescimo").inputmask('99.99');
+        $("#mora_multa").inputmask('99.99');
+        $("#deducoes").inputmask('decimal', {
+            'alias': 'numeric',
+            'groupSeparator': ',',
+            'digits': 2,
+            'radixPoint': "."
+        });
     });
 </script>

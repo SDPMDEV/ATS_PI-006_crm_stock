@@ -507,36 +507,33 @@ class Shop extends MY_Shop_Controller
                 }
 
                 if($order->payment_method == 'sicoob') {
-                    ini_set("display_errors", 1);
-
-                    $this->load->admin_model("sicoob_model");
-
+                    $this->load->admin_model('sicoob_model');
                     $config = new CI_Config();
+                    $api_url = $config->config["api_url"];
 
-                    $curl = curl_init($config->config["api_url"] . '/sicoob/get_key');
-                    curl_setopt_array($curl, [
-                        CURLOPT_SSL_VERIFYPEER => false,
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_CUSTOMREQUEST => 'GET'
-                    ]);
-                    $res = json_decode(curl_exec($curl));
-                    curl_close($curl);
+                    if (! $this->sicoob_model->checkCustomer($order->customer_id)) {
+                        $this->session->set_flashdata('error', 'Preencha todas as informações sobre seu perfil antes de gerar o boleto.');
+                        redirect('/profile');
+                    }
 
-                    $curl = curl_init($config->config["api_url"] . '/get_issuer');
-                    curl_setopt_array($curl, [
+                    $issuer = curl_init($api_url . '/get_issuer');
+                    curl_setopt_array($issuer, [
                         CURLOPT_SSL_VERIFYPEER => false,
                         CURLOPT_RETURNTRANSFER => true,
                         CURLOPT_CUSTOMREQUEST => 'POST'
                     ]);
-                    $issuer = json_decode(curl_exec($curl));
-                    curl_close($curl);
+                    $issuer = json_decode(curl_exec($issuer));
+                    $data = $this->sicoob_model->getBoletoConfigs($order->customer_id, $order->id, $issuer);
 
-                    if (! $this->sicoob_model->checkCustomer($order->customer_id)) {
-                        $this->session->set_flashdata('error', "Alguns dados precisam ser preenchidos antes de gerar o boleto.");
-                        redirect('/profile');
-                    }
+                    $boleto = curl_init($api_url . '/sicoob/get_boleto');
+                    curl_setopt_array($boleto, [
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_SSL_VERIFYPEER => false,
+                        CURLOPT_POST => true,
+                        CURLOPT_POSTFIELDS => http_build_query($data)
+                    ]);
 
-                    $this->data["sicoob_settings"] = $this->sicoob_model->getBoletoConfigs($order->customer_id, $order->id, $issuer, $res->sicoob_key);
+                    $this->data['boleto_sicoob'] = curl_exec($boleto);
                 }
 
                 $this->page_construct('pages/view_order', $this->data);

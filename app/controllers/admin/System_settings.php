@@ -2342,6 +2342,7 @@ class system_settings extends MY_Controller
         $res = json_decode(curl_exec($curl));
 
         $this->data['configs'] = $this->sicoob_model->getAll();
+        $this->data['especies'] = $this->sicoob_model->getAllEspecies();
         $this->data["sicoob_key"] = $res->sicoob_key;
         $this->data["set_key"] = $this->api_url . "/sicoob/set_key/?api_token=".$this->api_token;
         $this->page_construct('settings/boleto_sicoob', $meta, $this->data);
@@ -2355,30 +2356,24 @@ class system_settings extends MY_Controller
         }
 
         $data = [
-            "venc_em_dias" => $this->input->post("venc_em_dias"),
-            "valor_iof" => $this->input->post("valor_iof"),
-            "multa_em_dias" => $this->input->post("multa_em_dias"),
-            "juros_em_dias" => $this->input->post("juros_em_dias"),
-            "inst_1" => strip_tags($this->input->post("inst_1")),
-            "inst_2" => strip_tags($this->input->post("inst_2")),
-            "inst_3" => strip_tags($this->input->post("inst_3")),
-            "inst_4" => strip_tags($this->input->post("inst_4")),
-            "inst_5" => strip_tags($this->input->post("inst_5")),
-            "data_desc_1" => $this->input->post("data_desc_1"),
-            "data_desc_2" => $this->input->post("data_desc_2"),
-            "data_desc_3" => $this->input->post("data_desc_3"),
-            "valor_desc_1" => $this->input->post("valor_desc_1"),
-            "valor_desc_2" => $this->input->post("valor_desc_2"),
-            "valor_desc_3" => $this->input->post("valor_desc_3"),
-            "num_cliente" => $this->input->post("num_cliente"),
-            "cooperativa" => $this->input->post("cooperativa"),
-            "perc_juros" => $this->input->post("perc_juros"),
-            "perc_taxa_mora" => $this->input->post("perc_taxa_mora"),
-            "num_conta_corrente" => $this->input->post("num_conta_corrente")
+            "agencia" => $this->input->post('agencia'),
+            "conta" => $this->input->post('conta'),
+            "convenio" => $this->input->post('convenio'),
+            "multa_mora" => $this->input->post('mora_multa'),
+            "desc_opcional" => $this->input->post('desconto'),
+            "acres_opcional" => $this->input->post('outro_acrescimo'),
+            "especie" => $this->input->post('especie'),
+            "inst1" => strip_tags($this->input->post('inst1')),
+            "inst2" => strip_tags($this->input->post('inst2')),
+            "inst3" => strip_tags($this->input->post('inst3')),
+            "inst4" => strip_tags($this->input->post('inst4')),
+            "inst5" => strip_tags($this->input->post('inst5')),
+            "venc_dias" => $this->input->post('venc_dias'),
+            "deducoes" => $this->input->post('deducoes')
         ];
 
         if(!$this->sicoob_model->save($data)) {
-            $this->session->set_flashdata('message', "Erro ao salvar dados.");
+            $this->session->set_flashdata('error', "Erro ao salvar dados.");
         } else {
             $this->session->set_flashdata('message', "Dados salvos com sucesso.");
         }
