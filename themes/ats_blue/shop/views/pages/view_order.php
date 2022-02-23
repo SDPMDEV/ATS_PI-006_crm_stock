@@ -22,6 +22,17 @@
                             <?php }?>
                         <?php }?>
 
+                        <?php if ( $inv->payment_method == 'sicoob') { ?>
+                            <?php if ($vencimento) { ?>
+                                <div class="alert alert-danger">
+                                    <p>
+                                        <strong>Atenção: </strong>
+                                        O boleto gerado anteriormente já passou do prazo de pagamento, você deve gerar um novo boleto
+                                    </p>
+                                </div>
+                            <?php }?>
+                        <?php } ?>
+
                         <?php if(isset($_GET['link_error']) && $_GET['link_error'] == '1') { ?>
                             <div class="alert alert-danger">
                                 <p>
@@ -406,7 +417,7 @@
                                         </div>';
                                     }
 
-                                    if($inv->payment_method == 'sicoob') {
+                                    if($inv->payment_method == 'sicoob' && ! $vencimento) {
                                         echo "<div style='display: flex; flex-direction: column; align-items: end;'>";
                                         echo "<button onclick='PrintElem(`boleto-sicoob`)' class='btn btn-info' style='margin-top: 20px' id='imprimirBoletoSiccob'>
                                                     <i class='fa fa-print'></i>&nbsp;&nbsp;Imprimir boleto

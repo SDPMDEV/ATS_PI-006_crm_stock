@@ -42,6 +42,19 @@ class Sicoob_model extends CI_Model
         return true;
     }
 
+    public function getBoleto(int $numDoc)
+    {
+        return $this->db->get_where('boletos_sicoob', ['num_doc' => $numDoc])->result()[0];
+    }
+
+    public function saveBoleto(array $data)
+    {
+        if($this->db->insert('boletos_sicoob', $data))
+            return true;
+
+        return $this->db->error();
+    }
+
     public function getBoletoConfigs( $company_id, $sale_id, $issuer)
     {
         $customer = $this->db->get_where('companies', ['id' => $company_id] )->result()[0];
@@ -55,7 +68,7 @@ class Sicoob_model extends CI_Model
 
         return [
             'customer_name' => $customer->name,
-            'customer_cpfcpnj' => $customer->cpf_cnpj,
+            'customer_cpfcnpj' => $customer->vat_no,
             'customer_address' => $customer->address,
             'customer_cep' => $customer->postal_code,
             'customer_city' => $customer->city,
@@ -89,7 +102,22 @@ class Sicoob_model extends CI_Model
             'descDemo' => $sale->reference_no,
             'outras_ded' => $sicoob->deducoes,
             'valor_cob' => $valorCob,
+            "inst1" => $sicoob->inst1,
+            "inst2" => $sicoob->inst2,
+            "inst3" => $sicoob->inst3,
+            "inst4" => $sicoob->inst4,
+            "inst5" => $sicoob->inst5,
+            'data_emissao' => new DateTime()
         ];
+    }
+
+    public function setVencimento($numDoc, $dataVenc)
+    {
+        $this->db->where('num_doc', $numDoc);
+
+        $this->db->update('boletos_sicoob', [
+            'data_vencimento' => $dataVenc
+        ]);
     }
 
     public function getAllEspecies()

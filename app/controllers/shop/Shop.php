@@ -523,7 +523,15 @@ class Shop extends MY_Shop_Controller
                         CURLOPT_CUSTOMREQUEST => 'POST'
                     ]);
                     $issuer = json_decode(curl_exec($issuer));
-                    $data = $this->sicoob_model->getBoletoConfigs($order->customer_id, $order->id, $issuer);
+
+                    if (! $this->sicoob_model->getBoleto($order->id)) {
+                        $data = $this->sicoob_model->getBoletoConfigs($order->customer_id, $order->id, $issuer);
+                        unset($data["inst"]);
+                        unset($data["data_emissao"]);
+                        $this->sicoob_model->saveBoleto($data);
+                    }
+
+                    $data = $this->sicoob_model->getBoleto($order->id);
 
                     $boleto = curl_init($api_url . '/sicoob/get_boleto');
                     curl_setopt_array($boleto, [
@@ -532,8 +540,15 @@ class Shop extends MY_Shop_Controller
                         CURLOPT_POST => true,
                         CURLOPT_POSTFIELDS => http_build_query($data)
                     ]);
+                    $res = json_decode(curl_exec($boleto));
 
-                    $this->data['boleto_sicoob'] = curl_exec($boleto);
+                    $dataVenc = date('Y-m-d', strtotime($res->vencimento->date));
+
+                    if(date('Y-m-d') > $dataVenc) {
+                        $this->data['vencimento'] = true;
+                    }
+
+                    $this->data['boleto_sicoob'] = $res->boleto;
                 }
 
                 $this->page_construct('pages/view_order', $this->data);
