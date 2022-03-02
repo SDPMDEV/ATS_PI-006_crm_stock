@@ -44,7 +44,10 @@ class Sicoob_model extends CI_Model
 
     public function getBoleto(int $numDoc)
     {
-        return $this->db->get_where('boletos_sicoob', ['num_doc' => $numDoc])->result()[0];
+        if(isset($this->db->get_where('boletos_sicoob', ['num_doc' => $numDoc])->result()[0]))
+            return $this->db->get_where('boletos_sicoob', ['num_doc' => $numDoc])->result()[0];
+
+        return false;
     }
 
     public function saveBoleto(array $data)
@@ -107,7 +110,8 @@ class Sicoob_model extends CI_Model
             "inst3" => $sicoob->inst3,
             "inst4" => $sicoob->inst4,
             "inst5" => $sicoob->inst5,
-            'data_emissao' => new DateTime()
+            'data_emissao' => new DateTime(),
+            'data_vencimento' => date('Y-m-d', strtotime(date('Y-m-d') . ' + ' . $sicoob->venc_dias . ' days'))
         ];
     }
 
@@ -233,5 +237,55 @@ class Sicoob_model extends CI_Model
             case '63' : return 'TO'; break;
             default : return 'Não informado.'; break;
         }
+    }
+
+    public function getAllRemessas()
+    {
+        return $this->db->get('sma_sicoob_remessas')->result();
+    }
+
+    public function saveRemessa(array $data)
+    {
+        $query = $this->db->get_where('sma_sicoob_remessas', 'nome = ' . $data['nome']);
+
+        if ($query) {
+            return false;
+        }
+
+        return $this->db->insert('sma_sicoob_remessas', $data);
+    }
+
+    public function getRemessaConfigs($issuer, $company_id, $sale_id)
+    {
+        $customer = $this->db->get_where('companies', ['id' => $company_id] )->result()[0];
+        $sale = $this->db->get_where('sales', ['id' => $sale_id] )->result()[0];
+        $sicoob = $this->getAll();
+        $boleto = $this->db->get_where('boletos_sicoob', ['sequencial' => $sale_id])->result()[0];
+
+        return [
+            'issuer_cnpj' => $issuer->cnpj,
+            'agencia' => $sicoob->agencia,
+            'agencia_dv' => $sicoob->agencia_dv,
+            'conta' => $sicoob->conta,
+            'conta_dv' => $sicoob->conta_dv,
+            'issuer_name' => $issuer->razao_social,
+            'sequencial' => $sale->id,
+            'codigo_beneficiario' => $sicoob->codigo_beneficiario,
+            'codigo_beneficiario_dv' => $sicoob->codigo_beneficiario_dv,
+            'codigo_carteira' => $sicoob->codigo_carteira,
+            'valor' => $sale->grand_total,
+            'especie' => $sicoob->especie,
+            'data_emissao' => $boleto->data_emissao,
+            'venc_dias' => $sicoob->venc_dias,
+            'mora_multa' => $sicoob->multa_mora,
+            'customer_cpfcnpj' => $customer->vat_no,
+            'customer_name' => $customer->name,
+            'customer_address' => $customer->address,
+            'customer_bairro' => $customer->bairro,
+            'customer_cep' => $customer->postal_code,
+            'customer_city' => $customer->city,
+            'customer_uf' => $this->getUF($customer->UF),
+            'valor_venc' => $sicoob->valor_venc,
+        ];
     }
 }

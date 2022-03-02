@@ -526,26 +526,61 @@ class Shop extends MY_Shop_Controller
 
                     if (! $this->sicoob_model->getBoleto($order->id)) {
                         $data = $this->sicoob_model->getBoletoConfigs($order->customer_id, $order->id, $issuer);
+                        $data['data_emissao'] = $data['data_emissao']->format('Y-m-d');
                         unset($data["inst"]);
-                        unset($data["data_emissao"]);
                         $this->sicoob_model->saveBoleto($data);
                     }
 
-                    $data = $this->sicoob_model->getBoleto($order->id);
+                    $boletoFounded = $this->sicoob_model->getBoleto($order->id);
+                    $boletoFounded->inst = [
+                        $boletoFounded->inst1,
+                        $boletoFounded->inst2,
+                        $boletoFounded->inst3,
+                        $boletoFounded->inst4,
+                    ];
+                    $boletoFounded->data_emissao = new DateTime($boletoFounded->data_emissao);
 
                     $boleto = curl_init($api_url . '/sicoob/get_boleto');
                     curl_setopt_array($boleto, [
                         CURLOPT_RETURNTRANSFER => true,
                         CURLOPT_SSL_VERIFYPEER => false,
                         CURLOPT_POST => true,
-                        CURLOPT_POSTFIELDS => http_build_query($data)
+                        CURLOPT_POSTFIELDS => http_build_query($boletoFounded)
                     ]);
                     $res = json_decode(curl_exec($boleto));
 
                     $dataVenc = date('Y-m-d', strtotime($res->vencimento->date));
 
-                    if(date('Y-m-d') > $dataVenc) {
+                    if(date('Y-m-d') >= $dataVenc) {
                         $this->data['vencimento'] = true;
+                        $this->data['venceHoje'] = true;
+                    }
+
+                    $this->data['error_remessa'] = true;
+
+                    $remessaData = $this->sicoob_model->getRemessaConfigs($issuer, $order->customer_id, $order->id);
+
+                    $remessaCurl = curl_init();
+                    curl_setopt_array($remessaCurl, [
+                       CURLOPT_URL => $api_url . "/sicoob/create_remessa?" . http_build_query($remessaData),
+                       CURLOPT_RETURNTRANSFER => true,
+                       CURLOPT_SSL_VERIFYPEER => false,
+                       CURLOPT_CUSTOMREQUEST => "GET"
+                    ]);
+                    $remessa = json_decode(curl_exec($remessaCurl));
+
+                    if (isset($remessa->error)) {
+                        if(! $remessa->error) {
+                            $this->data['error_remessa'] = false;
+
+                            $datum = [
+                                "nome" => $remessa->name,
+                                "valor" => $boletoFounded->valor,
+                                "data_criacao" => $boletoFounded->data_emissao->format('Y-m-d')
+                            ];
+
+                            $this->sicoob_model->saveRemessa($datum);
+                        }
                     }
 
                     $this->data['boleto_sicoob'] = $res->boleto;

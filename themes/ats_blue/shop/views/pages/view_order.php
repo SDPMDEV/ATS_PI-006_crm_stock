@@ -23,15 +23,33 @@
                         <?php }?>
 
                         <?php if ( $inv->payment_method == 'sicoob') { ?>
-                            <?php if ($vencimento) { ?>
-                                <div class="alert alert-danger">
-                                    <p>
-                                        <strong>Atenção: </strong>
-                                        O boleto gerado anteriormente já passou do prazo de pagamento, você deve gerar um novo boleto
-                                    </p>
-                                </div>
+                            <?php if($error_remessa) { ?>
+                                    <div class="alert alert-danger">
+                                        <p>
+                                            <strong>Atenção: </strong>
+                                            Ocorreu um erro ao gerar o arquivo de remessa. Entre em contato com o administrador do sistema.
+                                        </p>
+                                    </div>
+                            <?php } else { ?>
+                                <?php if ($vencimento) { ?>
+                                    <div class="alert alert-danger">
+                                        <p>
+                                            <strong>Atenção: </strong>
+                                            O boleto gerado anteriormente já passou do prazo de pagamento, você deve gerar um novo boleto
+                                        </p>
+                                    </div>
+                                <?php }?>
+
+                                <?php if ($venceHoje) { ?>
+                                    <div class="alert alert-warning">
+                                        <p>
+                                            <strong>Atenção: </strong>
+                                            O boleto irá vencer hoje.
+                                        </p>
+                                    </div>
+                                <?php }?>
+                            <?php } ?>
                             <?php }?>
-                        <?php } ?>
 
                         <?php if(isset($_GET['link_error']) && $_GET['link_error'] == '1') { ?>
                             <div class="alert alert-danger">
@@ -481,7 +499,10 @@
 <script>
     function PrintElem(elem)
     {
-        let mywindow = window.open('', 'PRINT', 'height=400,width=600');
+        let left = (screen.width) / 3.5;
+        let top = (screen.height) / 3.5;
+
+        let mywindow = window.open('', 'PRINT', 'height=500,width=1000,location=no,toolbar=no,directories=no,status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,top='+top+', left='+left);
 
         mywindow.document.write('<html><head><title>' + document.title  + '</title>');
         mywindow.document.write('</head><body >');

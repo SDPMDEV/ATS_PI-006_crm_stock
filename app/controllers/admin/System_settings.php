@@ -2341,6 +2341,7 @@ class system_settings extends MY_Controller
         ]);
         $res = json_decode(curl_exec($curl));
 
+        $this->data['remessas'] = $this->sicoob_model->getAllRemessas();
         $this->data['configs'] = $this->sicoob_model->getAll();
         $this->data['especies'] = $this->sicoob_model->getAllEspecies();
         $this->data["sicoob_key"] = $res->sicoob_key;
@@ -2369,7 +2370,16 @@ class system_settings extends MY_Controller
             "inst4" => strip_tags($this->input->post('inst4')),
             "inst5" => strip_tags($this->input->post('inst5')),
             "venc_dias" => $this->input->post('venc_dias'),
-            "deducoes" => $this->input->post('deducoes')
+            "deducoes" => $this->input->post('deducoes'),
+            'agencia_dv' => $this->input->post('agencia_dv'),
+            'conta_dv' => $this->input->post('conta_dv'),
+            'codigo_beneficiario' => $this->input->post('codigo_beneficiario'),
+            'modalidade' => $this->input->post('modalidade'),
+            'tipo_formulario' => $this->input->post('tipo_formulario'),
+            'codigo_carteira' => $this->input->post('codigo_carteira'),
+            'identificacao_contrato' => $this->input->post('identificacao_contrato'),
+            'codigo_beneficiario_dv' => $this->input->post('codigo_beneficiario_dv'),
+            'valor_venc' => $this->input->post('valor_venc'),
         ];
 
         if(!$this->sicoob_model->save($data)) {
