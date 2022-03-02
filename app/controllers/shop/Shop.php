@@ -549,14 +549,13 @@ class Shop extends MY_Shop_Controller
                     ]);
                     $res = json_decode(curl_exec($boleto));
 
-                    $dataVenc = date('Y-m-d', strtotime($res->vencimento->date));
-
-                    if(date('Y-m-d') >= $dataVenc) {
+                    if( date('Y-m-d') > $boletoFounded->data_vencimento) {
                         $this->data['vencimento'] = true;
-                        $this->data['venceHoje'] = true;
                     }
 
-                    $this->data['error_remessa'] = true;
+                    if ( date('Y-m-d') == $boletoFounded->data_vencimento) {
+                        $this->data['venceHoje'] = true;
+                    }
 
                     $remessaData = $this->sicoob_model->getRemessaConfigs($issuer, $order->customer_id, $order->id);
 
@@ -569,6 +568,7 @@ class Shop extends MY_Shop_Controller
                     ]);
                     $remessa = json_decode(curl_exec($remessaCurl));
 
+                    $this->data['error_remessa'] = true;
                     if (isset($remessa->error)) {
                         if(! $remessa->error) {
                             $this->data['error_remessa'] = false;

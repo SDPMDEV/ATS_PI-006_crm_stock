@@ -275,7 +275,7 @@ class Sicoob_model extends CI_Model
             'codigo_carteira' => $sicoob->codigo_carteira,
             'valor' => $sale->grand_total,
             'especie' => $sicoob->especie,
-            'data_emissao' => $boleto->data_emissao,
+            'data_emissao' => $boleto->data_emissao ?? date('Y-m-d'),
             'venc_dias' => $sicoob->venc_dias,
             'mora_multa' => $sicoob->multa_mora,
             'customer_cpfcnpj' => $customer->vat_no,
@@ -287,5 +287,21 @@ class Sicoob_model extends CI_Model
             'customer_uf' => $this->getUF($customer->UF),
             'valor_venc' => $sicoob->valor_venc,
         ];
+    }
+
+    public function deleteRemessa($remessaId)
+    {
+        $this->db->where('id', $remessaId);
+        $this->db->delete('sicoob_remessas');
+    }
+
+    public function getRemessa($remessaId)
+    {
+        $query = $this->db->get_where('sicoob_remessas', "id = $remessaId");
+
+        if (! $query)
+            return false;
+
+        return $query->result()[0];
     }
 }

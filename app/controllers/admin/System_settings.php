@@ -3008,4 +3008,44 @@ class system_settings extends MY_Controller
         @chmod($output_path, 0644);
         return false;
     }
+
+    public function excluir_remessa()
+    {
+        $remessa = $this->sicoob_model->getRemessa($this->input->get('remessaId'));
+        $dataCriacao = $remessa->data_criacao;
+        $date = DateTime::createFromFormat("Y-m-d", $dataCriacao);
+
+        $ano = $date->format("Y");
+        $mes = $date->format("m");
+        $remessaName = $remessa->nome;
+
+        unlink(FCPATH . "api_fiscal/public/remessas_sicoob/$ano/$mes/$remessaName");
+
+        $this->sicoob_model->deleteRemessa($this->input->get('remessaId'));
+
+        $this->session->set_flashdata('message', 'Arquivo deletado com sucesso');
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    public function download_remessa()
+    {
+        $this->load->helper('download');
+
+        $remessa = $this->sicoob_model->getRemessa($this->input->get('remessaId'));
+
+        if ($remessa) {
+            $dataCriacao = $remessa->data_criacao;
+
+            $date = DateTime::createFromFormat("Y-m-d", $dataCriacao);
+
+            $ano = $date->format("Y");
+            $mes = $date->format("m");
+            $remessaName = $remessa->nome;
+            
+            force_download(FCPATH . "api_fiscal/public/remessas_sicoob/$ano/$mes/$remessaName", NULL);
+
+            $this->session->set_flashdata('message', 'Arquivo baixado com sucesso');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
 }

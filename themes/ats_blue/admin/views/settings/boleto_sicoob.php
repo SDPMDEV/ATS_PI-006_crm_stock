@@ -266,11 +266,11 @@
                                     <td class="text-center"><?= $remessa->valor ?></td>
                                     <td class="text-center"><?= date('d/m/Y', strtotime($remessa->data_criacao)) ?></td>
                                     <td class="text-center">
-                                        <a title="Baixar remessa" style="margin-right: 5px" href="<?= admin_url('/download_remessa/') . $remessa->id ?>">
+                                        <a title="Baixar remessa" style="margin-right: 5px" href="<?= admin_url('system_settings/download_remessa?remessaId=') . $remessa->id ?>">
                                             <i class="fa fa-download"></i>
                                         </a>
 
-                                        <a title="Excluir remessa" href="<?= admin_url('/excluir_remessa/') . $remessa->id ?>">
+                                        <a title="Excluir remessa" href="<?= admin_url('system_settings/excluir_remessa?remessaId=') . $remessa->id ?>">
                                             <i class="fa fa-trash"></i>
                                         </a>
                                     </td>
