@@ -576,7 +576,8 @@ class Shop extends MY_Shop_Controller
                             $datum = [
                                 "nome" => $remessa->name,
                                 "valor" => $boletoFounded->valor,
-                                "data_criacao" => $boletoFounded->data_emissao->format('Y-m-d')
+                                "data_criacao" => $boletoFounded->data_emissao->format('Y-m-d'),
+                                "situacao" => "pending"
                             ];
 
                             $this->sicoob_model->saveRemessa($datum);

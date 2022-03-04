@@ -42,14 +42,6 @@ class Sicoob_model extends CI_Model
         return true;
     }
 
-    public function getBoleto(int $numDoc)
-    {
-        if(isset($this->db->get_where('boletos_sicoob', ['num_doc' => $numDoc])->result()[0]))
-            return $this->db->get_where('boletos_sicoob', ['num_doc' => $numDoc])->result()[0];
-
-        return false;
-    }
-
     public function saveBoleto(array $data)
     {
         if($this->db->insert('boletos_sicoob', $data))
@@ -246,11 +238,10 @@ class Sicoob_model extends CI_Model
 
     public function saveRemessa(array $data)
     {
-        $query = $this->db->get_where('sma_sicoob_remessas', 'nome = ' . $data['nome']);
+        $query = $this->db->get_where('sicoob_remessas', ['nome =' => $data['nome']]);
 
-        if ($query) {
+        if (count($query->result()) > 0)
             return false;
-        }
 
         return $this->db->insert('sma_sicoob_remessas', $data);
     }
@@ -303,5 +294,82 @@ class Sicoob_model extends CI_Model
             return false;
 
         return $query->result()[0];
+    }
+
+    public function updateRemessa($remessaId, $data)
+    {
+        $this->db->where('id', $remessaId);
+
+        return $this->db->update('sicoob_remessas', $data);
+    }
+
+    public function getRemessasDownload()
+    {
+        $query = $this->db->get_where('sicoob_remessas', ['situacao =' => 'pending']);
+
+        if(! $query)
+            return [];
+
+        return $query->result();
+    }
+
+    public function getBoleto($id)
+    {
+        $query = $this->db->get_where('boletos_sicoob', ['sequencial =' => $id]);
+
+        if (! $query)
+            return false;
+
+        return $query->result();
+    }
+
+    public function upRemessa($remessaId, $data)
+    {
+        $this->db->where('nome', "remessa_$remessaId.REM");
+
+        return $this->db->update('sicoob_remessas', $data);
+    }
+
+    public function valorNaoPagos()
+    {
+        $query = $this->db->get_where('sicoob_remessas', ['situacao =' => 'pending']);
+
+        if (! $query)
+            return false;
+
+        $remessas = $query->result();
+
+        $sum = 0;
+        foreach ($remessas as $remessa) {
+            $sum += $remessa->valor;
+        }
+
+        return $sum;
+    }
+
+    public function faturaMes()
+    {
+        $this->db->select('*');
+        $this->db->from('sicoob_remessas');
+        $this->db->where('data_criacao BETWEEN CURDATE() - INTERVAL 30 DAY AND CURDATE() AND situacao = "paid" ');
+
+        $query = $this->db->get();
+
+        if (! $query)
+            return 0;
+
+        $remessas = $query->result();
+
+        $sum = 0;
+        foreach ($remessas as $remessa) {
+            $sum += $remessa->valor;
+        }
+
+        return $sum;
+    }
+
+    public function remessasCount()
+    {
+        return $this->db->count_all('sicoob_remessas');
     }
 }
