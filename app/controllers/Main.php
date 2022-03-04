@@ -232,15 +232,21 @@ class Main extends MY_Shop_Controller
             }
 
             if ($this->form_validation->run() === true) {
+                $state = explode("-", $this->input->post('state'));
+
                 $bdata = [
                     'name'        => $this->input->post('first_name') . ' ' . $this->input->post('last_name'),
                     'phone'       => $this->input->post('phone'),
                     'email'       => $this->input->post('email'),
                     'company'     => $this->input->post('company'),
                     'vat_no'      => $this->input->post('vat_no'),
+                    'bairro'      => $this->input->post('bairro'),
+                    'UF'          => $state[0],
+                    'cod_mun'     => $this->input->post('cod_mun'),
+                    'data_nasc'     => $this->input->post('data_nasc'),
                     'address'     => $this->input->post('address'),
                     'city'        => $this->input->post('city'),
-                    'state'       => $this->input->post('state'),
+                    'state'       => $state[1],
                     'postal_code' => $this->input->post('postal_code'),
                     'country'     => $this->input->post('country'),
                 ];
@@ -289,6 +295,18 @@ class Main extends MY_Shop_Controller
             }
         }
 
+
+        $config = new CI_Config();
+        $curl = curl_init($config->config["api_url"] . '/get_issuer_configs');
+        curl_setopt_array($curl, [
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST'
+        ]);
+        $configs = json_decode(curl_exec($curl));
+        curl_close($curl);
+
+        $this->data["configs"] = $configs;
         $this->data['featured_products'] = $this->shop_model->getFeaturedProducts();
         $this->data['customer']          = $this->site->getCompanyByID($this->session->userdata('company_id'));
         $this->data['user']              = $this->site->getUser();

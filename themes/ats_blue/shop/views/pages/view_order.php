@@ -5,20 +5,51 @@
             <div class="col-xs-12">
                 <div class="row">
                     <div class="col-sm-9 col-md-10">
-                        <?php if( $inv->collection_id == '' ) { ?>
-                            <div class="alert alert-info">
-                                <p><strong>Compra ainda não concluída: </strong> Certifique-se de selecionar um método de pagamento</p>
-                            </div>
-                        <?php } else { ?>
-                            <div class="alert alert-success">
-                                <p>
-                                    <strong>Compra efetuada com sucesso: </strong>
-                                    você pode acessar mais informações sobre sua compra clicando <a target="_blank" href="/order/details/<?= $_GET['collection_id'] ?? $inv->collection_id ?>">aqui</a>.
-                                    <br><br>
-                                    Obrigado pela preferência, volte sempre.
-                                </p>
-                            </div>
+                        <?php if ( $inv->payment_method == 'mercado_pago' ) { ?>
+                            <?php if( $inv->collection_id == '' ) { ?>
+                                <div class="alert alert-info">
+                                    <p><strong>Compra ainda não concluída: </strong> Certifique-se de selecionar um método de pagamento</p>
+                                </div>
+                            <?php } else { ?>
+                                <div class="alert alert-success">
+                                    <p>
+                                        <strong>Compra efetuada com sucesso: </strong>
+                                        você pode acessar mais informações sobre sua compra clicando <a target="_blank" href="/order/details/<?= $_GET['collection_id'] ?? $inv->collection_id ?>">aqui</a>.
+                                        <br><br>
+                                        Obrigado pela preferência, volte sempre.
+                                    </p>
+                                </div>
+                            <?php }?>
                         <?php }?>
+
+                        <?php if ( $inv->payment_method == 'sicoob') { ?>
+                            <?php if($error_remessa) { ?>
+                                    <div class="alert alert-danger">
+                                        <p>
+                                            <strong>Atenção: </strong>
+                                            Ocorreu um erro ao gerar o arquivo de remessa. Entre em contato com o administrador do sistema.
+                                        </p>
+                                    </div>
+                            <?php } else { ?>
+                                <?php if ($vencimento) { ?>
+                                    <div class="alert alert-danger">
+                                        <p>
+                                            <strong>Atenção: </strong>
+                                            O boleto gerado anteriormente já passou do prazo de pagamento, será aplicada uma taxa ao pagamento.
+                                        </p>
+                                    </div>
+                                <?php }?>
+
+                                <?php if ($venceHoje) { ?>
+                                    <div class="alert alert-warning">
+                                        <p>
+                                            <strong>Atenção: </strong>
+                                            O boleto irá vencer hoje.
+                                        </p>
+                                    </div>
+                                <?php }?>
+                            <?php } ?>
+                            <?php }?>
 
                         <?php if(isset($_GET['link_error']) && $_GET['link_error'] == '1') { ?>
                             <div class="alert alert-danger">
@@ -394,24 +425,31 @@
 
                                     if($inv->payment_method == 'mercado_pago') {
                                         echo '
-                                    <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; overflow: hidden">
-                                        <strong style="font-size: 16px; margin-bottom: 15px">Clique abaixo para efetuar o pagamento</strong>
-                                        <a href="'. $mp_link .'">
-                                            <img src="https://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_735X40.jpg?v=1" 
-                                                alt="Mercado Pago - Efetuar pagamento" title="Mercado Pago - Efetuar pagamento" 
-                                                width="735" height="40"/>
-                                        </a>
-                                    </div>';
-                                    } else {
-                                        echo '<div class="payment_buttons">';
-                                        $btn_code = '<div id="payment_buttons" class="text-center margin010">';
-                                        if ($paypal->active == '1' && $inv->grand_total != '0.00') {
-                                            $btn_code .= '<a href="' . site_url('pay/paypal/' . $inv->id) . '"><img src="' . base_url('assets/images/btn-paypal.png') . '" alt="Pay by PayPal"></a> ';
-                                        }
-                                        if ($skrill->active == '1' && $inv->grand_total != '0.00') {
-                                            $btn_code .= ' <a href="' . site_url('pay/skrill/' . $inv->id) . '"><img src="' . base_url('assets/images/btn-skrill.png') . '" alt="Pay by Skrill"></a>';
-                                        }
+                                        <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; overflow: hidden">
+                                            <strong style="font-size: 16px; margin-bottom: 15px">Clique abaixo para efetuar o pagamento</strong>
+                                            <a href="'. $mp_link .'">
+                                                <img src="https://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/tipo2_735X40.jpg?v=1" 
+                                                    alt="Mercado Pago - Efetuar pagamento" title="Mercado Pago - Efetuar pagamento" 
+                                                    width="735" height="40"/>
+                                            </a>
+                                        </div>';
+                                    }
 
+                                    if($inv->payment_method == 'sicoob') {
+                                        echo "<div style='display: flex; flex-direction: column; align-items: end;'>";
+                                        echo "<button onclick='PrintElem(`boleto-sicoob`)' class='btn btn-info' style='margin-top: 20px' id='imprimirBoletoSiccob'>
+                                                    <i class='fa fa-print'></i>&nbsp;&nbsp;Imprimir boleto
+                                              </button>";
+                                        echo "</div><hr>";
+
+                                        echo "<div style='display: flex; align-items: center; justify-content: center' id='boleto-sicoob'>";
+                                        print_r($boleto_sicoob);
+                                        echo "</div>";
+                                    }
+                                    echo "</pre>";
+
+                                    if($inv->payment_method == 'sicred') {
+                                        echo '<a>Boleto Sicred</a>';
                                     }
 
                                     if ($shop_settings->stripe == 1 && $stripe_publishable_key) {
@@ -458,6 +496,28 @@
         </div>
     </div>
 </section>
+<script>
+    function PrintElem(elem)
+    {
+        let left = (screen.width) / 3.5;
+        let top = (screen.height) / 3.5;
+
+        let mywindow = window.open('', 'PRINT', 'height=500,width=1000,location=no,toolbar=no,directories=no,status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,top='+top+', left='+left);
+
+        mywindow.document.write('<html><head><title>' + document.title  + '</title>');
+        mywindow.document.write('</head><body >');
+        mywindow.document.write(document.getElementById(elem).innerHTML);
+        mywindow.document.write('</body></html>');
+
+        mywindow.document.close(); // necessary for IE >= 10
+        mywindow.focus(); // necessary for IE >= 10*/
+
+        mywindow.print();
+        mywindow.close();
+
+        return true;
+    }
+</script>
 <script>
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);

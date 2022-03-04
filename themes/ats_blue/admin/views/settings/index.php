@@ -83,11 +83,19 @@ $ps = ['0' => lang('disable'), '1' => lang('enable')];
                         <span class="padding-right-10">Mercado Pago</span>
                     </a>
                 </li>
-                <li class="dropdown"><a href="<?= admin_url('system_settings/paypal') ?>" class="toggle_up"><i
-                            class="icon fab fa-paypal"></i><span
-                            class="padding-right-10"><?= lang('paypal'); ?></span></a></li>
-                <li class="dropdown"><a href="<?= admin_url('system_settings/skrill') ?>" class="toggle_down"><i
-                            class="icon fa fa-bank"></i><span class="padding-right-10"><?= lang('skrill'); ?></span></a>
+
+                <li class="dropdown">
+                    <a href="<?= admin_url("system_settings/boleto_sicoob") ?>" class="toggle_down">
+                        <i class="icon fa fa-paste"></i>
+                        <span class="padding-right-10">Boleto Sicoob</span>
+                    </a>
+                </li>
+
+                <li class="dropdown">
+                    <a href="#" class="toggle_down">
+                        <i class="icon fa fa-copy"></i>
+                        <span class="padding-right-10">Boleto Sicred</span>
+                    </a>
                 </li>
             </ul>
         </div>
@@ -995,6 +1003,25 @@ $ps = ['0' => lang('disable'), '1' => lang('enable')];
                         </div>
                     </fieldset>
 
+                    <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">Gateways de Pagamento</legend>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <input type="checkbox" <?= ($Settings->gateway_mercado_pago) ? "checked" : "" ?> name="gateway_mercado_pago" id="gateway_mercado_pago" class="form-control">
+                                <label for="gateway_mercado_pago">&nbsp; Mercado Pago</label>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="checkbox" <?= ($Settings->gateway_sicoob) ? "checked" : "" ?> name="gateway_sicoob" id="gateway_sicoob" class="form-control">
+                                <label for="gateway_sicoob">&nbsp; Boleto Sicoob</label>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="checkbox" <?= ($Settings->gateway_sicred) ? "checked" : "" ?> name="gateway_sicred" id="gateway_sicred" class="form-control">
+                                <label for="gateway_sicred">&nbsp; Boleto Sicred</label>
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
             </div>
             <div class="cleafix"></div>

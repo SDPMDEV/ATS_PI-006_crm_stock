@@ -30,6 +30,7 @@ class system_settings extends MY_Controller
         $this->lang->admin_load('settings', $this->Settings->user_language);
         $this->load->library('form_validation');
         $this->load->admin_model('settings_model');
+        $this->load->admin_model('sicoob_model');
         $this->upload_path        = 'assets/uploads/';
         $this->thumbs_path        = 'assets/uploads/thumbs/';
         $this->image_types        = 'gif|jpg|jpeg|png|tif';
@@ -2327,6 +2328,82 @@ class system_settings extends MY_Controller
         }
     }
 
+    public function boleto_sicoob()
+    {
+        $this->load->admin_model('sales_model');
+
+        $bc   = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('system_settings'), 'page' => lang('system_settings')], ['link' => '#', 'page' => "Boleto Sicoob"]];
+        $meta = ['page_title' => "Configurar Boleto Sicoob", 'bc' => $bc];
+
+        $curl = curl_init($this->api_url . "/sicoob/get_key/?api_token=".$this->api_token);
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_CUSTOMREQUEST => "GET"
+        ]);
+        $res = json_decode(curl_exec($curl));
+
+        $remessas = $this->sicoob_model->getAllRemessas();
+        foreach ($remessas as $remessa) {
+            $id = str_replace(["remessa_", ".REM"], "", $remessa->nome);
+            $sale = $this->sales_model->getSale($id);
+
+            $remessa->valor_pago = $sale->paid;
+            $remessa->referencia = $sale->reference_no;
+        }
+
+        $this->data['faturaMes'] = $this->sicoob_model->faturaMes();
+        $this->data['vlrNaoPagos'] = $this->sicoob_model->valorNaoPagos();
+        $this->data['remessasParaDownload'] = count($this->sicoob_model->getRemessasDownload());
+        $this->data['remessas'] = $remessas;
+        $this->data['configs'] = $this->sicoob_model->getAll();
+        $this->data['especies'] = $this->sicoob_model->getAllEspecies();
+        $this->data["sicoob_key"] = $res->sicoob_key;
+        $this->data["set_key"] = $this->api_url . "/sicoob/set_key/?api_token=".$this->api_token;
+        $this->page_construct('settings/boleto_sicoob', $meta, $this->data);
+    }
+
+    public function save_sicoob_configs()
+    {
+        if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->session->set_flashdata('message', lang('permission_denied'));
+            redirect('/');
+        }
+
+        $data = [
+            "agencia" => $this->input->post('agencia'),
+            "conta" => $this->input->post('conta'),
+            "convenio" => $this->input->post('convenio'),
+            "multa_mora" => $this->input->post('mora_multa'),
+            "desc_opcional" => $this->input->post('desconto'),
+            "acres_opcional" => $this->input->post('outro_acrescimo'),
+            "especie" => $this->input->post('especie'),
+            "inst1" => strip_tags($this->input->post('inst1')),
+            "inst2" => strip_tags($this->input->post('inst2')),
+            "inst3" => strip_tags($this->input->post('inst3')),
+            "inst4" => strip_tags($this->input->post('inst4')),
+            "inst5" => strip_tags($this->input->post('inst5')),
+            "venc_dias" => $this->input->post('venc_dias'),
+            "deducoes" => $this->input->post('deducoes'),
+            'agencia_dv' => $this->input->post('agencia_dv'),
+            'conta_dv' => $this->input->post('conta_dv'),
+            'codigo_beneficiario' => $this->input->post('codigo_beneficiario'),
+            'modalidade' => $this->input->post('modalidade'),
+            'tipo_formulario' => $this->input->post('tipo_formulario'),
+            'codigo_carteira' => $this->input->post('codigo_carteira'),
+            'identificacao_contrato' => $this->input->post('identificacao_contrato'),
+            'codigo_beneficiario_dv' => $this->input->post('codigo_beneficiario_dv'),
+            'valor_venc' => $this->input->post('valor_venc'),
+        ];
+
+        if(!$this->sicoob_model->save($data)) {
+            $this->session->set_flashdata('error', "Erro ao salvar dados.");
+        } else {
+            $this->session->set_flashdata('message', "Dados salvos com sucesso.");
+        }
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+
     public function mercado_pago()
     {
         $curl = curl_init($this->api_url . "/mercado_pago/get_keys/?api_token=".$this->api_token);
@@ -2339,7 +2416,7 @@ class system_settings extends MY_Controller
         $res = json_decode(curl_exec($curl));
 
         $bc   = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('system_settings'), 'page' => lang('system_settings')], ['link' => '#', 'page' => "Mercado Pago"]];
-        $meta = ['page_title' => lang('paypal_settings'), 'bc' => $bc];
+        $meta = ['page_title' => "Configurações Mercado Pago", 'bc' => $bc];
         $this->data["public_key"] = $res->public_key ?? "";
         $this->data["access_token"] = $res->access_token ?? "";
         $this->data["set_keys"] = $this->api_url . "/mercado_pago/set_keys";
@@ -2944,5 +3021,146 @@ class system_settings extends MY_Controller
         }
         @chmod($output_path, 0644);
         return false;
+    }
+
+    public function excluir_remessa()
+    {
+        $remessa = $this->sicoob_model->getRemessa($this->input->get('remessaId'));
+        $dataCriacao = $remessa->data_criacao;
+        $date = DateTime::createFromFormat("Y-m-d", $dataCriacao);
+
+        $ano = $date->format("Y");
+        $mes = $date->format("m");
+        $remessaName = $remessa->nome;
+
+        unlink(FCPATH . "api_fiscal/public/remessas_sicoob/$ano/$mes/$remessaName");
+
+        $this->sicoob_model->deleteRemessa($this->input->get('remessaId'));
+
+        $this->session->set_flashdata('message', 'Arquivo deletado com sucesso');
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    public function download_remessa()
+    {
+        $this->load->helper('download');
+        $remessaId = $this->input->get('remessaId');
+
+        $remessa = $this->sicoob_model->getRemessa($remessaId);
+
+        if ($remessa) {
+            $dataCriacao = $remessa->data_criacao;
+
+            $date = DateTime::createFromFormat("Y-m-d", $dataCriacao);
+
+            $ano = $date->format("Y");
+            $mes = $date->format("m");
+            $remessaName = $remessa->nome;
+            
+            force_download(FCPATH . "api_fiscal/public/remessas_sicoob/$ano/$mes/$remessaName", NULL);
+
+            $this->session->set_flashdata('message', 'Arquivo baixado com sucesso');
+            redirect($_SERVER['HTTP_REFERER']);
+        }
+    }
+
+    public function upload_retorno()
+    {
+        $retorno = $_FILES["upload_retorno"];
+        $targetDir = FCPATH . "api_fiscal/public/retornos_sicoob/" . basename($retorno["name"]);
+
+        if (move_uploaded_file($retorno["tmp_name"], $targetDir)) {
+            $this->validarRetorno($retorno["name"]);
+        } else {
+            exit(json_encode([
+                'error' => true,
+                'message' => 'Erro ao enviar arquivo de retorno.'
+            ]));
+        }
+
+    }
+
+    private function validarRetorno($arquivoRetorno)
+    {
+        $this->load->admin_model('sales_model');
+
+        $ch = curl_init($this->api_url . '/sicoob/get_retorno?retorno=' . $arquivoRetorno);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+        ]);
+        $res = json_decode(curl_exec($ch));
+
+        if($res === NULL)
+            die(json_encode(['error' => true, 'message' => 'Arquivo inválido. O arquivo não pode conter espaços ou caracteres especiais em seu nome e deve ser um aquivo válido de retorno sicoob.']));
+
+        if ($res->error)
+            die(json_encode(['error' => true, 'message' => $res->message]));
+
+        $boletosPagos = [];
+        foreach ($res->registros as $registro) {
+            if ($registro->R3U->codigo_movimento == 6) {
+                if ($this->sicoob_model->getBoleto($registro->nosso_numero)) {
+                    $boletosPagos[] = [
+                        'nossoNumero' => $registro->nosso_numero,
+                        'valorPago' => $registro->R3U->vlr_pago
+                    ];
+                }
+            }
+        }
+
+
+        foreach ($boletosPagos as $boleto) {
+            $this->sales_model->upSale($boleto['nossoNumero'], [
+                'payment_status' => 'paid',
+                'sale_status' => 'paid',
+                'paid' => $boleto['valorPago']
+            ]);
+
+            $this->sicoob_model->upRemessa($boleto['nossoNumero'], [
+                'situacao' => 'paid'
+            ]);
+        }
+
+        die(json_encode([
+            'error' => false,
+            'message' => 'Arquivo enviado e validado com sucesso.'
+        ]));
+    }
+
+    public function unique_remessa()
+    {
+        $this->load->helper('download');
+
+        $remessas = $this->sicoob_model->getRemessasDownload();
+        $filepath = FCPATH . "api_fiscal/public/remessas_sicoob/RemessasMescladas.REM";
+        $files = [];
+
+        foreach ($remessas as $remessa) {
+
+            $date = DateTime::createFromFormat("Y-m-d", $remessa->data_criacao);
+
+            $ano = $date->format("Y");
+            $mes = $date->format("m");
+
+            $files[] = FCPATH . "api_fiscal/public/remessas_sicoob/$ano/$mes/" . $remessa->nome;
+        }
+
+        $out = fopen($filepath, "w");
+        foreach ($files as $index => $file) {
+            if ($index == 0) {
+                fwrite($out, file_get_contents($file));
+            } else {
+                fwrite($out, PHP_EOL . file_get_contents($file));
+            }
+
+        }
+        fclose($out);
+
+        force_download($filepath, NULL);
+
+        $this->session->set_flashdata('message', 'Arquivos mesclados e baixados com sucesso!');
+        admin_redirect($_SERVER['HTTP_REFERER']);
     }
 }

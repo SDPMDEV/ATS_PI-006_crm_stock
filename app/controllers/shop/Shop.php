@@ -506,6 +506,87 @@ class Shop extends MY_Shop_Controller
                     }
                 }
 
+                if($order->payment_method == 'sicoob') {
+                    $this->load->admin_model('sicoob_model');
+                    $config = new CI_Config();
+                    $api_url = $config->config["api_url"];
+
+                    if (! $this->sicoob_model->checkCustomer($order->customer_id)) {
+                        $this->session->set_flashdata('error', 'Preencha todas as informações sobre seu perfil antes de gerar o boleto.');
+                        redirect('/profile');
+                    }
+
+                    $issuer = curl_init($api_url . '/get_issuer');
+                    curl_setopt_array($issuer, [
+                        CURLOPT_SSL_VERIFYPEER => false,
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_CUSTOMREQUEST => 'POST'
+                    ]);
+                    $issuer = json_decode(curl_exec($issuer));
+
+                    if (! $this->sicoob_model->getBoleto($order->id)) {
+                        $data = $this->sicoob_model->getBoletoConfigs($order->customer_id, $order->id, $issuer);
+                        $data['data_emissao'] = $data['data_emissao']->format('Y-m-d');
+                        unset($data["inst"]);
+                        $this->sicoob_model->saveBoleto($data);
+                    }
+
+                    $boletoFounded = $this->sicoob_model->getBoleto($order->id);
+                    $boletoFounded->inst = [
+                        $boletoFounded->inst1,
+                        $boletoFounded->inst2,
+                        $boletoFounded->inst3,
+                        $boletoFounded->inst4,
+                    ];
+                    $boletoFounded->data_emissao = new DateTime($boletoFounded->data_emissao);
+
+                    $boleto = curl_init($api_url . '/sicoob/get_boleto');
+                    curl_setopt_array($boleto, [
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_SSL_VERIFYPEER => false,
+                        CURLOPT_POST => true,
+                        CURLOPT_POSTFIELDS => http_build_query($boletoFounded)
+                    ]);
+                    $res = json_decode(curl_exec($boleto));
+
+                    if( date('Y-m-d') > $boletoFounded->data_vencimento) {
+                        $this->data['vencimento'] = true;
+                    }
+
+                    if ( date('Y-m-d') == $boletoFounded->data_vencimento) {
+                        $this->data['venceHoje'] = true;
+                    }
+
+                    $remessaData = $this->sicoob_model->getRemessaConfigs($issuer, $order->customer_id, $order->id);
+
+                    $remessaCurl = curl_init();
+                    curl_setopt_array($remessaCurl, [
+                       CURLOPT_URL => $api_url . "/sicoob/create_remessa?" . http_build_query($remessaData),
+                       CURLOPT_RETURNTRANSFER => true,
+                       CURLOPT_SSL_VERIFYPEER => false,
+                       CURLOPT_CUSTOMREQUEST => "GET"
+                    ]);
+                    $remessa = json_decode(curl_exec($remessaCurl));
+
+                    $this->data['error_remessa'] = true;
+                    if (isset($remessa->error)) {
+                        if(! $remessa->error) {
+                            $this->data['error_remessa'] = false;
+
+                            $datum = [
+                                "nome" => $remessa->name,
+                                "valor" => $boletoFounded->valor,
+                                "data_criacao" => $boletoFounded->data_emissao->format('Y-m-d'),
+                                "situacao" => "pending"
+                            ];
+
+                            $this->sicoob_model->saveRemessa($datum);
+                        }
+                    }
+
+                    $this->data['boleto_sicoob'] = $res->boleto;
+                }
+
                 $this->page_construct('pages/view_order', $this->data);
             } else {
                 $this->session->set_flashdata('error', lang('access_denied'));

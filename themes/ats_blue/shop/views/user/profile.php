@@ -78,20 +78,42 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <?= lang('state', 'state'); ?>
-                                            <?php
-                                            if ($Settings->indian_gst) {
-                                                $states = $this->gst->getIndianStates(true);
-                                                echo form_dropdown('state', $states, set_value('state', $customer->state), 'class="form-control selectpicker mobile-device" id="state" required="required"');
-                                            } else {
-                                                echo form_input('state', set_value('state', $customer->state), 'class="form-control" id="state"');
-                                            }
-                                            ?>
+                                            <select name="state" id="state" class="form-control">
+                                                <?php foreach ($configs->estados as $cEst => $estado) { ?>
+                                                    <?php if($estado == $customer->state) { ?>
+                                                        <option value="<?= $cEst ?>-<?= $estado ?>">
+                                                            <?= $estado ?>
+                                                        </option>
+                                                    <?php }?>
+                                                <?php } ?>
+
+                                                <?php foreach ($configs->estados as $cEst => $estado) { ?>
+                                                    <option value="<?= $cEst ?>-<?= $estado ?>">
+                                                        <?= $estado ?>
+                                                    </option>
+                                                <?php }?>
+                                            </select>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="cod_mun">Código do município</label>
+                                            <input type="text" name="cod_mun" id="cod_mun" class="form-control" value="<?= $customer->cod_mun ?>">
+                                        </div>
+                                    </div>
+
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <?= lang('postal_code', 'postal_code'); ?>
                                             <?= form_input('postal_code', set_value('postal_code', $customer->postal_code), 'class="form-control tip" id="postal_code" required="required"'); ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="bairro">Bairro</label>
+                                            <?= form_input('bairro', set_value('bairro', $customer->bairro), 'class="form-control tip" id="bairro" required="required"'); ?>
                                         </div>
                                     </div>
                                 </div>
@@ -101,6 +123,13 @@
                                         <div class="form-group">
                                             <?= lang('country', 'country'); ?>
                                             <?= form_input('country', set_value('country', $customer->country), 'class="form-control tip" id="country" required="required"'); ?>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="data_nasc">Data de nascimento</label>
+                                            <input type="date" name="data_nasc" id="data_nasc" value="<?= $customer->data_nasc ?>" class="form-control">
                                         </div>
                                     </div>
                                 </div>
