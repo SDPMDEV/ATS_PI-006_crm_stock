@@ -9,6 +9,11 @@ class Sicoob_model extends CI_Model
         return $this->db->get('sicoob_configs')->result()[0];
     }
 
+    public function getColumnValue($colum)
+    {
+        return $this->db->select($colum)->get('sicoob_configs')->result()[0]->{$colum};
+    }
+
     public function save(array $data)
     {
         $this->db->truncate('sicoob_configs');
@@ -60,6 +65,12 @@ class Sicoob_model extends CI_Model
         $valorCob = $valorCob - $sicoob->deducoes;
         $valorCob = $valorCob + ($sicoob->multa_mora / 100) * $sale->grand_total;
         $valorCob = $valorCob + ($sicoob->acres_opcional / 100) * $sale->grand_total;
+        $descDemo = [
+            str_replace('{venda}', $sale->id, $sicoob->inst1),
+            str_replace('{venda}', $sale->id, $sicoob->inst2),
+            str_replace('{venda}', $sale->id, $sicoob->inst3),
+            str_replace('{venda}', $sale->id, $sicoob->inst4),
+        ];
 
         return [
             'customer_name' => $customer->name,
@@ -94,7 +105,7 @@ class Sicoob_model extends CI_Model
             'especie' => $sicoob->especie,
             'desconto' => ($sicoob->desc_opcional / 100) * $sale->grand_total,
             'outro_acrescimo' => ($sicoob->acres_opcional / 100) * $sale->grand_total,
-            'descDemo' => $sale->reference_no,
+            'descDemo' => $descDemo,
             'outras_ded' => $sicoob->deducoes,
             'valor_cob' => $valorCob,
             "inst1" => $sicoob->inst1,
@@ -277,6 +288,10 @@ class Sicoob_model extends CI_Model
             'customer_city' => $customer->city,
             'customer_uf' => $this->getUF($customer->UF),
             'valor_venc' => $sicoob->valor_venc,
+            'inst1' => $sicoob->inst1,
+            'inst2' => $sicoob->inst2,
+            'inst3' => $sicoob->inst3,
+            'inst4' => $sicoob->inst4,
         ];
     }
 
@@ -315,12 +330,20 @@ class Sicoob_model extends CI_Model
 
     public function getBoleto($id)
     {
+        $sicoob = $this->getAll();
         $query = $this->db->get_where('boletos_sicoob', ['sequencial =' => $id]);
 
-        if (! $query)
+        if (empty($query->result()))
             return false;
 
-        return $query->result();
+        $boleto = $query->result()[0];
+
+        unset($sicoob->id);
+        foreach ($sicoob as $index => $item) {
+            $boleto->{$index} = $item;
+        }
+
+        return $boleto;
     }
 
     public function upRemessa($remessaId, $data)

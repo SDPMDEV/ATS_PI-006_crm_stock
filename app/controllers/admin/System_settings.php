@@ -3084,7 +3084,7 @@ class system_settings extends MY_Controller
     {
         $this->load->admin_model('sales_model');
 
-        $ch = curl_init($this->api_url . '/sicoob/get_retorno?retorno=' . $arquivoRetorno);
+        $ch = curl_init($this->api_url . '/sicoob/get_retorno?api_token='.$this->api_token.'&retorno=' . $arquivoRetorno);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
