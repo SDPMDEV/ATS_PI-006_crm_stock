@@ -90,13 +90,6 @@ $ps = ['0' => lang('disable'), '1' => lang('enable')];
                         <span class="padding-right-10">Boleto Sicoob</span>
                     </a>
                 </li>
-
-                <li class="dropdown">
-                    <a href="#" class="toggle_down">
-                        <i class="icon fa fa-copy"></i>
-                        <span class="padding-right-10">Boleto Sicred</span>
-                    </a>
-                </li>
             </ul>
         </div>
     </div>
@@ -1014,11 +1007,6 @@ $ps = ['0' => lang('disable'), '1' => lang('enable')];
                             <div class="form-group">
                                 <input type="checkbox" <?= ($Settings->gateway_sicoob) ? "checked" : "" ?> name="gateway_sicoob" id="gateway_sicoob" class="form-control">
                                 <label for="gateway_sicoob">&nbsp; Boleto Sicoob</label>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="checkbox" <?= ($Settings->gateway_sicred) ? "checked" : "" ?> name="gateway_sicred" id="gateway_sicred" class="form-control">
-                                <label for="gateway_sicred">&nbsp; Boleto Sicred</label>
                             </div>
                         </div>
                     </fieldset>

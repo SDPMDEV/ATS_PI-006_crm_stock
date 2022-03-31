@@ -29,7 +29,7 @@
 	"scripts": {
 		"install-stock": [
 			"composer install",
-			"cd api_fiscal && git clone -b master https://github.com/ALLIANCETECHSYSTEM/ATS_PI-007_crm_nfe.git && cp .env.example .env",
+			"cd api_fiscal && git clone -b master https://github.com/ALLIANCETECHSYSTEM/ATS_PI-007_crm_nfe.git . && cp .env.example .env",
 			"cat terminal_messages.txt"
 		]
 	}

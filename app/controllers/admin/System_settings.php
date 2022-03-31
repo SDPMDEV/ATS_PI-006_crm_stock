@@ -31,6 +31,7 @@ class system_settings extends MY_Controller
         $this->load->library('form_validation');
         $this->load->admin_model('settings_model');
         $this->load->admin_model('sicoob_model');
+        $this->load->admin_model('sales_model');
         $this->upload_path        = 'assets/uploads/';
         $this->thumbs_path        = 'assets/uploads/thumbs/';
         $this->image_types        = 'gif|jpg|jpeg|png|tif';
@@ -3082,9 +3083,8 @@ class system_settings extends MY_Controller
 
     private function validarRetorno($arquivoRetorno)
     {
-        $this->load->admin_model('sales_model');
 
-        $ch = curl_init($this->api_url . '/sicoob/get_retorno?retorno=' . $arquivoRetorno);
+        $ch = curl_init($this->api_url . '/sicoob/get_retorno?api_token='.$this->api_token.'&retorno=' . $arquivoRetorno);
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
@@ -3092,33 +3092,14 @@ class system_settings extends MY_Controller
         ]);
         $res = json_decode(curl_exec($ch));
 
-        if($res === NULL)
-            die(json_encode(['error' => true, 'message' => 'Arquivo inválido. O arquivo não pode conter espaços ou caracteres especiais em seu nome e deve ser um aquivo válido de retorno sicoob.']));
-
-        if ($res->error)
-            die(json_encode(['error' => true, 'message' => $res->message]));
-
-        $boletosPagos = [];
-        foreach ($res->registros as $registro) {
-            if ($registro->R3U->codigo_movimento == 6) {
-                if ($this->sicoob_model->getBoleto($registro->nosso_numero)) {
-                    $boletosPagos[] = [
-                        'nossoNumero' => $registro->nosso_numero,
-                        'valorPago' => $registro->R3U->vlr_pago
-                    ];
-                }
-            }
-        }
-
-
-        foreach ($boletosPagos as $boleto) {
-            $this->sales_model->upSale($boleto['nossoNumero'], [
+        foreach($res->boletos as $boleto) {
+            $this->sales_model->upSale($boleto->nosso_numero, [
                 'payment_status' => 'paid',
                 'sale_status' => 'paid',
-                'paid' => $boleto['valorPago']
+                'paid' => $boleto->vlr_pago
             ]);
 
-            $this->sicoob_model->upRemessa($boleto['nossoNumero'], [
+            $this->sicoob_model->upRemessa($boleto->nosso_numero, [
                 'situacao' => 'paid'
             ]);
         }

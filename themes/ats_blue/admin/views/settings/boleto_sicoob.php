@@ -156,23 +156,15 @@
 
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label for="modalidade">Modalidade</label>
-                            <input type="text" name="modalidade" value="<?= $configs->modalidade ?>" id="modalidade" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label for="tipo_formulario">Tipo de formulário</label>
-                            <input type="text" name="tipo_formulario" value="<?= $configs->tipo_formulario ?>" id="tipo_formulario" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="form-group">
                             <label for="codigo_carteira">Código da carteira</label>
-                            <input type="text" name="codigo_carteira" value="<?= $configs->codigo_carteira ?>" id="codigo_carteira" class="form-control">
+                            <select name="codigo_carteira" id="codigo_carteira" class="form-control">
+                                <option value="1">Simples Com Registro</option>
+                                <option value="2">Simples Sem Registro</option>
+                                <option value="3">Garantida Caucionada</option>
+                            </select>
                         </div>
+
+                        <input type="hidden" name="modalidade" id="modalidade">
                     </div>
 
                     <div class="col-md-3">
@@ -313,7 +305,7 @@
                                                 <td class="text-center"><?= $remessa->valor_pago ?></td>
                                                 <td class="text-center"><?= $remessa->referencia ?></td>
                                                 <td class="text-center"><?= date('d/m/Y', strtotime($remessa->data_criacao)) ?></td>
-                                                <td class="text-center"><?= $remessa->situacao ?></td>
+                                                <td class="text-center"><?= lang($remessa->situacao) ?></td>
                                                 <td class="text-center">
                                                     <a title="Baixar remessa" style="margin-right: 5px" href="<?= admin_url('system_settings/download_remessa?remessaId=') . $remessa->id ?>">
                                                         <i class="fa fa-download"></i>
@@ -398,10 +390,13 @@
     })
 
     $(document).ready(()=>{
+        $("#modalidade").val( "0" + $("#codigo_carteira").val() );
+
         $(":input").inputmask();
 
         $("#desconto").inputmask('99.99');
         $("#outro_acrescimo").inputmask('99.99');
+        $("#valor_venc").inputmask('99.99');
         $("#mora_multa").inputmask('99.99');
         $("#deducoes").inputmask('decimal', {
             'alias': 'numeric',
@@ -411,5 +406,9 @@
         });
 
         $('#remessas_table').DataTable();
+
+        $("#codigo_carteira").change((event)=>{
+            $("#modalidade").val( "0" + $("#codigo_carteira").val() );
+        })
     });
 </script>

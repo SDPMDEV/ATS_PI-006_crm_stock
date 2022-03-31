@@ -1873,9 +1873,9 @@ class Products extends MY_Controller
             unset($data["ajax"]);
             $data["api_token"] = $api_url;
 
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$api_url&".http_build_query($data));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token&".http_build_query($data));
         } else {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$api_url");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token");
         }
 
         if(curl_exec($ch)) {

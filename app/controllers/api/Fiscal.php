@@ -1,6 +1,5 @@
 <?php
 
-
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Fiscal extends MY_Controller
@@ -517,7 +516,8 @@ class Fiscal extends MY_Controller
                         "CFOP_saida_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_saida_estadual,
                         "CFOP_saida_inter_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_saida_inter_estadual,
                     ],
-                    'estado' => $sale->estado
+                    'estado' => $sale->estado,
+                    'api_token' => $this->api_token
                 ];
 
 
@@ -644,7 +644,8 @@ class Fiscal extends MY_Controller
                             "CFOP_saida_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_saida_estadual,
                             "CFOP_saida_inter_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_saida_inter_estadual,
                         ],
-                        'estado' => $sale->estado
+                        'estado' => $sale->estado,
+                        'api_token' => $this->api_token
                     ];
 
                     $ch = curl_init();
@@ -1131,7 +1132,7 @@ class Fiscal extends MY_Controller
             if(count($this->get->val) == 1) {
                 $sale = $this->sales_model->getSale($this->get->val[0]);
 
-                $ch = curl_init($this->api_url . '/download_xml/?' . http_build_query(['chave' => $sale->chave]));
+                $ch = curl_init($this->api_url . '/download_xml/?' . http_build_query(['chave' => $sale->chave, 'api_token' => $this->api_token]));
                 curl_setopt_array($ch, [
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_SSL_VERIFYPEER => false,
@@ -1184,7 +1185,7 @@ class Fiscal extends MY_Controller
                     ]);
                 }
 
-                $ch = curl_init($this->api_url . '/download_xml_zip/?' . http_build_query(['xmls' => $xml_to_download]));
+                $ch = curl_init($this->api_url . '/download_xml_zip/?' . http_build_query(['xmls' => $xml_to_download, 'api_token' => $this->api_token]));
                 curl_setopt_array($ch, [
                     CURLOPT_CUSTOMREQUEST => "GET",
                     CURLOPT_SSL_VERIFYPEER => false,
@@ -1247,7 +1248,8 @@ class Fiscal extends MY_Controller
                 $sale = $this->sales_model->getSale($this->get->val[0]);
                 $data = [
                     'estado' => $sale->estado,
-                    'chave' => $sale->chave
+                    'chave' => $sale->chave,
+                    'api_token' => $this->api_token
                 ];
 
                 $ch = curl_init($this->api_url . '/print_cancel/?' . http_build_query($data));
@@ -1298,7 +1300,8 @@ class Fiscal extends MY_Controller
 
             $data = [
                 'estado' => $this->get->estado,
-                'chave' => $this->get->chave
+                'chave' => $this->get->chave,
+                'api_token' => $this->api_token
             ];
 
             $ch = curl_init($this->api_url . '/print_cancel/?' . http_build_query($data));
@@ -1417,11 +1420,12 @@ class Fiscal extends MY_Controller
                     'chave' => $sale->chave,
                     'data_registro' => $sale->date,
                     'NfNumero' => $sale->nfNumero,
-                    'valor_total' => $sale->grand_total
+                    'valor_total' => $sale->grand_total,
+                    'api_token' => $this->api_token
                 ]);
             }
 
-            $ch = curl_init($this->api_url . "/send_nfe_xml/?" . http_build_query(['sales_to_pdf' => $salesToPdf]));
+            $ch = curl_init($this->api_url . "/send_nfe_xml/?" . http_build_query(['sales_to_pdf' => $salesToPdf, 'api_token' => $this->api_token]));
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_CUSTOMREQUEST => "GET",
@@ -1546,7 +1550,8 @@ class Fiscal extends MY_Controller
                 "CFOP_entrada_inter_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_entrada_inter_estadual,
                 "CFOP_saida_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_saida_estadual,
                 "CFOP_saida_inter_estadual" => $this->returnApiProps('/get_nature_configs')[0]->CFOP_saida_inter_estadual,
-            ]
+            ],
+            'api_token' => $this->api_token
         ];
 
 //        echo "<pre>";

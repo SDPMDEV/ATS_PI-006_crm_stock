@@ -4,8 +4,16 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Shop extends MY_Shop_Controller
 {
+    private string $api_url;
+
+    private string $api_token;
+
     public function __construct()
     {
+        $config = new CI_Config();
+        $this->api_url = $config->config["api_url"];
+        $this->api_token = $config->config["api_token"];
+
         parent::__construct();
         if ($this->Settings->mmode) {
             redirect('notify/offline');
@@ -487,7 +495,8 @@ class Shop extends MY_Shop_Controller
                         'quantity' => $order->total_items,
                         'unit_price' => $order->grand_total,
                         'notification_url' => base_url() . '/shop/orders/' . $order->id . '/notification',
-                        'sale_id' => $order->id
+                        'sale_id' => $order->id,
+                        'api_token' => $this->api_token
                     ];
 
                     $curl = curl_init($api_url . '/mercado_pago/make_payment/?' . http_build_query($mp_data));
@@ -516,7 +525,7 @@ class Shop extends MY_Shop_Controller
                         redirect('/profile');
                     }
 
-                    $issuer = curl_init($api_url . '/get_issuer');
+                    $issuer = curl_init($api_url . '/get_issuer?' . http_build_query(['api_token' => $this->api_token]));
                     curl_setopt_array($issuer, [
                         CURLOPT_SSL_VERIFYPEER => false,
                         CURLOPT_RETURNTRANSFER => true,
@@ -528,19 +537,30 @@ class Shop extends MY_Shop_Controller
                         $data = $this->sicoob_model->getBoletoConfigs($order->customer_id, $order->id, $issuer);
                         $data['data_emissao'] = $data['data_emissao']->format('Y-m-d');
                         unset($data["inst"]);
+                        unset($data['descDemo']);
                         $this->sicoob_model->saveBoleto($data);
                     }
 
                     $boletoFounded = $this->sicoob_model->getBoleto($order->id);
                     $boletoFounded->inst = [
-                        $boletoFounded->inst1,
-                        $boletoFounded->inst2,
-                        $boletoFounded->inst3,
-                        $boletoFounded->inst4,
+                        str_replace('{venda}', $order->id, $boletoFounded->inst1),
+                        str_replace('{venda}', $order->id, $boletoFounded->inst2),
+                        str_replace('{venda}', $order->id, $boletoFounded->inst3),
+                        str_replace('{venda}', $order->id, $boletoFounded->inst4),
                     ];
-                    $boletoFounded->data_emissao = new DateTime($boletoFounded->data_emissao);
 
-                    $boleto = curl_init($api_url . '/sicoob/get_boleto');
+                    $boletoFounded->descDemo = [
+                        str_replace('{venda}', $order->id, $boletoFounded->inst1),
+                        str_replace('{venda}', $order->id, $boletoFounded->inst2),
+                        str_replace('{venda}', $order->id, $boletoFounded->inst3),
+                        str_replace('{venda}', $order->id, $boletoFounded->inst4),
+                    ];
+
+                    $boletoFounded->data_emissao = new DateTime($boletoFounded->data_emissao);
+                    $boletoFounded->codigo_carteira = $this->sicoob_model->getColumnValue('codigo_carteira');
+                    $boletoFounded->modalidade = $this->sicoob_model->getColumnValue('modalidade');
+
+                    $boleto = curl_init($api_url . '/sicoob/get_boleto?' . http_build_query(['api_token' => $this->api_token]));
                     curl_setopt_array($boleto, [
                         CURLOPT_RETURNTRANSFER => true,
                         CURLOPT_SSL_VERIFYPEER => false,
@@ -558,7 +578,7 @@ class Shop extends MY_Shop_Controller
                     }
 
                     $remessaData = $this->sicoob_model->getRemessaConfigs($issuer, $order->customer_id, $order->id);
-
+                    $remessaData["api_token"] = $this->api_token;
                     $remessaCurl = curl_init();
                     curl_setopt_array($remessaCurl, [
                        CURLOPT_URL => $api_url . "/sicoob/create_remessa?" . http_build_query($remessaData),
@@ -876,13 +896,14 @@ class Shop extends MY_Shop_Controller
     {
         $config = new CI_Config();
         $api_url = $config->config["api_url"];
+        $api_token = $config->config["api_token"];
 
-        $curl = curl_init($api_url . '/mercado_pago/get_notification');
+        $curl = curl_init($api_url . '/mercado_pago/get_notification?' . http_build_query(['api_token' => $this->api_token]));
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS => http_build_query(['collection_id' => $collection_id ?? $_REQUEST['collection_id']])
+            CURLOPT_POSTFIELDS => http_build_query(['collection_id' => $collection_id ?? $_REQUEST['collection_id'], 'api_token' => $api_token])
         ]);
         $res = json_decode(curl_exec($curl));
         curl_close($curl);
