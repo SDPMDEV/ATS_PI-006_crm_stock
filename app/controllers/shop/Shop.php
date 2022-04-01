@@ -509,9 +509,7 @@ class Shop extends MY_Shop_Controller
                     curl_close($curl);
 
                     if(!$res->error) {
-                        $this->data['mp_link'] = $res->link;
-                    } else {
-                        $this->data['mp_link'] = base_url() . "/shop/orders/" . $order->id . "/?link_error=1";
+                        $this->data['mp_link'] = $res->link ?? base_url() . "/shop/orders/" . $order->id . "/?link_error=1";
                     }
                 }
 
