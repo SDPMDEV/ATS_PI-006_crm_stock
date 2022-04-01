@@ -17,11 +17,13 @@ class Parcelas_model extends CI_Model
     public function getParcBySale($sale_id)
     {
         $this->db->from('parcelas');
-        $this->db->order_by("sale_id", $id);
+        $this->db->order_by("sale_id", $sale_id);
         $query = $this->db->get();
 
-        if ($query->num_rows() > 0) {
-            return $query->result()[0];
+        if($query) {
+            if ($query->num_rows() > 0) {
+                return $query->result()[0];
+            }
         }
 
         return false;

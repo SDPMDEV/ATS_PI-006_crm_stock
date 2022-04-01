@@ -443,7 +443,7 @@ class Sales extends MY_Controller
             $this->data['units']      = $this->site->getAllBaseUnits();
             //$this->data['currencies'] = $this->sales_model->getAllCurrencies();
             $this->data['fiscalSettings'] = $this->returnApiProps('/get_issuer_configs');
-            $this->data['lastSale'] = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe;
+            $this->data['lastSale'] = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe ?? "";
             $this->data['slnumber']    = ''; //$this->site->getReference('so');
             $this->data['payment_ref'] = ''; //$this->site->getReference('pay');
             $bc                        = [['link' => base_url(), 'page' => lang('home')], ['link' => admin_url('sales'), 'page' => lang('sales')], ['link' => '#', 'page' => lang('add_sale')]];
@@ -1163,7 +1163,7 @@ class Sales extends MY_Controller
             $this->data['tax_rates']  = $this->site->getAllTaxRates();
             $this->data['warehouses'] = $this->site->getAllWarehouses();
             $this->data['fiscalSettings'] = $this->returnApiProps('/get_issuer_configs');
-            $this->data['lastSale'] = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe;
+            $this->data['lastSale'] = $this->nfe_model->getAllLastNumbers()->ultimo_num_nfe ?? "";
             $this->data['parcelas'] = $this->parcelas_model->getParcBySale($id);
             $this->data['sale'] = $this->sales_model->getSale($id);
 

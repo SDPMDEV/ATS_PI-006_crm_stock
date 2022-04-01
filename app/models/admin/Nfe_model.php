@@ -27,7 +27,7 @@ class Nfe_model extends CI_Model
 
     public function getAllLastNumbers()
     {
-        return $this->db->get('ultimos_numeros')->result()[0];
+        return $this->db->get('ultimos_numeros')->result()[0] ?? [];
     }
 
     public function updateLastNumber($newValue = [])
