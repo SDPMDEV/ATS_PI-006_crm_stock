@@ -98,15 +98,6 @@
                                                         </label>
                                                     <?php } ?>
 
-                                                    <?php if($Settings->gateway_sicred) { ?>
-                                                        <label style="display: inline-block; width: auto;">
-                                                            <input type="radio" name="payment_method" value="sicred" id="sicred" required="required">
-                                                            <span>
-                                                            <i class="fa fa-copy"></i> Boleto Sicred
-                                                        </span>
-                                                        </label>
-                                                    <?php } ?>
-
                                                 </div>
                                                 <hr>
                                                 <div class="form-group">
