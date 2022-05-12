@@ -1,5 +1,7 @@
 <?php
 
+use PhpParser\Node\Expr;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Fiscal extends MY_Controller
@@ -50,6 +52,7 @@ class Fiscal extends MY_Controller
         $this->load->admin_model('sales_model');
         $this->load->admin_model('companies_model');
         $this->load->admin_model('nfe_model');
+        $this->load->admin_model('sicoob_model');
 
         if(!isset($this->post->ajax) && !$this->post->ajax) {
             if (!$this->loggedIn) {
@@ -205,7 +208,8 @@ class Fiscal extends MY_Controller
                 'remote_url' => $this->api_url,
                 'categories' => $this->site->getAllCategories(),
                 'warehouses' => $this->site->getAllWarehouses(),
-                'tax_rates' => $this->site->getAllTaxRates()
+                'tax_rates' => $this->site->getAllTaxRates(),
+                'api_url' => $this->api_url
             ]);   
         } else {
             $this->load->helper('url');
@@ -1723,6 +1727,144 @@ class Fiscal extends MY_Controller
                 </script>
             ');
         }
+    }
+
+    public function printSicoob($order_id)
+    {
+        $order = $this->sales_model->getSale($order_id);
+
+
+
+        $issuer = curl_init($this->api_url . '/get_issuer?' . http_build_query(['api_token' => $this->api_token]));
+        curl_setopt_array($issuer, [
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST'
+        ]);
+        $issuer = json_decode(curl_exec($issuer));
+
+        // TODO: GET BOLETO NO ADMIN
+        if (! $this->sicoob_model->getBoleto($order->id)) {
+            $data = $this->sicoob_model->getBoletoConfigs($order->customer_id, $order->id, $issuer);
+            $data['data_emissao'] = $data['data_emissao']->format('Y-m-d');
+            unset($data["inst"]);
+            unset($data['descDemo']);
+            $this->sicoob_model->saveBoleto($data);
+        }
+
+        $boletoFounded = $this->sicoob_model->getBoleto($order->id);
+
+        $boletoFounded->inst = [
+            str_replace('{venda}', $order->id, $boletoFounded->inst1),
+            str_replace('{venda}', $order->id, $boletoFounded->inst2),
+            str_replace('{venda}', $order->id, $boletoFounded->inst3),
+            str_replace('{venda}', $order->id, $boletoFounded->inst4),
+        ];
+
+        $boletoFounded->descDemo = [
+            str_replace('{venda}', $order->id, $boletoFounded->inst1),
+            str_replace('{venda}', $order->id, $boletoFounded->inst2),
+            str_replace('{venda}', $order->id, $boletoFounded->inst3),
+            str_replace('{venda}', $order->id, $boletoFounded->inst4),
+        ];
+
+        $boletoFounded->data_emissao = new DateTime($boletoFounded->data_emissao);
+        $boletoFounded->codigo_carteira = $this->sicoob_model->getColumnValue('codigo_carteira');
+        $boletoFounded->modalidade = $this->sicoob_model->getColumnValue('modalidade');
+
+        $boleto = curl_init($this->api_url . '/sicoob/get_boleto?' . http_build_query(['api_token' => $this->api_token]));
+        curl_setopt_array($boleto, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($boletoFounded)
+        ]);
+        $res = json_decode(curl_exec($boleto));
+
+        if( date('Y-m-d') > $boletoFounded->data_vencimento) {
+            $this->data['vencimento'] = true;
+        }
+
+        if ( date('Y-m-d') == $boletoFounded->data_vencimento) {
+            $this->data['venceHoje'] = true;
+        }
+
+        $remessaData = $this->sicoob_model->getRemessaConfigs($issuer, $order->customer_id, $order->id);
+        $remessaData["api_token"] = $this->api_token;
+        $remessaCurl = curl_init();
+        curl_setopt_array($remessaCurl, [
+            CURLOPT_URL => $this->api_url . "/sicoob/create_remessa?" . http_build_query($remessaData),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_CUSTOMREQUEST => "GET"
+        ]);
+        $remessa = json_decode(curl_exec($remessaCurl));
+
+        $this->data['error_remessa'] = true;
+        if (isset($remessa->error)) {
+            if(! $remessa->error) {
+                $this->data['error_remessa'] = false;
+
+                $datum = [
+                    "nome" => $remessa->name,
+                    "valor" => $boletoFounded->valor,
+                    "data_criacao" => $boletoFounded->data_emissao->format('Y-m-d'),
+                    "situacao" => "pending"
+                ];
+
+                $this->sicoob_model->saveRemessa($datum);
+            }
+        }
+        
+       if($res->boleto) {
+            die('
+           <style>
+           button {
+                margin-bottom: 5rem; cursor: pointer; padding: 20px; outline: none; border: none; background-color: #388938; color: #fff;
+                transition: 0.3s;
+           }
+           
+           button:hover {
+                background-color: green;
+           }
+           
+           @media print { 
+               .no-print {
+                    display: none;
+               }
+           }
+           </style>
+            <div style="margin: 5rem; display: flex; align-items: center; justify-content: center; flex-direction: column">
+            <button class="no-print" onclick="window.print()">Imprimir/baixar boleto</button>
+            <div>
+            ' .$res->boleto.'
+            </div>
+            </div>');
+        }
+
+        die('
+           <style>
+           button {
+                margin-bottom: 5rem; cursor: pointer; padding: 20px; outline: none; border: none; background-color: #388938; color: #fff;
+                transition: 0.3s;
+           }
+           
+           button:hover {
+                background-color: green;
+           }
+           
+           @media print { 
+               .no-print {
+                    display: none;
+               }
+           }
+           </style>
+            <div style="margin: 5rem; display: flex; align-items: center; justify-content: center; flex-direction: column">
+            <button class="no-print" onclick="window.print()">Imprimir/baixar boleto</button>
+            <div>
+                <p>Ocorreu um erro ao gerar o boleto. certifique-se de configurar corretamente o emitente.</p>
+            </div>
+            </div>');
     }
 }
 

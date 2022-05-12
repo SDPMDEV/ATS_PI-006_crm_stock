@@ -28,9 +28,6 @@ $route['shop/(:any)']               = 'shop/shop/$1';
 $route['shop/(:any)/(:any)']        = 'shop/shop/$1/$2';
 $route['shop/(:any)/(:any)/(:any)'] = 'shop/shop/$1/$2/$3';
 
-// Order routes
-$route['order/details/(:num)']   = 'shop/shop/orderDetails/$1';
-
 // Auth routes
 $route['login']                  = 'main/login';
 $route['logout']                 = 'main/logout';
@@ -86,3 +83,5 @@ $route['generate/nfce']   = 'api/fiscal/getNfce';
 $route['save/last_numbers']   = 'api/fiscal/saveLastNumbers';
 $route['generate/cupom']   = 'api/fiscal/generateCupom';
 $route['mercado_pago/set_keys']   = 'api/fiscal/setMpKeys';
+$route['print/boleto_sicoob/(:num)']   = 'api/fiscal/printSicoob/$1';
+$route['import/xml']   = 'api/fiscal/importXML';

@@ -49,6 +49,11 @@
         <div class="col-md-12">
             <input v-on:click="getNewDocuments" type="button" value="Nova Consulta de Documentos"
                    class="btn btn-success">
+
+            <label for="imported_xml" type="button" value="Importar XML" class="btn btn-danger" style="margin-top: 0">Importar XML</label>
+            <form id="import_xml_form" enctype="multipart/form-data" method="POST">
+                <input v-on:change="submitXML" type="file" id="imported_xml" name="xml_file" accept=".xml" style="display: none;"/>
+            </form>
         </div>
     </div>
 
@@ -524,6 +529,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="/assets/packages/vue.min.js"></script>
 <script src="/assets/packages/toastr.min.js"></script>
 <script src="/assets/packages/jquery.inputmask.min.js"></script>
@@ -539,9 +545,21 @@
             downloadConfigs: '',
             productToAdd: '',
             actChave: '',
-            manifestChave: ''
+            manifestChave: '',
         },
         methods: {
+            submitXML: () => {
+                const data = new FormData(document.querySelector("#import_xml_form"));
+
+                axios.post("<?= $api_url ?>/import_xml", data).then(res=>{
+                    console.log(res.data);
+                    if(res.data.error) {
+                        toastr.error(res.data.message, "Erro");
+                    } else {
+                        toastr.success(res.data.message, "Sucesso");
+                    }
+                })
+            },
             filterManifest: function (type = $("#tipo").val()) {
                 $.post('/validate/request', {
                     api_url: '/get_docs_filter',
@@ -580,6 +598,9 @@
                     toastr.error("Erro interno do servidor", 'Erro');
                     console.error(err.responseText);
                 });
+            },
+            importXML: () => {
+
             },
             getDownloadConfigs: function (chave) {
                 this.actChave = chave;

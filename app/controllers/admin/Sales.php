@@ -1574,6 +1574,7 @@ class Sales extends MY_Controller
             $warehouse_id = $user->warehouse_id;
         }
         $detail_link       = anchor('admin/sales/view/$1', '<i class="fa fa-file-text-o"></i> ' . lang('sale_details'));
+        $boleto_link       = anchor('print/boleto_sicoob/$1', '<i class="fa fa-print"></i> ' . lang('imprimir_boleto'), 'target="_blank"');
         $duplicate_link    = anchor('admin/sales/add?sale_id=$1', '<i class="fa fa-plus-circle"></i> ' . lang('duplicate_sale'));
         $payments_link     = anchor('admin/sales/payments/$1', '<i class="fa fa-money"></i> ' . lang('view_payments'), 'data-toggle="modal" data-target="#myModal"');
         $add_payment_link  = anchor('admin/sales/add_payment/$1', '<i class="fa fa-money"></i> ' . lang('add_payment'), 'data-toggle="modal" data-target="#myModal"');
@@ -1600,6 +1601,7 @@ class Sales extends MY_Controller
             <li>' . $edit_link . '</li>
             <li>' . $pdf_link . '</li>
             <li>' . $email_link . '</li>
+            <li>' . $boleto_link . '</li>
             <li>' . $return_link . '</li>
             <li>' . $delete_link . '</li>
         </ul>
