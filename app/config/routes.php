@@ -84,4 +84,3 @@ $route['save/last_numbers']   = 'api/fiscal/saveLastNumbers';
 $route['generate/cupom']   = 'api/fiscal/generateCupom';
 $route['mercado_pago/set_keys']   = 'api/fiscal/setMpKeys';
 $route['print/boleto_sicoob/(:num)']   = 'api/fiscal/printSicoob/$1';
-$route['import/xml']   = 'api/fiscal/importXML';

@@ -140,7 +140,7 @@
                             </div>
 
                             <div class="row" style="text-align: end; margin-right: 10px">
-                                <a type="button" class="btn btn-info" v-bind:href=" '<?= str_replace("/api", "", $remote_url) . "/dfe/downloadXml/" ?>' + downloadConfigs.infos.chave ">
+                                <a download class="btn btn-info" v-bind:href=" '<?= $api_url ?>/dfe/downloadXML/' + downloadConfigs.infos.chave ">
                                     Baixar XML
                                 </a>
                             </div>
@@ -426,7 +426,7 @@
                                         <div class="form-group">
                                             <label for="categoria"><b>Categoria</b></label>
                                             <select required class="form-control" id="categoria" name="categoria">
-                                                <option v-for="categoria in downloadConfigs.categorias" v-bind:value="categoria.id">{{ categoria.nome }}</option>
+                                                <option v-for="categoria in downloadConfigs.categorias" v-bind:value="categoria.id">{{ categoria.name }}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -552,7 +552,6 @@
                 const data = new FormData(document.querySelector("#import_xml_form"));
 
                 axios.post("<?= $api_url ?>/import_xml", data).then(res=>{
-                    console.log(res.data);
                     if(res.data.error) {
                         toastr.error(res.data.message, "Erro");
                     } else {
@@ -604,15 +603,20 @@
             },
             getDownloadConfigs: function (chave) {
                 this.actChave = chave;
-                $.post('/validate/request', {
-                    api_url: `/get_download_configs/${chave}`,
+
+                axios.post("<?= $api_url ?>/get_download_configs/" + chave, {
                     token: this.token
                 }).then(res => {
-                    this.downloadConfigs = res;
-                    $('#modal-completa').modal('show');
-                }).fail(err => {
+                    this.downloadConfigs = res.data;
+                    console.log(res.data);
+                    if(res.data.error) {
+                        toastr.error(res.data.message, "Error");
+                    } else {
+                        $('#modal-completa').modal('show');
+                    }
+                }).catch(err => {
                     toastr.error("Erro interno do servidor", 'Erro');
-                    console.error(err.responseText);
+                    console.error(err);
                 });
             },
             number_format: function (number, decimals, dec_point, thousands_sep) {
@@ -697,7 +701,6 @@
                     evento: $('#tipo_evento').val(),
                     chave: this.manifestChave
                 }).then(res=>{
-                    console.log(res);
                     if(!res.error) {
                         toastr.success(res.message, 'Sucesso');
                     } else {
