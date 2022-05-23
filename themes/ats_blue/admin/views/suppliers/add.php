@@ -1,4 +1,5 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed'); ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <div class="modal-dialog modal-lg">
     <div class="modal-content">
         <div class="modal-header">
@@ -19,6 +20,11 @@
 
             <div class="row">
                 <div class="col-md-6">
+                    <div class="form-group">
+                        <?= lang('vat_no', 'vat_no'); ?>
+                        <?php echo form_input('vat_no', '', 'class="form-control" id="vat_no" onchange="getCnpj(event)"'); ?>
+                    </div>
+
                     <div class="form-group company">
                         <?= lang('company', 'company'); ?>
                         <?php echo form_input('company', '', 'class="form-control tip" id="company" data-bv-notempty="true"'); ?>
@@ -26,10 +32,6 @@
                     <div class="form-group person">
                         <?= lang('name', 'name'); ?>
                         <?php echo form_input('name', '', 'class="form-control tip" id="name" data-bv-notempty="true"'); ?>
-                    </div>
-                    <div class="form-group">
-                        <?= lang('vat_no', 'vat_no'); ?>
-                        <?php echo form_input('vat_no', '', 'class="form-control" id="vat_no"'); ?>
                     </div>
                     <div class="form-group">
                         <?= lang('gst_no', 'gst_no'); ?>
@@ -116,3 +118,32 @@
     <?php echo form_close(); ?>
 </div>
 <?= $modal_js ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    function getCnpj(event)
+    {
+        if(event.target.value !== '') {
+            const cnpj = event.target.value.replaceAll(".", '').replaceAll("-", "").replaceAll("/", "");
+
+            $.get(`https://www.receitaws.com.br/v1/cnpj/${cnpj}`).then(res => {
+                console.log(res)
+                if(res.status === "ERROR") {
+                    return toastr.error(res.message, "Erro");
+                }
+
+                toastr.info("Cnpj encontrado!", "Ok");
+
+                document.querySelector("#postal_code").value = res.cep;
+                document.querySelector("#company").value = res.nome;
+                document.querySelector("#country").value = "Brasil";
+                document.querySelector("#name").value = res.nome;
+                document.querySelector("#cf2").value = res.atividade_principal[0].text;
+                document.querySelector("#email_address").value = res.email;
+                document.querySelector("#phone").value = res.telefone;
+                document.querySelector("#address").value = res.logradouro;
+                document.querySelector("#city").value = res.municipio;
+                document.querySelector("#state").value = res.uf;
+            })
+        }
+    }
+</script>
