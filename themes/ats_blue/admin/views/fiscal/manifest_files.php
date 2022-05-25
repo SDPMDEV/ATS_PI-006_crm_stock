@@ -598,9 +598,6 @@
                     console.error(err.responseText);
                 });
             },
-            importXML: () => {
-
-            },
             getDownloadConfigs: function (chave) {
                 this.actChave = chave;
 
