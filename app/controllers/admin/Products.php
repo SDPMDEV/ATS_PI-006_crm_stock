@@ -340,7 +340,7 @@ class Products extends MY_Controller
             } else {
                 $photos = null;
             }
-            $data['quantity'] = $wh_total_quantity ?? 0;
+//            $data['quantity'] = $wh_total_quantity ?? 0;
             // $this->sma->print_arrays($data, $warehouse_qty, $product_attributes);
         }
 
@@ -1236,7 +1236,8 @@ class Products extends MY_Controller
             } else {
                 $photos = null;
             }
-            $data['quantity'] = $wh_total_quantity ?? 0;
+
+//            $data['quantity'] = $wh_total_quantity ?? 0;
             // $this->sma->print_arrays($data, $warehouse_qty, $update_variants, $product_attributes, $photos, $items);
         }
 

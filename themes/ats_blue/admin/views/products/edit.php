@@ -143,28 +143,45 @@ if (!empty($variants)) {
                         </div>
                     </div>
                     <div class="form-group standard">
-                        <?= lang('product_unit', 'unit'); ?>
-                        <?php
-                        $pu[''] = lang('select') . ' ' . lang('unit');
-                        foreach ($base_units as $bu) {
-                            $pu[$bu->id] = $bu->name . ' (' . $bu->code . ')';
-                        }
-                        ?>
-                        <?= form_dropdown('unit', $pu, set_value('unit', $product->unit), 'class="form-control tip" required="required" id="unit" style="width:100%;"'); ?>
+                        <select class="form-control" style="display: none" name="unit" id="unit">
+                            <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                <?php if($un == $productConfigs->unidade_venda) {?>
+                                    <option value="<?= $un ?>"><?= $un ?></option>
+                                <?php }?>
+                            <?php } ?>
+
+                            <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                <option value="<?= $un ?>"><?= $un ?></option>
+                            <?php } ?>
+                        </select>
                     </div>
                     <div class="form-group standard">
                         <?= lang('default_sale_unit', 'default_sale_unit'); ?>
-                        <?php
-                        $uopts[''] = lang('select') . ' ' . lang('unit');
-                        foreach ($subunits as $sunit) {
-                            $uopts[$sunit->id] = $sunit->name . ' (' . $sunit->code . ')';
-                        }
-                        ?>
-                        <?= form_dropdown('default_sale_unit', $uopts, $product->sale_unit, 'class="form-control" id="default_sale_unit" style="width:100%;"'); ?>
+                        <select class="form-control" name="default_sale_unit" id="default_sale_unit">
+                            <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                <?php if($un == $productConfigs->unidade_venda) {?>
+                                    <option value="<?= $un ?>"><?= $un ?></option>
+                                <?php }?>
+                            <?php } ?>
+
+                            <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                <option value="<?= $un ?>"><?= $un ?></option>
+                            <?php } ?>
+                        </select>
                     </div>
                     <div class="form-group standard">
                         <?= lang('default_purchase_unit', 'default_purchase_unit'); ?>
-                        <?= form_dropdown('default_purchase_unit', $uopts, $product->purchase_unit, 'class="form-control" id="default_purchase_unit" style="width:100%;"'); ?>
+                        <select name="default_purchase_unit" id="default_purchase_unit" class="form-control">
+                            <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                <?php if($un == $productConfigs->unidade_compra) {?>
+                                    <option value="<?= $un ?>"><?= $un ?></option>
+                                <?php }?>
+                            <?php } ?>
+
+                            <?php foreach($fiscalConfigs->unidadesDeMedida as $un) { ?>
+                                <option value="<?= $un ?>"><?= $un ?></option>
+                            <?php } ?>
+                        </select>
                     </div>
                     <div class="form-group standard">
                         <?= lang('product_cost', 'cost') ?>
@@ -489,18 +506,17 @@ if (!empty($variants)) {
                                     <input value="<?= $productConfigs->quantity ?>" name="quantidade" id="quantidade" class="form-control"/>
                                 </div>
                             </div>
-
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="valor_compra"><b>Valor de compra</b></label>
-                                    <input value="<?= $productConfigs->cost ?>" type="text" name="valor_compra" id="valor_compra" class="form-control" v-model="valorCompra" v-on:change="calcularValorVenda" />
+                                    <input value="<?= $this->sma->formatDecimal($productConfigs->cost) ?>" type="text" name="valor_compra" id="valor_compra" class="form-control" v-model="valorCompra" v-on:change="calcularValorVenda" />
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="valor_venda"><b>Valor de Venda</b></label>
-                                    <input value="<?= $productConfigs->price ?>" type="text" name="valor_venda" id="valor_venda" class="form-control" v-bind:value="valorVenda" />
+                                    <input value="<?= $this->sma->formatDecimal($productConfigs->price) ?>" type="text" name="valor_venda" id="valor_venda" class="form-control" v-bind:value="valorVenda" />
                                 </div>
                             </div>
 
@@ -666,56 +682,56 @@ if (!empty($variants)) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="cfop_saida_interno"><b>CFOP saida interno *</b></label>
-                                    <input value="<?= $productConfigs->CFOP_saida_estadual ?>" type="text" name="cfop_saida_interno" id="cfop_saida_interno" class="form-control">
+                                    <input value="<?= $productConfigs->CFOP_saida_estadual ?? 0 ?>" type="text" name="cfop_saida_interno" id="cfop_saida_interno" class="form-control">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="cfop_saida_externo"><b>CFOP saida externo *</b></label>
-                                    <input value="<?= $productConfigs->CFOP_saida_inter_estadual ?>" type="text" name="cfop_saida_externo" id="cfop_saida_externo" class="form-control">
+                                    <input value="<?= $productConfigs->CFOP_saida_inter_estadual ?? 0 ?>" type="text" name="cfop_saida_externo" id="cfop_saida_externo" class="form-control">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="perc_icms"><b>%ICMS *</b></label>
-                                    <input value="<?= $productConfigs->perc_icms ?>" type="text" name="perc_icms" id="perc_icms" class="form-control">
+                                    <input value="<?= $productConfigs->perc_icms ?? 0 ?>" type="text" name="perc_icms" id="perc_icms" class="form-control">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="perc_pis"><b>%PIS *</b></label>
-                                    <input value="<?= $productConfigs->perc_pis ?>" type="text" name="perc_pis" id="perc_pis" class="form-control">
+                                    <input value="<?= $productConfigs->perc_pis ?? 0 ?>" type="text" name="perc_pis" id="perc_pis" class="form-control">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="perc_cofins"><b>%COFINS *</b></label>
-                                    <input value="<?= $productConfigs->perc_cofins ?>" type="text" name="perc_cofins" id="perc_cofins" class="form-control">
+                                    <input value="<?= $productConfigs->perc_cofins ?? 0 ?>" type="text" name="perc_cofins" id="perc_cofins" class="form-control">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="perc_ipi"><b>%IPI *</b></label>
-                                    <input value="<?= $productConfigs->perc_ipi ?>" type="text" name="perc_ipi" id="perc_ipi" class="form-control">
+                                    <input value="<?= $productConfigs->perc_ipi ?? 0 ?>" type="text" name="perc_ipi" id="perc_ipi" class="form-control">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="perc_iss"><b>%ISS *</b></label>
-                                    <input value="<?= $productConfigs->perc_iss ?>" type="text" name="perc_iss" id="perc_iss" class="form-control">
+                                    <input value="<?= $productConfigs->perc_iss ?? 0 ?>" type="text" name="perc_iss" id="perc_iss" class="form-control">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="cod_lista_iss"><b>Cod Lista Serviço (iss)</b></label>
-                                    <input value="<?= $productConfigs->cListServ ?>" type="text" name="cod_lista_iss" id="cod_lista_iss" class="form-control">
+                                    <input value="<?= $productConfigs->cListServ ?? 0 ?>" type="text" name="cod_lista_iss" id="cod_lista_iss" class="form-control">
                                 </div>
                             </div>
 
@@ -1340,6 +1356,11 @@ if (!empty($variants)) {
     $(document).ready(()=>{
         if($("#modulo_fiscal").is(":checked"))
             $("#fiscal_inputs").show();
+
+
+        if($("#code").val() !== "" && $("#slug").val() === "") {
+            $("#slug").val($("#code").val())
+        }
     })
 </script>
 <script>

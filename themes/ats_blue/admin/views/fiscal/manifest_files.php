@@ -196,7 +196,7 @@
                                                 </a>
 
                                                 <a v-if="item.produtoNovo === false"
-                                                   title="Editar Produto" class="btn btn-sm btn-clean btn-icon mr-2" v-bind:href="'/admin/products/edit/'+item.id">
+                                                   title="Editar Produto" class="btn btn-sm btn-clean btn-icon mr-2" v-bind:href="'/admin/products/edit/'+item.id" target="_blank">
                                                     <span class="svg-icon svg-icon-warning">
                                                         <svg xmlns="http://www.w3.org/2000/svg"
                                                              xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"

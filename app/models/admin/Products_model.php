@@ -71,68 +71,68 @@ class Products_model extends CI_Model
             $warehouses = $this->site->getAllWarehouses();
             if ($data['type'] != 'standard') {
                 foreach ($warehouses as $warehouse) {
-                    $this->db->insert('warehouses_products', ['product_id' => $product_id, 'warehouse_id' => $warehouse->id, 'quantity' => 0]);
+                    $this->db->insert('warehouses_products', ['product_id' => $product_id, 'warehouse_id' => $warehouse->id, 'quantity' => $data['quantity']]);
                 }
             }
 
             $tax_rate = $this->site->getTaxRateByID($data['tax_rate']);
 
-            if ($warehouse_qty && !empty($warehouse_qty)) {
-                foreach ($warehouse_qty as $wh_qty) {
-                    if (isset($wh_qty['quantity']) && !empty($wh_qty['quantity'])) {
-                        $this->db->insert('warehouses_products', ['product_id' => $product_id, 'warehouse_id' => $wh_qty['warehouse_id'], 'quantity' => $wh_qty['quantity'], 'rack' => $wh_qty['rack'], 'avg_cost' => $data['cost']]);
-
-                        if (!$product_attributes) {
-                            $tax_rate_id = $tax_rate ? $tax_rate->id : null;
-                            $tax         = $tax_rate ? (($tax_rate->type == 1) ? $tax_rate->rate . '%' : $tax_rate->rate) : null;
-                            $unit_cost   = $data['cost'];
-                            if ($tax_rate) {
-                                if ($tax_rate->type == 1 && $tax_rate->rate != 0) {
-                                    if ($data['tax_method'] == '0') {
-                                        $pr_tax_val    = ($data['cost'] * $tax_rate->rate) / (100 + $tax_rate->rate);
-                                        $net_item_cost = $data['cost'] - $pr_tax_val;
-                                        $item_tax      = $pr_tax_val * $wh_qty['quantity'];
-                                    } else {
-                                        $net_item_cost = $data['cost'];
-                                        $pr_tax_val    = ($data['cost'] * $tax_rate->rate) / 100;
-                                        $unit_cost     = $data['cost'] + $pr_tax_val;
-                                        $item_tax      = $pr_tax_val * $wh_qty['quantity'];
-                                    }
-                                } else {
-                                    $net_item_cost = $data['cost'];
-                                    $item_tax      = $tax_rate->rate;
-                                }
-                            } else {
-                                $net_item_cost = $data['cost'];
-                                $item_tax      = 0;
-                            }
-
-                            $subtotal = (($net_item_cost * $wh_qty['quantity']) + $item_tax);
-
-                            $item = [
-                                'product_id'        => $product_id,
-                                'product_code'      => $data['code'],
-                                'product_name'      => $data['name'],
-                                'net_unit_cost'     => $net_item_cost,
-                                'unit_cost'         => $unit_cost,
-                                'real_unit_cost'    => $unit_cost,
-                                'quantity'          => $wh_qty['quantity'],
-                                'quantity_balance'  => $wh_qty['quantity'],
-                                'quantity_received' => $wh_qty['quantity'],
-                                'item_tax'          => $item_tax,
-                                'tax_rate_id'       => $tax_rate_id,
-                                'tax'               => $tax,
-                                'subtotal'          => $subtotal,
-                                'warehouse_id'      => $wh_qty['warehouse_id'],
-                                'date'              => date('Y-m-d'),
-                                'status'            => 'received',
-                            ];
-                            $this->db->insert('purchase_items', $item);
-                            $this->site->syncProductQty($product_id, $wh_qty['warehouse_id']);
-                        }
-                    }
-                }
-            }
+//            if ($warehouse_qty && !empty($warehouse_qty)) {
+//                foreach ($warehouse_qty as $wh_qty) {
+//                    if (isset($wh_qty['quantity']) && !empty($wh_qty['quantity'])) {
+//                        $this->db->insert('warehouses_products', ['product_id' => $product_id, 'warehouse_id' => $wh_qty['warehouse_id'], 'quantity' => $wh_qty['quantity'], 'rack' => $wh_qty['rack'], 'avg_cost' => $data['cost']]);
+//
+//                        if (!$product_attributes) {
+//                            $tax_rate_id = $tax_rate ? $tax_rate->id : null;
+//                            $tax         = $tax_rate ? (($tax_rate->type == 1) ? $tax_rate->rate . '%' : $tax_rate->rate) : null;
+//                            $unit_cost   = $data['cost'];
+//                            if ($tax_rate) {
+//                                if ($tax_rate->type == 1 && $tax_rate->rate != 0) {
+//                                    if ($data['tax_method'] == '0') {
+//                                        $pr_tax_val    = ($data['cost'] * $tax_rate->rate) / (100 + $tax_rate->rate);
+//                                        $net_item_cost = $data['cost'] - $pr_tax_val;
+//                                        $item_tax      = $pr_tax_val * $wh_qty['quantity'];
+//                                    } else {
+//                                        $net_item_cost = $data['cost'];
+//                                        $pr_tax_val    = ($data['cost'] * $tax_rate->rate) / 100;
+//                                        $unit_cost     = $data['cost'] + $pr_tax_val;
+//                                        $item_tax      = $pr_tax_val * $wh_qty['quantity'];
+//                                    }
+//                                } else {
+//                                    $net_item_cost = $data['cost'];
+//                                    $item_tax      = $tax_rate->rate;
+//                                }
+//                            } else {
+//                                $net_item_cost = $data['cost'];
+//                                $item_tax      = 0;
+//                            }
+//
+//                            $subtotal = (($net_item_cost * $wh_qty['quantity']) + $item_tax);
+//
+//                            $item = [
+//                                'product_id'        => $product_id,
+//                                'product_code'      => $data['code'],
+//                                'product_name'      => $data['name'],
+//                                'net_unit_cost'     => $net_item_cost,
+//                                'unit_cost'         => $unit_cost,
+//                                'real_unit_cost'    => $unit_cost,
+//                                'quantity'          => $wh_qty['quantity'],
+//                                'quantity_balance'  => $wh_qty['quantity'],
+//                                'quantity_received' => $wh_qty['quantity'],
+//                                'item_tax'          => $item_tax,
+//                                'tax_rate_id'       => $tax_rate_id,
+//                                'tax'               => $tax,
+//                                'subtotal'          => $subtotal,
+//                                'warehouse_id'      => $wh_qty['warehouse_id'],
+//                                'date'              => date('Y-m-d'),
+//                                'status'            => 'received',
+//                            ];
+//                            $this->db->insert('purchase_items', $item);
+//                            $this->site->syncProductQty($product_id, $wh_qty['warehouse_id']);
+//                        }
+//                    }
+//                }
+//            }
 
             if ($product_attributes) {
                 foreach ($product_attributes as $pr_attr) {
@@ -203,7 +203,7 @@ class Products_model extends CI_Model
                         }
                     }
 
-                    $this->site->syncVariantQty($option_id, $variant_warehouse_id);
+//                    $this->site->syncVariantQty($option_id, $variant_warehouse_id);
                 }
             }
 
@@ -213,7 +213,7 @@ class Products_model extends CI_Model
                 }
             }
 
-            $this->site->syncQuantity(null, null, null, $product_id);
+//            $this->site->syncQuantity(null, null, null, $product_id);
             return true;
         }
         return false;
@@ -1022,11 +1022,13 @@ class Products_model extends CI_Model
             }
 
             $tax_rate = $this->site->getTaxRateByID($data['tax_rate']);
+            $warehouses = $this->site->getAllWarehouses();
 
-            if ($warehouse_qty && !empty($warehouse_qty)) {
-                foreach ($warehouse_qty as $wh_qty) {
-                    $this->db->update('warehouses_products', ['rack' => $wh_qty['rack']], ['product_id' => $id, 'warehouse_id' => $wh_qty['warehouse_id']]);
-                }
+            foreach($warehouses as $wareh) {
+                $this->db->update('warehouses_products',
+                    ['quantity' => $data['quantity']],
+                    ['product_id' => $id, 'warehouse_id' => $wareh->id, ]
+                );
             }
 
             if (!empty($update_variants)) {
@@ -1110,7 +1112,7 @@ class Products_model extends CI_Model
                 }
             }
 
-            $this->site->syncQuantity(null, null, null, $id);
+//            $this->site->syncQuantity(null, null, null, $id);
             return true;
         }
         return false;
