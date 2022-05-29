@@ -32,6 +32,7 @@
     } ?>
                         <?= lang('status'); ?>: <?= lang($inv->status); ?><br>
                         <?= lang('payment_status'); ?>: <?= lang($inv->payment_status); ?><br>
+                        <b>Vencimento: <b> <?= date('d/m/Y', strtotime($inv->vencimento)) ?><br>
                         <?php
                         if ($inv->payment_status != 'paid' && $inv->due_date) {
                             echo '<br>' . lang('due_date') . ': ' . $this->sma->hrsd($inv->due_date);

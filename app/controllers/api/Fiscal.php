@@ -591,7 +591,7 @@ class Fiscal extends MY_Controller
                             'CST_CSOSN' => $pr->CST_CSOSN,
                             'CFOP_saida_estadual' => $pr->CFOP_saida_estadual,
                             'CFOP_saida_inter_estadual' => $pr->CFOP_saida_inter_estadual,
-                            'CEST' => $pr->CEST,
+                            'CEST' => $pr->CEST ?? '',
                             'CST_IPI' => $pr->CST_IPI,
                             'unidade_venda' => $pr->unidade_venda,
                             'quantidade' => 1,
@@ -1558,10 +1558,6 @@ class Fiscal extends MY_Controller
             'api_token' => $this->api_token
         ];
 
-//        echo "<pre>";
-//        print_r($data);
-//        die;
-
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,$this->api_url . '/generate_nfce');
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -1574,6 +1570,19 @@ class Fiscal extends MY_Controller
         $recibo = $res->json;
         $retorno = substr($recibo, 0, 4);
         $mensagem = substr($recibo, 5, strlen($recibo));
+
+        if(substr($recibo, 0, 4) == 'Erro') {
+             die('
+                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <script>
+                    window.onload = function() {
+                        swal("Erro ao gerar NF!", "'. $mensagem .'" , "error").then(()=>{
+                            window.close();
+                        });
+                    };
+                </script>
+            ');
+        }
 
         if(!$res->data->error) {
             if($retorno == 'Erro') {
@@ -1642,17 +1651,20 @@ class Fiscal extends MY_Controller
                 ';
             }
         } else {
-
-            echo '
-                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-                <script>
-                    window.onload = function() {
-                        swal("Algo errado", "Erro ao enviar NFC-e", "error").then(()=>{
-                            window.close();
-                        });
-                    };
-                </script>
-            ';
+            if(isset($res->data->xml_error)) {
+                echo '<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>';
+                foreach ($res->data->xml_error as $err) {
+                    echo '
+                    <script>
+                        window.onload = function() {
+                            swal("Erro ao gerar NF!", "'. $err .'" , "error").then(()=>{
+                                window.close();
+                            });
+                        };
+                    </script>
+                    ';
+                }
+            }
         }
     }
 
@@ -1674,11 +1686,25 @@ class Fiscal extends MY_Controller
         $sale = $this->get->sale_id ? $this->sales_model->getSale($this->get->sale_id) :
                 $this->sales_model->getSale($this->sales_model->getLastSaleId());
 
-        $products_id = explode(",", $sale->id_produtos);
+        $products_id = array_filter(explode(",", $sale->id_produtos));
         $products_to_nfce = [];
 
         foreach($products_id as $id) {
-            array_push($products_to_nfce, [true]);
+            $product = $this->products_model->getProductById($id);
+            if($product) {
+                $products_to_nfce[] = [
+                    'quantidade' => $product->quantity,
+                    'valor' => $product->cost,
+                    'produto' => [
+                        'unidade_venda' => $product->unit,
+                        'valor' => $product->cost,
+                        'quantidade' => $product->quantity,
+                        'id' => $product->id,
+                        'nome' => $product->name
+                    ],
+                    'itemPedido' => '',
+                ];
+            }
         }
 
         $data = [

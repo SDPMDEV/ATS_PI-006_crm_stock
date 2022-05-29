@@ -65,7 +65,7 @@ if (!empty($variants)) {
         });
     });
 </script>
-<div class="box">
+<div class="box" id="app">
     <div class="box-header">
         <h2 class="blue"><i class="fa-fw fa fa-edit"></i><?= lang('edit_product'); ?></h2>
     </div>
@@ -185,11 +185,11 @@ if (!empty($variants)) {
                     </div>
                     <div class="form-group standard">
                         <?= lang('product_cost', 'cost') ?>
-                        <?= form_input('cost', (isset($_POST['cost']) ? $_POST['cost'] : ($product ? $this->sma->formatDecimal($product->cost) : '')), 'class="form-control tip" id="cost" required="required"') ?>
+                        <?= form_input('cost', '', 'class="form-control tip" id="cost" required="required" v-model="valorCompra" ') ?>
                     </div>
                     <div class="form-group all">
                         <?= lang('product_price', 'price') ?>
-                        <?= form_input('price', (isset($_POST['price']) ? $_POST['price'] : ($product ? $this->sma->formatDecimal($product->price) : '')), 'class="form-control tip" id="price" required="required"') ?>
+                        <?= form_input('price', (isset($_POST['price']) ? $_POST['price'] : ($product ? $this->sma->formatDecimal($product->price) : '')), 'class="form-control tip" id="price" required="required" v-model="valorVenda"') ?>
                     </div>
 
                     <div class="form-group">
@@ -496,7 +496,7 @@ if (!empty($variants)) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="conversao_estoque"><b>Conversão unitária</b></label>
-                                    <input type="text" name="conversao_estoque" id="conversao_estoque" class="form-control" v-model="convUnitaria" v-on:change="calcularValorVenda" value="<?= $productConfigs->conversao_unitaria ?>"/>
+                                    <input type="text" name="conversao_estoque" id="conversao_estoque" class="form-control" v-model="convUnitaria" v-on:change="calcularValorVenda"/>
                                 </div>
                             </div>
 
@@ -509,14 +509,14 @@ if (!empty($variants)) {
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="valor_compra"><b>Valor de compra</b></label>
-                                    <input value="<?= $this->sma->formatDecimal($productConfigs->cost) ?>" type="text" name="valor_compra" id="valor_compra" class="form-control" v-model="valorCompra" v-on:change="calcularValorVenda" />
+                                    <input type="text" name="valor_compra" id="valor_compra" class="form-control" v-model="valorCompra" v-on:change="calcularValorVenda" />
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="valor_venda"><b>Valor de Venda</b></label>
-                                    <input value="<?= $this->sma->formatDecimal($productConfigs->price) ?>" type="text" name="valor_venda" id="valor_venda" class="form-control" v-bind:value="valorVenda" />
+                                    <input v-model="valorVenda" type="text" name="valor_venda" id="valor_venda" class="form-control" />
                                 </div>
                             </div>
 
@@ -1367,9 +1367,9 @@ if (!empty($variants)) {
     const app = new Vue({
         el: "#app",
         data: {
-            valorCompra: '',
-            valorVenda: '',
-            convUnitaria: '',
+            valorCompra: '<?= $this->sma->formatDecimal($productConfigs->cost) ?>',
+            valorVenda: '<?= $this->sma->formatDecimal($productConfigs->price) ?>',
+            convUnitaria: '<?= $productConfigs->conversao_unitaria ?>',
         },
         methods: {
             calcularValorVenda: ()=>{

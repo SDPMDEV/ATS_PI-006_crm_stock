@@ -552,6 +552,7 @@
                 const data = new FormData(document.querySelector("#import_xml_form"));
 
                 axios.post("<?= $api_url ?>/import_xml", data).then(res=>{
+                    console.log(res.data)
                     if(res.data.error) {
                         toastr.error(res.data.message, "Erro");
                     } else {

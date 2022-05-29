@@ -8,14 +8,14 @@
     #PRData td:nth-child(9) {
         text-align: right;
     }
-        <?php
-    } if ($Owner || $Admin || $this->session->userdata('show_price')) {
-        ?>
+    <?php
+} if ($Owner || $Admin || $this->session->userdata('show_price')) {
+    ?>
     #PRData td:nth-child(8) {
         text-align: right;
     }
-        <?php
-    } ?>
+    <?php
+} ?>
 </style>
 <script>
     var oTable;
@@ -42,19 +42,19 @@
             },
             "aoColumns": [
                 {"bSortable": false, "mRender": checkbox}, {"bSortable": false,"mRender": img_hl}, null, null, null, null, <?php if ($Owner || $Admin) {
-                    echo '{"mRender": currencyFormat}, {"mRender": currencyFormat},';
-                                                                                                                           } else {
-                                                                                                                               if ($this->session->userdata('show_cost')) {
-                                                                                                                                   echo '{"mRender": currencyFormat},';
-                                                                                                                               }
-                                                                                                                               if ($this->session->userdata('show_price')) {
-                                                                                                                                   echo '{"mRender": currencyFormat},';
-                                                                                                                               }
-                                                                                                                           } ?> {"mRender": formatQuantity}, null, <?php if (!$warehouse_id || !$Settings->racks) {
-    echo '{"bVisible": false},';
-                                                                                                                           } else {
-                                                                                                                               echo '{"bSortable": true},';
-                                                                                                                           } ?> {"mRender": formatQuantity}, {"bSortable": false}
+                echo '{"mRender": currencyFormat}, {"mRender": currencyFormat},';
+            } else {
+                if ($this->session->userdata('show_cost')) {
+                    echo '{"mRender": currencyFormat},';
+                }
+                if ($this->session->userdata('show_price')) {
+                    echo '{"mRender": currencyFormat},';
+                }
+            } ?> {"mRender": formatQuantity}, null, <?php if (!$warehouse_id || !$Settings->racks) {
+                echo '{"bVisible": false},';
+            } else {
+                echo '{"bSortable": true},';
+            } ?> {"mRender": formatQuantity}, {"bSortable": false}
             ]
         }).fnSetFilteringDelay().dtFilter([
             {column_number: 2, filter_default_label: "[<?=lang('code');?>]", filter_type: "text", data: []},
@@ -78,25 +78,25 @@
             }
             ?>
             {column_number: <?php $col++;
-            echo $col; ?>, filter_default_label: "[<?=lang('quantity');?>]", filter_type: "text", data: []},
+                echo $col; ?>, filter_default_label: "[<?=lang('quantity');?>]", filter_type: "text", data: []},
             {column_number: <?php $col++;
-            echo $col; ?>, filter_default_label: "[<?=lang('unit');?>]", filter_type: "text", data: []},
+                echo $col; ?>, filter_default_label: "[<?=lang('unit');?>]", filter_type: "text", data: []},
             <?php $col++; if ($warehouse_id && $Settings->racks) {
-                echo '{column_number : ' . $col . ', filter_default_label: "[' . lang('rack') . ']", filter_type: "text", data: [] },';
-            } ?>
+            echo '{column_number : ' . $col . ', filter_default_label: "[' . lang('rack') . ']", filter_type: "text", data: [] },';
+        } ?>
             {column_number: <?php $col++;
-            echo $col; ?>, filter_default_label: "[<?=lang('alert_quantity');?>]", filter_type: "text", data: []},
+                echo $col; ?>, filter_default_label: "[<?=lang('alert_quantity');?>]", filter_type: "text", data: []},
         ], "footer");
 
     });
 </script>
 <?php if ($Owner || ($GP && $GP['bulk_actions'])) {
-                echo admin_form_open('products/product_actions' . ($warehouse_id ? '/' . $warehouse_id : ''), 'id="action-form"');
+    echo admin_form_open('products/product_actions' . ($warehouse_id ? '/' . $warehouse_id : ''), 'id="action-form"');
 } ?>
 <div class="box">
     <div class="box-header">
         <h2 class="blue"><i
-                class="fa-fw fa fa-barcode"></i><?= lang('products') . ' (' . ($warehouse_id ? $warehouse->name : lang('all_warehouses')) . ')' . ($supplier ? ' (' . lang('supplier') . ': ' . ($supplier->company && $supplier->company != '-' ? $supplier->company : $supplier->name) . ')' : ''); ?>
+                    class="fa-fw fa fa-barcode"></i><?= lang('products') . ' (' . ($warehouse_id ? $warehouse->name : lang('all_warehouses')) . ')' . ($supplier ? ' (' . lang('supplier') . ': ' . ($supplier->company && $supplier->company != '-' ? $supplier->company : $supplier->name) . ')' : ''); ?>
         </h2>
 
         <div class="box-icon">
@@ -113,11 +113,11 @@
                         </li>
                         <?php if (!$warehouse_id) {
                             ?>
-                        <li>
-                            <a href="<?= admin_url('products/update_price') ?>" data-toggle="modal" data-target="#myModal">
-                                <i class="fa fa-file-excel-o"></i> <?= lang('update_price') ?>
-                            </a>
-                        </li>
+                            <li>
+                                <a href="<?= admin_url('products/update_price') ?>" data-toggle="modal" data-target="#myModal">
+                                    <i class="fa fa-file-excel-o"></i> <?= lang('update_price') ?>
+                                </a>
+                            </li>
                             <?php
                         } ?>
                         <li>
@@ -143,11 +143,11 @@
                         <li class="divider"></li>
                         <li>
                             <a href="#" class="bpo" title="<b><?= $this->lang->line('delete_products') ?></b>"
-                                data-content="<p><?= lang('r_u_sure') ?></p><button type='button' class='btn btn-danger' id='delete' data-action='delete'><?= lang('i_m_sure') ?></a> <button class='btn bpo-close'><?= lang('no') ?></button>"
-                                data-html="true" data-placement="left">
-                            <i class="fa fa-trash-o"></i> <?= lang('delete_products') ?>
-                             </a>
-                         </li>
+                               data-content="<p><?= lang('r_u_sure') ?></p><button type='button' class='btn btn-danger' id='delete' data-action='delete'><?= lang('i_m_sure') ?></a> <button class='btn bpo-close'><?= lang('no') ?></button>"
+                               data-html="true" data-placement="left">
+                                <i class="fa fa-trash-o"></i> <?= lang('delete_products') ?>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <?php if (!empty($warehouses)) {

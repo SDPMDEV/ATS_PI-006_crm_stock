@@ -64,7 +64,7 @@ class Products extends MY_Controller
                 'subcategory_id'    => $this->input->post('subcategory') ? $this->input->post('subcategory') : null,
                 'cost'              => $this->sma->formatDecimal($this->input->post('cost')),
                 'price'             => $this->sma->formatDecimal($this->input->post('price')),
-                'unit'              => $this->input->post('unit'),
+                'unit'              => $this->input->post('unidade_venda'),
                 'sale_unit'         => $this->input->post('default_sale_unit'),
                 'purchase_unit'     => $this->input->post('default_purchase_unit'),
                 'tax_rate'          => $this->input->post('tax_rate'),
@@ -957,7 +957,7 @@ class Products extends MY_Controller
                 'subcategory_id'    => $this->input->post('subcategory') ? $this->input->post('subcategory') : null,
                 'cost'              => $this->sma->formatDecimal($this->input->post('cost')),
                 'price'             => $this->sma->formatDecimal($this->input->post('price')),
-                'unit'              => $this->input->post('unit'),
+                'unit'              => $this->input->post('default_sale_unit'),
                 'sale_unit'         => $this->input->post('default_sale_unit'),
                 'purchase_unit'     => $this->input->post('default_purchase_unit'),
                 'tax_rate'          => $this->input->post('tax_rate'),
@@ -1020,12 +1020,17 @@ class Products extends MY_Controller
                 'perc_ipi'                  => $this->input->post('perc_ipi'),
                 'perc_iss'                  => $this->input->post('perc_iss'),
                 'cListServ'                 => $this->input->post('cod_lista_iss'),
-                'codigo_anp'                => $this->input->post('ident_anp') == '--' ?? '',
+                'codigo_anp'                => $this->input->post('ident_anp') == '--' ? '' : $this->input->post('ident_anp'),
                 'gerenciar_estoque'         => $this->input->post('gerenciar_estoque') ?? false,
                 'valor_livre'               => $this->input->post('valor_livre') ?? false,
                 'quantity'                  => $this->input->post('quantidade'),
                 'referencia'                => $this->input->post('referencia')
             ];
+
+//            echo '<pre>';
+//            print_r($data);
+//            die;
+
             $warehouse_qty      = null;
             $product_attributes = null;
             $update_variants    = [];

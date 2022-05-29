@@ -829,7 +829,6 @@ class Pos extends MY_Controller
             $biller           = $biller_details->company && $biller_details->company != '-' ? $biller_details->company : $biller_details->name;
             $note             = $this->sma->clear_tags($this->input->post('pos_note'));
             $staff_note       = $this->sma->clear_tags($this->input->post('staff_note'));
-
             $total            = 0;
             $product_tax      = 0;
             $product_discount = 0;
@@ -1071,6 +1070,13 @@ class Pos extends MY_Controller
             // $this->sma->print_arrays($data, $products, $payment);
         }
 
+        $idProdutos = '';
+        if(isset($products)) {
+            foreach ($products as $product) {
+                $idProdutos .= $product['product_id'] . ', ';
+            }
+        }
+
         if ($this->form_validation->run() == true && !empty($products) && !empty($data)) {
             if ($suspend) {
                 if ($this->pos_model->suspendSale($data, $products, $did)) {
@@ -1080,6 +1086,9 @@ class Pos extends MY_Controller
                 }
             } else {
                 if ($sale = $this->pos_model->addSale($data, $products, $payment, $did)) {
+                    $this->sales_model->upSale($sale['sale_id'], [
+                        'id_produtos' => $idProdutos
+                    ]);
                     $this->session->set_userdata('remove_posls', 1);
                     $msg = $this->lang->line('sale_added');
                     if (!empty($sale['message'])) {
