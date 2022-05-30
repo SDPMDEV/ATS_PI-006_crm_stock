@@ -37,8 +37,12 @@ class Nfe_model extends CI_Model
         return $this->db->update('ultimos_numeros', $newValue);
     }
 
-    public function truncate($tableName)
+    public function getProductsNfe($saleId)
     {
-        return $this->db->truncate($tableName);
+        return $this->db
+            ->get_where('products_nfe', [
+                'sale_id' => $saleId
+            ])
+            ->result();
     }
 }

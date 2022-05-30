@@ -811,8 +811,6 @@ class Pos extends MY_Controller
         $this->form_validation->set_rules('warehouse', $this->lang->line('warehouse'), 'required');
         $this->form_validation->set_rules('biller', $this->lang->line('biller'), 'required');
 
-        $this->nfe_model->truncate('products_nfe');
-
         if ($this->form_validation->run() == true) {
             $date             = date('Y-m-d H:i:s');
             $warehouse_id     = $this->input->post('warehouse');
@@ -917,41 +915,6 @@ class Pos extends MY_Controller
             if (empty($products)) {
                 $this->form_validation->set_rules('product', lang('order_items'), 'required');
             } elseif ($this->pos_settings->item_order == 0) {
-                foreach($products as $product) {
-                    $pr = $this->products_model->getProductByID($product['product_id']);
-
-                    $map = function($v) {return $v['product_id'];};
-                    $equals = array_count_values(array_map($map, $products));
-                    foreach($equals as $equal => $qty) {
-                        if($equal == $pr->id) {
-                            $product['quantity'] = $qty;
-                        }
-                    }
-
-                    $data = [
-                        'id' => (int)$pr->id,
-                        'nome' => $pr->name,
-                        'NCM' => $pr->NCM,
-                        'CST_CSOSN' => $pr->CST_CSOSN,
-                        'CFOP_saida_estadual' => $pr->CFOP_saida_estadual,
-                        'CEST' => $pr->CEST,
-                        'unidade_venda' => $pr->unidade_venda,
-                        'quantidade' => $product['quantity'],
-                        'valor' => $pr->price,
-                        'perc_icms' => number_format($pr->perc_icms, 2),
-                        'CST_PIS' => $pr->CST_PIS,
-                        'perc_pis' => number_format($pr->perc_pis, 2),
-                        'perc_iss' => $pr->perc_iss,
-                        'CST_COFINS' => $pr->CST_COFINS,
-                        'perc_cofins' => number_format($pr->perc_cofins, 2),
-                        'descricao_anp' => $pr->descricao_anp ?? '',
-                        'codigo_anp' => number_format($pr->codigo_anp, 2),
-                        'codBarras' => $pr->codBarras,
-                        'payment_method' => $this->input->post('paid_by')[0] == 'cash' ? '01' : $this->input->post('paid_by')[0]
-                    ];
-
-                    $this->nfe_model->saveProductToNfe($data);
-                }
                 krsort($products);
             }
 
@@ -1089,6 +1052,43 @@ class Pos extends MY_Controller
                     $this->sales_model->upSale($sale['sale_id'], [
                         'id_produtos' => $idProdutos
                     ]);
+
+                    foreach($products as $product) {
+                        $pr = $this->products_model->getProductByID($product['product_id']);
+
+                        $map = function($v) {return $v['product_id'];};
+                        $equals = array_count_values(array_map($map, $products));
+                        foreach($equals as $equal => $qty) {
+                            if($equal == $pr->id) {
+                                $product['quantity'] = $qty;
+                            }
+                        }
+
+                        $data = [
+                            'nome' => $pr->name,
+                            'NCM' => $pr->NCM,
+                            'CST_CSOSN' => $pr->CST_CSOSN,
+                            'CFOP_saida_estadual' => $pr->CFOP_saida_estadual,
+                            'CEST' => $pr->CEST ?? '00.000.00',
+                            'unidade_venda' => $pr->unidade_venda,
+                            'quantidade' => $product['quantity'],
+                            'valor' => $pr->price,
+                            'perc_icms' => number_format($pr->perc_icms, 2),
+                            'CST_PIS' => $pr->CST_PIS,
+                            'perc_pis' => number_format($pr->perc_pis, 2),
+                            'perc_iss' => $pr->perc_iss,
+                            'CST_COFINS' => $pr->CST_COFINS,
+                            'perc_cofins' => number_format($pr->perc_cofins, 2),
+                            'descricao_anp' => $pr->descricao_anp ?? '',
+                            'codigo_anp' => number_format($pr->codigo_anp, 2),
+                            'codBarras' => $pr->codBarras,
+                            'payment_method' => $this->input->post('paid_by')[0] == 'cash' ? '01' : $this->input->post('paid_by')[0],
+                            'sale_id' => $sale['sale_id']
+                        ];
+
+                        $this->nfe_model->saveProductToNfe($data);
+                    }
+
                     $this->session->set_userdata('remove_posls', 1);
                     $msg = $this->lang->line('sale_added');
                     if (!empty($sale['message'])) {

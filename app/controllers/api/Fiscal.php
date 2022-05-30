@@ -1490,7 +1490,6 @@ class Fiscal extends MY_Controller
             $res = curl_exec($ch);
 
             if(!$res->error) {
-                $this->nfe_model->truncate('products_nfe');
 
                 header('Content-type: application/pdf');
 
@@ -1531,6 +1530,7 @@ class Fiscal extends MY_Controller
     public function getNFce()
     {
         $lastId = $this->get->sale_id ?? $this->sales_model->getLastSaleId();
+        $products = $this->nfe_model->getProductsNfe($lastId);
 
         $data = [
             'lastId' => ($this->nfe_model->getAllLastNumbers()->ultimo_num_nfce == null) ? 1 : $this->nfe_model->getAllLastNumbers()->ultimo_num_nfce,
@@ -1541,12 +1541,12 @@ class Fiscal extends MY_Controller
                     'uf' => ''
                 ]
             ],
-            'produtos' => $this->nfe_model->getAll(),
+            'produtos' => $products,
             'desconto' => $this->sales_model->getSale($lastId)->order_discount,
             'valor_total' => $this->sales_model->getSale($lastId)->grand_total,
             'valor_pago' => $this->get->valor_pago,
             'troco' => $this->get->troco ?? 0,
-            'tipo_pagamento' => $this->nfe_model->getAll()[0]->payment_method,
+            'tipo_pagamento' => $products[0]->payment_method,
             'estado' => $this->sales_model->getSale($lastId)->estado,
             'natureza' => [
                 "natureza" => $this->returnApiProps('/get_issuer')->nat_op_padrao,
@@ -1571,8 +1571,34 @@ class Fiscal extends MY_Controller
         $retorno = substr($recibo, 0, 4);
         $mensagem = substr($recibo, 5, strlen($recibo));
 
+        if(isset($res->exception)) {
+            die('
+                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <script>
+                    window.onload = function() {
+                        swal("Erro ao gerar NF!", "Erro interno" , "error").then(()=>{
+                            window.close();
+                        });
+                    };
+                </script>
+            ');
+        }
+
+        if($data['estado'] == null) {
+            die('
+                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <script>
+                    window.onload = function() {
+                        swal("Erro ao gerar NF!", "Erro interno: Nfe sem estado" , "error").then(()=>{
+                            window.close();
+                        });
+                    };
+                </script>
+            ');
+        }
+
         if(substr($recibo, 0, 4) == 'Erro') {
-             die('
+             echo '
                 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                 <script>
                     window.onload = function() {
@@ -1581,7 +1607,7 @@ class Fiscal extends MY_Controller
                         });
                     };
                 </script>
-            ');
+            ';
         }
 
         if(!$res->data->error) {
@@ -1616,11 +1642,17 @@ class Fiscal extends MY_Controller
             } else if($res == 'Apro') {
 
                 echo '
-                    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                     <script>
                         window.onload = function() {
-                            swal("Cuidado", "Esta NF já esta aprovada, não é possível enviar novamente!", "warning").then(()=>{
-                                window.close();
+                            Swal.fire({
+                                title: "Cuidado",
+                                text: "Esta NF já esta aprovada, não é possível enviar novamente!",
+                                icon: "warning",
+                                confirmButtonText: "Imprimir Cupom", 
+                            })
+                            .then(()=>{
+                                window.location.href = "/print/nfce/?chave=" + "'.$this->sales_model->getSale($lastId)->chave.'";
                             });
                         };
                     </script>
@@ -1636,8 +1668,6 @@ class Fiscal extends MY_Controller
                 $this->nfe_model->updateLastNumber([
                     'ultimo_num_nfce' => (int)$data['lastId']+1
                 ]);
-
-                $this->nfe_model->truncate('products_nfe');
 
                 echo '
                     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
