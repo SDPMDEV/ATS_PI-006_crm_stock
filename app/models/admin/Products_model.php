@@ -1143,4 +1143,14 @@ class Products_model extends CI_Model
         }
         return false;
     }
+
+    public function getQuantityInSale($sale_id, $product_id)
+    {
+        $query = $this->db->get_where('sale_items', [
+            'sale_id' => $sale_id,
+            'product_id' => $product_id
+        ])->result();
+
+        return (int) $query[0]->unit_quantity;
+    }
 }

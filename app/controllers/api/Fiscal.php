@@ -1721,14 +1721,16 @@ class Fiscal extends MY_Controller
 
         foreach($products_id as $id) {
             $product = $this->products_model->getProductById($id);
+            $quantity = $this->products_model->getQuantityInSale($sale->id, $product->id);
+
             if($product) {
                 $products_to_nfce[] = [
-                    'quantidade' => $product->quantity,
-                    'valor' => $product->cost,
+                    'quantidade' => $quantity,
+                    'valor' => $product->price,
                     'produto' => [
                         'unidade_venda' => $product->unit,
-                        'valor' => $product->cost,
-                        'quantidade' => $product->quantity,
+                        'valor' => $product->price,
+                        'quantidade' => $quantity,
                         'id' => $product->id,
                         'nome' => $product->name
                     ],
