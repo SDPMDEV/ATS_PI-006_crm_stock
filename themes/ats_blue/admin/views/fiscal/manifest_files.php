@@ -88,11 +88,11 @@
                 <td>{{ doc.chave }}</td>
                 <td>{{ doc.estado }}</td>
                 <td>
-                    <a v-if="doc.tipo == 1 || doc.tipo == 2" style="width: 100%;" class="btn btn-success" v-on:click="getDownloadConfigs(doc.chave)">Completa</a>
-                    <a v-if="doc.tipo == 1 || doc.tipo == 2" style="width: 100%;" target="_blank" class="btn btn-primary" v-bind:href="'<?= $api_url ?>/dfe/imprimirDanfe/'+doc.chave" target="_blank">Imprimir</a>
-                    <a v-if="doc.tipo == 3" style="width: 100%;" class="btn btn-danger">Desconhecida</a>
-                    <a v-if="doc.tipo == 4" style="width: 100%" class="btn btn-warning">Não realizada</a>
-                    <a v-if="doc.tipo == 0" style="width: 100%;" class="btn btn-info" onclick="" data-toggle="modal" data-target="#modal-manifest" v-on:click="prepareManifest(doc.chave)">Manifestar</a>
+                    <a v-if="doc.tipo === 1 || doc.tipo === 2" style="width: 100%;" class="btn btn-success" v-on:click="getDownloadConfigs(doc.chave)">Completa</a>
+                    <a v-if="doc.tipo === 1 || doc.tipo === 2" style="width: 100%;" class="btn btn-primary" v-bind:href="'<?= $api_url ?>/dfe/imprimirDanfe/'+doc.chave" target="_blank">Imprimir</a>
+                    <a v-if="doc.tipo === 3" style="width: 100%;" class="btn btn-danger">Desconhecida</a>
+                    <a v-if="doc.tipo === 4" style="width: 100%" class="btn btn-warning">Não realizada</a>
+                    <a v-if="doc.tipo === 0" style="width: 100%;" class="btn btn-info" onclick="" data-toggle="modal" data-target="#modal-manifest" v-on:click="prepareManifest(doc.chave)">Manifestar</a>
                 </td>
             </tr>
             </tbody>
@@ -163,7 +163,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="item in downloadConfigs.itens">
+                                <tr v-for="(item, index) in downloadConfigs.itens" v-bind:id="'doc-row-' + index">
                                     <td v-bind:id=" `td_cod_${item.codigo[0]}` ">{{ item.codigo[0] }}</td>
                                     <td v-bind:id=" `td_name_${item.codigo[0]}` ">{{ item.xProd[0] }}</td>
                                     <td v-bind:id=" `td_ncm_${item.codigo[0]}` ">{{ item.NCM[0] }}</td>
@@ -196,7 +196,9 @@
                                                 </a>
 
                                                 <a v-if="item.produtoNovo === false"
-                                                   title="Editar Produto" class="btn btn-sm btn-clean btn-icon mr-2" v-bind:href="'/admin/products/edit/'+item.id" target="_blank">
+                                                   title="Editar Produto" class="btn btn-sm btn-clean btn-icon mr-2" v-bind:href="'/admin/products/edit/'+item.id" target="_blank"
+                                                   @click="changeRowColor(index)"
+                                                    >
                                                     <span class="svg-icon svg-icon-warning">
                                                         <svg xmlns="http://www.w3.org/2000/svg"
                                                              xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
@@ -598,6 +600,10 @@
                     toastr.error("Erro interno do servidor", 'Erro');
                     console.error(err.responseText);
                 });
+            },
+            changeRowColor(rowId) {
+                const row = document.querySelector(`#doc-row-${rowId}`);
+                row.style.backgroundColor = '#fff78c';
             },
             getDownloadConfigs: function (chave) {
                 this.actChave = chave;
