@@ -1694,7 +1694,7 @@ class Fiscal extends MY_Controller
                 $this->sales_model->upSale($lastId, [
                     'estado' => $res->data->estado,
                     'chave' => $res->data->chave,
-                    'nfcNumero' => $res->nNf
+                    'nfcNumero' => $res->data->nfcNum
                 ]);
 
                 $this->nfe_model->updateLastNumber([
