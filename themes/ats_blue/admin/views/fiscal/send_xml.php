@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="/assets/packages/toastr.css"/>
 <div class="container" id="app">
     <fieldset class="scheduler-border">
-        <legend class="scheduler-border">ENVIAR XML PARA O ESCRITÓRIO</legend>
+        <legend class="scheduler-border">Listagem de xml</legend>
 
         <form id="form-filter">
 
@@ -37,16 +37,14 @@
         </form>
     </fieldset>
 
-
-    <hr>
-    <b v-if="notFound" style="color: red; font-size: 20px">Nenhum arquivo encontrado</b>
-
     <div v-if="allXML.length > 0">
+        <hr>
+
         <div class="row">
             <div class="col-md-12">
                 <b style="text-align: start">Total de arquivos de NFCe: <span style="color: #0eaad6">{{ allXML.length }}</span></b>      
                 <div style="text-align: end">                
-                    <a type="button" href="<?= str_replace('/api', '', $remote_url) ?>/enviarXml/downloadNfce" id="btn-baixarXML" class="btn btn-info">Baixar Arquivos de XML NFCe</a>
+                    <a type="button" v-bind:href="downloadNfceLink" id="btn-baixarXML" class="btn btn-info">Baixar Arquivos XML (NFCe)</a>
                 </div>
             </div>
         </div>
@@ -64,12 +62,48 @@
                 </thead>
                 <tbody>
                     <tr v-for="xml in allXML">
-                        <td scope="row" style="text-align: center;">{{ xml.id }}</td>
-                        <td style="text-align: center;">{{ xml.razao_social }}</td>
-                        <td style="text-align: center;">{{ xml.valor_total }}</td>
+                        <td style="text-align: center;">{{ xml.id }}</td>
+                        <td style="text-align: center;">{{ xml.customer }}</td>
+                        <td style="text-align: center;">{{ xml.grand_total }}</td>
                         <td style="text-align: center;">{{ xml.chave }}</td>
-                        <td style="text-align: center;">{{ xml.updated_at }}</td>
+                        <td style="text-align: center;">{{ xml.date }}</td>
                     </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div v-if="xmlNfe.length > 0">
+        <hr>
+
+        <div class="row">
+            <div class="col-md-12">
+                <b style="text-align: start">Total de arquivos de NFe: <span style="color: #0eaad6">{{ xmlNfe.length }}</span></b>
+                <div style="text-align: end">
+                    <a type="button" v-bind:href="downloadNfeLink" id="btn-baixarXML" class="btn btn-info">Baixar Arquivos XML (NFe)</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 50px; width: 100%">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">Venda ID</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Valor</th>
+                    <th scope="col">Chave</th>
+                    <th scope="col">Data</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="xml in xmlNfe">
+                    <td style="text-align: center;">{{ xml.id }}</td>
+                    <td style="text-align: center;">{{ xml.customer }}</td>
+                    <td style="text-align: center;">{{ xml.grand_total }}</td>
+                    <td style="text-align: center;">{{ xml.chave }}</td>
+                    <td style="text-align: center;">{{ xml.date }}</td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -97,6 +131,11 @@
         el: "#app",
         data: {
             allXML: [],
+            xmlNfe: [],
+            chavesNfce: [],
+            chavesNfe: [],
+            downloadNfceLink: window.location.origin + '/api_fiscal/api/download/pos/xml?',
+            downloadNfeLink: window.location.origin + '/api_fiscal/api/download/pos/xml?',
             notFound: false
         }
     });
@@ -105,13 +144,27 @@
         e.preventDefault();
 
         $.post('/validate/request', getFormData( $('#form-filter') )).then(res=>{
+            console.log(res)
             if(res.xmlNfce.length <= 0) {
                 app.notFound = true;
                 app.allXML = [];
+                app.xmlNfe = [];
                 toastr.error(`Nenhum registro encontrado.`, "Erro");
             } else {
                 app.notFound = false;
                 app.allXML = res.xmlNfce;
+                app.xmlNfe = res.xml;
+                app.chavesNfce = res.chavesNfce;
+                app.chavesNfe = res.chavesNfe;
+
+                app.chavesNfce.forEach(value => {
+                    app.downloadNfceLink += '&chaves='+value
+                })
+
+                app.chavesNfe.forEach(value => {
+                    app.downloadNfeLink += '&chaves='+value
+                })
+
                 toastr.success(`${app.allXML.length} registros encontrados.`, "Sucesso");
             }
         }).fail(err=>{
@@ -119,24 +172,31 @@
         })
     });
 
-    
+    $(document).ready(()=> {
+        const today = new Date();
+
+        let dd = (today.getDate() < 10) ? "0"+today.getDate() : today.getDate();
+        let mm = today.getMonth()+1;
+        let yyyy = today.getFullYear();
 
 
-    const today = new Date();
+        const priorDate = new Date();
 
-    let dd = (today.getDate() < 10) ? "0"+today.getDate() : today.getDate();
-    let mm = today.getMonth()+1;
-    let yyyy = today.getFullYear();
+        const previous = new Date(priorDate.setDate(today.getDate()-30));
 
-    
-    const priorDate = new Date();
+        let dd30 = (previous.getDate() < 10) ? "0"+previous.getDate() : previous.getDate();
+        let mm30 = previous.getMonth()+1;
+        let yyyy30 = previous.getFullYear();
 
-    const previous = new Date(priorDate.setDate(today.getDate()-30));
+        if(mm < 10) {
+            mm = '0'+mm;
+        }
 
-    let dd30 = (previous.getDate() < 10) ? "0"+previous.getDate() : previous.getDate();
-    let mm30 = previous.getMonth()+1;
-    let yyyy30 = previous.getFullYear();
+        if(mm30 < 10) {
+            mm30 = '0'+mm30;
+        }
 
-    document.querySelector("#data_final").value =  yyyy+"-"+mm+"-"+dd;
-    document.querySelector("#data_inicial").value = yyyy30+"-"+mm30+"-"+dd30;
+        document.querySelector("#data_final").value =  yyyy+"-"+mm+"-"+dd;
+        document.querySelector("#data_inicial").value = yyyy30+"-"+mm30+"-"+dd30;
+    })
 </script>

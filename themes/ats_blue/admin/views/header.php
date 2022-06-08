@@ -672,6 +672,7 @@
                                                 <li><a href="<?= admin_url("fiscal/natureza_de_operacao") ?>"><i class="fas fa-file-signature"></i><span class="text">Natureza de Operação</span></a></li>
                                                 <li><a href="<?= admin_url("fiscal/tributacao") ?>"><i class="fas fa-cash-register"></i><span class="text">Tributação</span></a></li>
                                                 <li><a href="<?= admin_url("fiscal/manifesto") ?>"><i class="fas fa-file-invoice"></i><span class="text">Manifesto</span></a></li>
+                                                <li><a href="<?= admin_url("fiscal/enviar_xml") ?>"><i class="far fa-file-alt"></i><span class="text">Listar XML</span></a></li>
                                             </ul>
                                         </li>
 
@@ -1312,6 +1313,7 @@
                                                     <li><a href="<?= admin_url("fiscal/natureza_de_operacao") ?>"><i class="fas fa-file-signature"></i><span class="text">Natureza de Operação</span></a></li>
                                                     <li><a href="<?= admin_url("fiscal/tributacao") ?>"><i class="fas fa-cash-register"></i><span class="text">Tributação</span></a></li>
                                                     <li><a href="<?= admin_url("fiscal/manifesto") ?>"><i class="fas fa-file-invoice"></i><span class="text">Manifesto</span></a></li>
+                                                    <li><a href="<?= admin_url("fiscal/enviar_xml") ?>"><i class="far fa-file-alt"></i><span class="text">Listar XML</span></a></li>
                                                 </ul>
                                             </li>
                                             <?php
