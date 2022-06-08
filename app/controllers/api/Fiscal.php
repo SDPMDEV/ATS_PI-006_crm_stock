@@ -665,6 +665,21 @@ class Fiscal extends MY_Controller
                     $retorno = substr($recibo, 0, 4);
                     $mensagem = substr($recibo, 5, strlen($recibo));
 
+                    if(isset($res->exception)) {
+                        echo '
+                        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                            <script>
+                                window.onload = function() {
+                                    swal("Erro ao gerar NF!", "Erro interno" , "error").then(()=>{
+                                        window.close();
+                                    });
+                                };
+                            </script>
+                        ';
+
+                        die;
+                    }
+
                     if($retorno == 'Erro') {
                         $m = (object)json_decode($mensagem);
 
