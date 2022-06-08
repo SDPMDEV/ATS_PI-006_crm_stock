@@ -1530,7 +1530,31 @@ class Fiscal extends MY_Controller
     public function getNFce()
     {
         $lastId = $this->get->sale_id ?? $this->sales_model->getLastSaleId();
-        $products = $this->nfe_model->getProductsNfe($lastId);
+        $products = $this->products_model->getProductsInSale($lastId,);
+
+        foreach($products as $product) {
+            $pr = $this->products_model->getProductByID($product->product_id);
+
+            $product->nome = $pr->name;
+            $product->NCM = $pr->NCM;
+            $product->CST_CSOSN = $pr->CST_CSOSN;
+            $product->CFOP_saida_estadual = $pr->CFOP_saida_estadual;
+            $product->CEST = $pr->CEST;
+            $product->unidade_venda = $pr->unidade_venda;
+            $product->quantidade = $this->products_model->getQuantityInSale($lastId, $pr->id);
+            $product->valor = $product->unit_price;
+            $product->perc_icms = number_format($pr->perc_icms, 2);
+            $product->CST_PIS = $pr->CST_PIS;
+            $product->perc_pis = number_format($pr->perc_pis, 2);
+            $product->perc_iss = $pr->perc_iss;
+            $product->CST_COFINS = $pr->CST_COFINS;
+            $product->perc_cofins = number_format($pr->perc_cofins, 2);
+            $product->descricao_anp = $pr->descricao_anp ?? '';
+            $product->codigo_anp = number_format($pr->codigo_anp, 2);
+            $product->codBarras = $pr->codBarras;
+            $product->payment_method = $this->sales_model->getSale($lastId)->tipo_pagamento;
+            $product->sale_id = $lastId;
+        }
 
         $data = [
             'lastId' => ($this->nfe_model->getAllLastNumbers()->ultimo_num_nfce == null) ? 1 : $this->nfe_model->getAllLastNumbers()->ultimo_num_nfce,
@@ -1544,9 +1568,9 @@ class Fiscal extends MY_Controller
             'produtos' => $products,
             'desconto' => $this->sales_model->getSale($lastId)->order_discount,
             'valor_total' => $this->sales_model->getSale($lastId)->grand_total,
-            'valor_pago' => $this->get->valor_pago,
+            'valor_pago' => $this->get->valor_pago ?? $this->sales_model->getSale($lastId)->grand_total,
             'troco' => $this->get->troco ?? 0,
-            'tipo_pagamento' => $products[0]->payment_method,
+            'tipo_pagamento' => $products[0]->payment_method == 'cash' ? '01' : '03',
             'estado' => $this->sales_model->getSale($lastId)->estado,
             'natureza' => [
                 "natureza" => $this->returnApiProps('/get_issuer')->nat_op_padrao,
@@ -1558,6 +1582,10 @@ class Fiscal extends MY_Controller
             'api_token' => $this->api_token
         ];
 
+//        echo '<pre>';
+//        print_r($data);
+//        die;
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,$this->api_url . '/generate_nfce');
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -1566,6 +1594,9 @@ class Fiscal extends MY_Controller
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $res = json_decode(curl_exec($ch));
+
+//        var_dump($res);
+//        die;
 
         $recibo = $res->json;
         $retorno = substr($recibo, 0, 4);
@@ -1576,6 +1607,7 @@ class Fiscal extends MY_Controller
                 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                 <script>
                     window.onload = function() {
+                        console.log("'.$res->exception.'");
                         swal("Erro ao gerar NF!", "Erro interno" , "error").then(()=>{
                             window.close();
                         });
@@ -1598,7 +1630,7 @@ class Fiscal extends MY_Controller
         }
 
         if(substr($recibo, 0, 4) == 'Erro') {
-             echo '
+             die('
                 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                 <script>
                     window.onload = function() {
@@ -1607,7 +1639,7 @@ class Fiscal extends MY_Controller
                         });
                     };
                 </script>
-            ';
+            ');
         }
 
         if(!$res->data->error) {
@@ -1662,7 +1694,7 @@ class Fiscal extends MY_Controller
                 $this->sales_model->upSale($lastId, [
                     'estado' => $res->data->estado,
                     'chave' => $res->data->chave,
-                    'nfcNumero' => $res->nfcNum
+                    'nfcNumero' => $res->nNf
                 ]);
 
                 $this->nfe_model->updateLastNumber([

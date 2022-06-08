@@ -446,8 +446,15 @@ if (!empty($variants)) {
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="quantidade"><b>Quantidade</b></label>
+                                    <label for="quantidade"><b>Quantidade de venda</b></label>
                                     <input type="number" name="quantidade" id="quantidade" class="form-control"/>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="quantidade_compra"><b>Quantidade de compra</b></label>
+                                    <input type="number" name="quantidade_compra" id="quantidade_compra" class="form-control"/>
                                 </div>
                             </div>
 

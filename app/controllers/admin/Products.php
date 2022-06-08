@@ -64,7 +64,7 @@ class Products extends MY_Controller
                 'subcategory_id'    => $this->input->post('subcategory') ? $this->input->post('subcategory') : null,
                 'cost'              => $this->sma->formatDecimal($this->input->post('cost')),
                 'price'             => $this->sma->formatDecimal($this->input->post('price')),
-                'unit'              => $this->input->post('unidade_venda'),
+                'unit'              => $this->input->post('unidade_venda') ?? 72,
                 'sale_unit'         => $this->input->post('default_sale_unit'),
                 'purchase_unit'     => $this->input->post('default_purchase_unit'),
                 'tax_rate'          => $this->input->post('tax_rate'),
@@ -131,7 +131,8 @@ class Products extends MY_Controller
                 'gerenciar_estoque'         => $this->input->post('gerenciar_estoque') ?? false,
                 'valor_livre'               => $this->input->post('valor_livre') ?? false,
                 'quantity'                  => $this->input->post('quantidade'),
-                'referencia'                => $this->input->post('referencia')
+                'referencia'                => $this->input->post('referencia'),
+                'quantidade_compra'                => $this->input->post('quantidade_compra')
             ];
             $warehouse_qty      = null;
             $product_attributes = null;
@@ -957,7 +958,7 @@ class Products extends MY_Controller
                 'subcategory_id'    => $this->input->post('subcategory') ? $this->input->post('subcategory') : null,
                 'cost'              => $this->sma->formatDecimal($this->input->post('cost')),
                 'price'             => $this->sma->formatDecimal($this->input->post('price')),
-                'unit'              => $this->input->post('default_sale_unit'),
+                'unit'              => $this->input->post('default_sale_unit') ?? 72,
                 'sale_unit'         => $this->input->post('default_sale_unit'),
                 'purchase_unit'     => $this->input->post('default_purchase_unit'),
                 'tax_rate'          => $this->input->post('tax_rate'),
@@ -1024,12 +1025,10 @@ class Products extends MY_Controller
                 'gerenciar_estoque'         => $this->input->post('gerenciar_estoque') ?? false,
                 'valor_livre'               => $this->input->post('valor_livre') ?? false,
                 'quantity'                  => $this->input->post('quantidade'),
-                'referencia'                => $this->input->post('referencia')
+                'referencia'                => $this->input->post('referencia'),
+                'quantidade_compra'         => $this->input->post('quantidade_compra')
             ];
 
-//            echo '<pre>';
-//            print_r($data);
-//            die;
 
             $warehouse_qty      = null;
             $product_attributes = null;
@@ -1246,6 +1245,9 @@ class Products extends MY_Controller
             // $this->sma->print_arrays($data, $warehouse_qty, $update_variants, $product_attributes, $photos, $items);
         }
 
+//        echo '<pre>';
+//        print_r($data);
+//        die;
         if ($this->form_validation->run() == true && $this->products_model->updateProduct($id, $data, $items, $warehouse_qty, $product_attributes, $photos, $update_variants)) {
             $this->session->set_flashdata('message', lang('product_updated'));
             admin_redirect('products');

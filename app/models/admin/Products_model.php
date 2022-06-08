@@ -1151,6 +1151,31 @@ class Products_model extends CI_Model
             'product_id' => $product_id
         ])->result();
 
-        return (int) $query[0]->unit_quantity;
+        if(! empty($query)) {
+            return (int) $query[0]->unit_quantity;
+        }
+
+        $query = $this->db->get_where('sale_items', [
+            'sale_id' => $sale_id,
+            'product_name' => $product_id
+        ])->result();
+
+        if(! empty($query)) {
+            return (int) $query[0]->unit_quantity;
+        }
+
+        return 0;
+    }
+
+    public function getProductsInSale($sale_id)
+    {
+        $query = $this->db->get_where('sale_items', [
+            'sale_id' => $sale_id
+        ])->result();
+
+        if(! empty($query))
+            return $query;
+
+        return [];
     }
 }

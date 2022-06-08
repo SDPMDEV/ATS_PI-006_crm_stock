@@ -502,10 +502,26 @@ if (!empty($variants)) {
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="quantidade"><b>Quantidade</b></label>
+                                    <label for="quantidade"><b>Quantidade de venda</b></label>
                                     <input value="<?= $productConfigs->quantity ?>" name="quantidade" id="quantidade" class="form-control"/>
                                 </div>
                             </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="quantidade_compra"><b>Quantidade de compra</b></label>
+                                    <input value="<?php
+                                        if(strpos($productConfigs->unidade_compra, 'CX')) {
+                                            echo $productConfigs->conversao_unitaria;
+                                        } elseif(strpos($productConfigs->unidade_compra, 'DZ')) {
+                                            echo $productConfigs->conversao_unitaria;
+                                        } else {
+                                            echo $productConfigs->quantidade_compra;
+                                        }
+                                    ?>" name="quantidade_compra" id="quantidade_compra" class="form-control"/>
+                                </div>
+                            </div>
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="valor_compra"><b>Valor de compra</b></label>
