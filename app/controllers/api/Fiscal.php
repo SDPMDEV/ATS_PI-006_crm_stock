@@ -54,7 +54,7 @@ class Fiscal extends MY_Controller
         $this->load->admin_model('nfe_model');
         $this->load->admin_model('sicoob_model');
 
-        if(!isset($this->post->ajax) && !$this->post->ajax) {
+        if (!isset($this->post->ajax) && !$this->post->ajax) {
             if (!$this->loggedIn) {
                 $this->session->set_userdata('requested_page', $this->uri->uri_string());
                 $this->sma->md('login');
@@ -72,10 +72,10 @@ class Fiscal extends MY_Controller
      * @param array $arr
      * @return stdClass
      */
-    private function toJson(array $arr) : stdClass
+    private function toJson(array $arr): stdClass
     {
         $json = new stdClass();
-        foreach($arr as $index => $value) {
+        foreach ($arr as $index => $value) {
             $json->$index = $value;
         }
 
@@ -107,17 +107,17 @@ class Fiscal extends MY_Controller
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
 
-        if(!empty($data)) {
+        if (!empty($data)) {
             unset($data["api_url"]);
             unset($data["ajax"]);
             $data["api_token"] = $this->api_token;
 
-            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token&".http_build_query($data));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token&" . http_build_query($data));
         } else {
             curl_setopt($ch, CURLOPT_POSTFIELDS, "api_token=$this->api_token");
         }
 
-        if(curl_exec($ch)) {
+        if (curl_exec($ch)) {
             return json_decode(curl_exec($ch));
         } else {
             return curl_error($ch);
@@ -133,18 +133,18 @@ class Fiscal extends MY_Controller
         $doc = preg_replace("/[^0-9]/", "", $doc);
         $qtd = strlen($doc);
 
-        if($qtd >= 11) {
-            if($qtd === 11 ) {
+        if ($qtd >= 11) {
+            if ($qtd === 11) {
                 $docFormatado = substr($doc, 0, 3) . '.' .
-                substr($doc, 3, 3) . '.' .
-                substr($doc, 6, 3) . '.' .
-                substr($doc, 9, 2);
+                    substr($doc, 3, 3) . '.' .
+                    substr($doc, 6, 3) . '.' .
+                    substr($doc, 9, 2);
             } else {
                 $docFormatado = substr($doc, 0, 2) . '.' .
-                substr($doc, 2, 3) . '.' .
-                substr($doc, 5, 3) . '/' .
-                substr($doc, 8, 4) . '-' .
-                substr($doc, -2);
+                    substr($doc, 2, 3) . '.' .
+                    substr($doc, 5, 3) . '/' .
+                    substr($doc, 8, 4) . '-' .
+                    substr($doc, -2);
             }
 
             return $docFormatado;
@@ -181,11 +181,11 @@ class Fiscal extends MY_Controller
     public function configure_office()
     {
         $data = [
-            "configs" => (array)$this->returnOfficeConfigs(), 
+            "configs" => (array)$this->returnOfficeConfigs(),
             "token" => $this->api_token,
             "remote_url" => $this->api_url
         ];
-        
+
         $this->renderView("configure_office", $data);
     }
 
@@ -202,7 +202,7 @@ class Fiscal extends MY_Controller
      */
     public function manifest()
     {
-        if($this->returnApiProps('/validate_certificate')->manifest_perm) {
+        if ($this->returnApiProps('/validate_certificate')->manifest_perm) {
             $this->renderView("manifest_files", [
                 'configs' => $this->returnApiProps("/get_docs"),
                 'remote_url' => $this->api_url,
@@ -210,7 +210,7 @@ class Fiscal extends MY_Controller
                 'warehouses' => $this->site->getAllWarehouses(),
                 'tax_rates' => $this->site->getAllTaxRates(),
                 'api_url' => $this->api_url
-            ]);   
+            ]);
         } else {
             $this->load->helper('url');
             $this->session->set_flashdata('error', 'É necessário configurar o emitente e o certificado antes de manifestar.');
@@ -243,7 +243,7 @@ class Fiscal extends MY_Controller
         $data = [
             "remote_url" => $this->api_url
         ];
-        
+
         $this->renderView("send_xml", $data);
     }
 
@@ -268,7 +268,7 @@ class Fiscal extends MY_Controller
     {
         $json = new stdClass();
 
-        foreach($data as $index => $value) {
+        foreach ($data as $index => $value) {
             $json->$index = $value;
         }
 
@@ -287,20 +287,20 @@ class Fiscal extends MY_Controller
     {
         $this->saveLastNumbers();
 
-        if(isset($this->post->api_url)) {
-            if(strpos($this->post->api_url, 'get_download_configs') !== false) {
-                $data = $this->returnApiProps($this->post->api_url, (array) $this->post);
-                foreach($data->itens as $dt) {
-                    $code = (array) $dt->codigo;
+        if (isset($this->post->api_url)) {
+            if (strpos($this->post->api_url, 'get_download_configs') !== false) {
+                $data = $this->returnApiProps($this->post->api_url, (array)$this->post);
+                foreach ($data->itens as $dt) {
+                    $code = (array)$dt->codigo;
                     $dt->produtoNovo = $this->check_product($code[0]);
                     $dt->id = $this->getProductId($code[0]);
                 }
                 $this->responseJson((array)$data);
             } else {
-                $this->responseJson((array) $this->returnApiProps($this->post->api_url, (array) $this->post));
+                $this->responseJson((array)$this->returnApiProps($this->post->api_url, (array)$this->post));
             }
-        } else if(!empty($api_url)) {
-            $this->responseJson((array) $this->returnApiProps($endpoint, $data));
+        } else if (!empty($api_url)) {
+            $this->responseJson((array)$this->returnApiProps($endpoint, $data));
         } else {
             $this->responseJson(["error" => true, "message" => "Url da api não informada."]);
         }
@@ -311,7 +311,7 @@ class Fiscal extends MY_Controller
      */
     public function addProduct()
     {
-        if($this->input->method() != 'post' || $this->input->method() == 'POST') {
+        if ($this->input->method() != 'post' || $this->input->method() == 'POST') {
             redirect('/', 'refresh');
         }
 
@@ -328,42 +328,42 @@ class Fiscal extends MY_Controller
             'subcategory_id' => null,
             'tax_rate' => $this->input->post('tax_rate'),
             'tax_method' => $this->input->post('tax_method'),
-            'supplier1'         => null,
-            'supplier1price'    => null,
-            'supplier2'         => null,
-            'supplier2price'    => null,
-            'supplier3'         => null,
-            'supplier3price'    => null,
-            'supplier4'         => null,
-            'supplier4price'    => null,
-            'supplier5'         => null,
-            'supplier5price'    => null,
-            'cf1'               => null,
-            'cf2'               => null,
-            'cf3'               => null,
-            'cf4'               => null,
-            'cf5'               => null,
-            'cf6'               => null,
+            'supplier1' => null,
+            'supplier1price' => null,
+            'supplier2' => null,
+            'supplier2price' => null,
+            'supplier3' => null,
+            'supplier3price' => null,
+            'supplier4' => null,
+            'supplier4price' => null,
+            'supplier5' => null,
+            'supplier5price' => null,
+            'cf1' => null,
+            'cf2' => null,
+            'cf3' => null,
+            'cf4' => null,
+            'cf5' => null,
+            'cf6' => null,
             'alert_quantity' => null,
             'track_quantity' => null,
             'details' => null,
             'product_details' => null,
-            'promotion'         => null,
-            'promo_price'       => null,
-            'start_date'        => null,
-            'end_date'          => null,
+            'promotion' => null,
+            'promo_price' => null,
+            'start_date' => null,
+            'end_date' => null,
             'supplier1_part_no' => null,
             'supplier2_part_no' => null,
             'supplier3_part_no' => null,
             'supplier4_part_no' => null,
             'supplier5_part_no' => null,
-            'file'              => null,
-            'slug'              => null,
-            'weight'            => null,
-            'featured'          => null,
-            'hsn_code'          => null,
+            'file' => null,
+            'slug' => null,
+            'weight' => null,
+            'featured' => null,
+            'hsn_code' => null,
             'barcode_symbology' => $this->input->post('barcode_symbology'),
-            'second_name'       => null,
+            'second_name' => null,
             'hide' => $this->input->post('hide') ? $this->input->post('hide') : 0,
             'hide_pos' => $this->input->post('hide_pos') ? $this->input->post('hide_pos') : 0,
             'name' => $this->input->post('name'),
@@ -402,10 +402,10 @@ class Fiscal extends MY_Controller
 
         $product_attributes = [
             [
-                'name'         => $this->input->post('name'),
+                'name' => $this->input->post('name'),
                 'warehouse_id' => $this->input->post('warehouse'),
-                'quantity'     => $this->input->post("quantidade"),
-                'price'        => $this->input->post('valor_compra'),
+                'quantity' => $this->input->post("quantidade"),
+                'price' => $this->input->post('valor_compra'),
             ]
         ];
 
@@ -435,9 +435,9 @@ class Fiscal extends MY_Controller
 
     public function generateDanfe()
     {
-        if(isset($this->get->val)) {
+        if (isset($this->get->val)) {
             $products = [];
-            if(count($this->get->val) == 1) {
+            if (count($this->get->val) == 1) {
                 $sale = $this->sales_model->getSale($this->get->val[0]);
                 $customer = $this->companies_model->getCustomerById($sale->customer_id);
                 $products_id = explode(",", $sale->id_produtos);
@@ -454,7 +454,7 @@ class Fiscal extends MY_Controller
                     'numeracaoVolumes' => $sale->num_volumes
                 ] : null;
 
-                foreach($products_id as $id) {
+                foreach ($products_id as $id) {
                     $pr = $this->products_model->getProductByID($id);
                     array_push($products, [
                         'id' => (int)$pr->id,
@@ -526,7 +526,7 @@ class Fiscal extends MY_Controller
 
 
                 $ch = curl_init($this->api_url . '/generate_danfe/?' . http_build_query($data));
-                curl_setopt_array($ch,[
+                curl_setopt_array($ch, [
                     CURLOPT_SSL_VERIFYPEER => false,
                     CURLOPT_CUSTOMREQUEST => "GET",
                     CURLOPT_RETURNTRANSFER => true,
@@ -562,14 +562,14 @@ class Fiscal extends MY_Controller
 
     public function sendSale()
     {
-        if(isset($this->get->val)) {
+        if (isset($this->get->val)) {
             $products = [];
-            if(count($this->get->val) == 1) {
+            if (count($this->get->val) == 1) {
                 $sale = $this->sales_model->getSale($this->get->val[0]);
                 $customer = $this->companies_model->getCustomerById($sale->customer_id);
                 $products_id = explode(",", $sale->id_produtos);
 
-                if($sale->etado != 'APROVADO') {
+                if ($sale->etado != 'APROVADO') {
                     $frete = ($sale->tipo_frete != 9) ? [
                         'tipo' => $sale->tipo_frete,
                         'valor' => $sale->shipping,
@@ -582,7 +582,7 @@ class Fiscal extends MY_Controller
                         'numeracaoVolumes' => $sale->num_volumes
                     ] : null;
 
-                    foreach($products_id as $id) {
+                    foreach ($products_id as $id) {
                         $pr = $this->products_model->getProductByID($id);
                         array_push($products, [
                             'id' => (int)$pr->id,
@@ -653,7 +653,7 @@ class Fiscal extends MY_Controller
                     ];
 
                     $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL,$this->api_url . '/generate_nf');
+                    curl_setopt($ch, CURLOPT_URL, $this->api_url . '/generate_nf');
                     curl_setopt($ch, CURLOPT_POST, 1);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
@@ -665,7 +665,7 @@ class Fiscal extends MY_Controller
                     $retorno = substr($recibo, 0, 4);
                     $mensagem = substr($recibo, 5, strlen($recibo));
 
-                    if(isset($res->exception)) {
+                    if (isset($res->exception)) {
                         echo '
                         <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                             <script>
@@ -680,7 +680,7 @@ class Fiscal extends MY_Controller
                         die;
                     }
 
-                    if($retorno == 'Erro') {
+                    if ($retorno == 'Erro') {
                         $m = (object)json_decode($mensagem);
 
                         $this->sales_model->upSale($sale->id, [
@@ -691,14 +691,14 @@ class Fiscal extends MY_Controller
                             <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                             <script>
                                 window.onload = function() {
-                                    swal("Erro ao gerar NF!", "[ '. $m->protNFe->infProt->cStat .' ] :  '. $m->protNFe->infProt->xMotivo . ' \n" , "error").then(()=>{
+                                    swal("Erro ao gerar NF!", "[ ' . $m->protNFe->infProt->cStat . ' ] :  ' . $m->protNFe->infProt->xMotivo . ' \n" , "error").then(()=>{
                                         window.close();
                                     });
                                 };
                             </script>
                         ';
 
-                    } else if($res == 'Apro'){
+                    } else if ($res == 'Apro') {
                         echo '
                             <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                             <script>
@@ -709,7 +709,7 @@ class Fiscal extends MY_Controller
                                 };
                             </script>
                         ';
-                    } else if($res->error) {
+                    } else if ($res->error) {
                         echo '
                             <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                             <script>
@@ -735,8 +735,8 @@ class Fiscal extends MY_Controller
                             <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
                             <script>
                                 window.onload = function() {
-                                  swal("Sucesso", "NF-e gerada com sucesso RECIBO: '.$recibo.'", "success").then(() => {
-                                      window.location.href = window.location.origin + "/generate/danfe/?val[]='.$sale->id.'";
+                                  swal("Sucesso", "NF-e gerada com sucesso RECIBO: ' . $recibo . '", "success").then(() => {
+                                      window.location.href = window.location.origin + "/generate/danfe/?val[]=' . $sale->id . '";
                                   });
                                 };                            
                             </script>
@@ -777,6 +777,68 @@ class Fiscal extends MY_Controller
                     };
                 </script>
             ';
+        }
+    }
+
+    public function downloadPosXml()
+    {
+        if(isset($this->get->val)) {
+            $chaves = [];
+            foreach ($this->get->val as $item) {
+                $sale = $this->sales_model->getSale($item);
+
+                if(! $sale->chave) {
+                    die('
+                    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                    <script>
+                        window.onload = function() {
+                            swal("Erro ao baixar xml!", "A venda '.$item.' não possui chave, certifique-se de gerar a NFce para prosseguir.", "error").then(()=>{
+                                window.close();
+                            });
+                        };
+                    </script>');
+                }
+
+                $chaves['chaves'][] = $sale->chave;
+            }
+
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $this->api_url . '/download/pos/xml?' . http_build_query($chaves),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_SSL_VERIFYPEER => false,
+            ]);
+            $res = json_decode($ch);
+
+            if(isset($res->error)) {
+                die('
+                    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                    <script>
+                        window.onload = function() {
+                            swal("Erro ao baixar xml!", "'.$res->message.'", "error").then(()=>{
+                                window.close();
+                            });
+                        };
+                    </script>');
+            } else {
+                echo '
+                    <script>
+                        window.location.href = "'.$this->api_url.'" + "/download/pos/xml?'. http_build_query($chaves).'";
+                    </script>
+                ';
+            }
+        } else {
+            die('
+                <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+                <script>
+                    window.onload = function() {
+                        swal("Erro ao baixar xml!", "Selecione uma venda para prosseguir.", "error").then(()=>{
+                            window.close();
+                        });
+                    };
+                </script>
+                '
+            );
         }
     }
 

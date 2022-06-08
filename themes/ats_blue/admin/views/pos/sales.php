@@ -184,6 +184,12 @@
                         </tfoot>
                     </table>
                 </div>
+                <div style="margin-top: 1rem;">
+                    <a class="btn-danger"
+                       style="padding: 1rem; margin-top: 1rem; cursor: pointer; text-decoration: none"
+                       onclick="downloadPosXml()"
+                    >Baixar XML</a>
+                </div>
             </div>
         </div>
     </div>
@@ -197,3 +203,11 @@
     <?= form_close() ?>
     <?php
 } ?>
+<script>
+    function downloadPosXml()
+    {
+        window.open(
+            window.location.origin + '/download/pos/xml?' + $("#action-form").serialize()
+        )
+    }
+</script>
